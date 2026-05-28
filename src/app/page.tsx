@@ -3,17 +3,18 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="page-wrapper">
+    <div style={{minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto"}}>
+      
       {/* Header */}
-      <div className="page-header">
-        <div className="flex items-center justify-center mx-auto mb-2">
-          <Image src="/konek.svg" alt="Konek Logo" width={280} height={155} priority />
+      <div style={{backgroundColor: "#1D9E75", padding: "32px 24px 24px", textAlign: "center"}}>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "6px"}}>
+          <Image src="/konek.svg" alt="Konek Logo" width={220} height={122} priority />
         </div>
-        <p className="page-header-sub">Your Campus. Your Community.</p>
+        <p style={{fontSize: "0.8rem", color: "rgba(255,255,255,0.85)"}}>Your Campus. Your Community.</p>
       </div>
 
       {/* Features */}
-      <div className="flex-1 px-6 py-6 space-y-3">
+      <div style={{flex: 1, padding: "16px 24px", display: "flex", flexDirection: "column", gap: "8px"}}>
         {[
           { icon: "/feed.png", name: "Feeds", desc: "Viral campus life & moments" },
           { icon: "/soapbox.png", name: "Soapbox", desc: "Voice out. Be heard." },
@@ -21,30 +22,29 @@ export default function Home() {
           { icon: "/bazaar.png", name: "Bazaar", desc: "Buy & sell on campus" },
           { icon: "/living.png", name: "Living", desc: "Find your boarding house" },
         ].map((f) => (
-          <div key={f.name} className="flex items-center gap-4 p-3 rounded-xl" style={{backgroundColor: "var(--color-surface)"}}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{backgroundColor: "var(--color-primary-light)"}}>
-              <Image src={f.icon} alt={f.name} width={28} height={28} />
-            </div>
+          <div key={f.name} style={{display: "flex", alignItems: "center", gap: "14px", padding: "10px 12px", backgroundColor: "#F7F7F7", borderRadius: "12px"}}>
+            <Image src={f.icon} alt={f.name} width={32} height={32} />
             <div>
-              <div className="text-sm font-semibold" style={{color: "var(--color-text-primary)"}}>{f.name}</div>
-              <div className="text-xs mt-0.5" style={{color: "var(--color-text-secondary)"}}>{f.desc}</div>
+              <div style={{fontSize: "0.875rem", fontWeight: 600, color: "#1A1A1A"}}>{f.name}</div>
+              <div style={{fontSize: "0.75rem", color: "#888", marginTop: "1px"}}>{f.desc}</div>
             </div>
           </div>
         ))}
       </div>
 
       {/* CTA */}
-      <div className="px-6 pb-10 space-y-3">
-        <Link href="/signup" className="btn-primary">
+      <div style={{padding: "12px 24px 32px", display: "flex", flexDirection: "column", gap: "10px"}}>
+        <Link href="/signup" style={{display: "block", width: "100%", backgroundColor: "#1D9E75", color: "#fff", textAlign: "center", padding: "14px", borderRadius: "12px", fontWeight: 600, fontSize: "0.875rem", textDecoration: "none"}}>
           Get started — it's free
         </Link>
-        <p className="text-center text-xs" style={{color: "var(--color-text-secondary)"}}>
+        <p style={{textAlign: "center", fontSize: "0.75rem", color: "#888"}}>
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold" style={{color: "var(--color-primary)"}}>
+          <Link href="/login" style={{color: "#1D9E75", fontWeight: 600, textDecoration: "none"}}>
             Log in
           </Link>
         </p>
       </div>
+
     </div>
   );
 }

@@ -86,64 +86,67 @@ export default function SignupPage() {
     }
   };
 
+  const inputStyle = {
+    width: "100%",
+    backgroundColor: "#F7F7F7",
+    border: "1px solid #F0F0F0",
+    borderRadius: "10px",
+    padding: "10px 14px",
+    fontSize: "0.8rem",
+    color: "#1A1A1A",
+    outline: "none",
+    fontFamily: "inherit",
+    marginTop: "3px",
+    display: "block",
+  };
+
+  const labelStyle = {
+    fontSize: "0.65rem",
+    fontWeight: 600 as const,
+    color: "#888",
+    textTransform: "uppercase" as const,
+    letterSpacing: "0.05em",
+  };
+
   return (
-    <div className="page-wrapper">
+    <div style={{minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto"}}>
+
       {/* Header */}
-      <div className="page-header">
+      <div style={{backgroundColor: "#1D9E75", padding: "24px 24px 18px", textAlign: "center"}}>
         <Link href="/">
           <Image src="/konek.svg" alt="Konek" width={160} height={88} priority />
         </Link>
-        <p className="page-header-title">Create your account</p>
-        <p className="page-header-sub">Tangub City students only</p>
+        <p style={{color: "#fff", fontWeight: 600, fontSize: "1rem", marginTop: "4px"}}>Create your account</p>
+        <p style={{fontSize: "0.8rem", color: "rgba(255,255,255,0.8)"}}>Tangub City students only</p>
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSignup} className="flex-1 px-6 py-6 space-y-4">
-        {error && <div className="alert-error">{error}</div>}
+      <form onSubmit={handleSignup} style={{flex: 1, padding: "16px 24px", display: "flex", flexDirection: "column", gap: "12px"}}>
+
+        {error && (
+          <div style={{backgroundColor: "#FEF2F2", border: "1px solid #FCA5A5", color: "#EF4444", fontSize: "0.8rem", padding: "10px 14px", borderRadius: "10px"}}>
+            {error}
+          </div>
+        )}
 
         <div>
-          <label className="input-label">Full Name</label>
-          <input
-            type="text"
-            required
-            placeholder="Juan dela Cruz"
-            value={form.full_name}
-            onChange={(e) => setForm({...form, full_name: e.target.value})}
-            className="input-field"
-          />
+          <label style={labelStyle}>Full Name</label>
+          <input type="text" required placeholder="Juan dela Cruz" value={form.full_name} onChange={(e) => setForm({...form, full_name: e.target.value})} style={inputStyle} />
         </div>
 
         <div>
-          <label className="input-label">Email</label>
-          <input
-            type="email"
-            required
-            placeholder="juan@email.com"
-            value={form.email}
-            onChange={(e) => setForm({...form, email: e.target.value})}
-            className="input-field"
-          />
+          <label style={labelStyle}>Email</label>
+          <input type="email" required placeholder="juan@email.com" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} style={inputStyle} />
         </div>
 
         <div>
-          <label className="input-label">Password</label>
-          <input
-            type="password"
-            required
-            placeholder="Min. 6 characters"
-            value={form.password}
-            onChange={(e) => setForm({...form, password: e.target.value})}
-            className="input-field"
-          />
+          <label style={labelStyle}>Password</label>
+          <input type="password" required placeholder="Min. 6 characters" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} style={inputStyle} />
         </div>
 
         <div>
-          <label className="input-label">School</label>
-          <select
-            value={form.school}
-            onChange={(e) => setForm({...form, school: e.target.value})}
-            className="input-field"
-          >
+          <label style={labelStyle}>School</label>
+          <select value={form.school} onChange={(e) => setForm({...form, school: e.target.value})} style={inputStyle}>
             {schools.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
@@ -151,31 +154,32 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label className="input-label">Student ID Photo</label>
-          <label className="upload-box">
+          <label style={labelStyle}>Student ID Photo</label>
+          <label style={{marginTop: "3px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", border: "2px dashed #1D9E75", borderRadius: "10px", padding: "14px", cursor: "pointer", backgroundColor: "#E1F5EE", textAlign: "center"}}>
             {idPreview ? (
-              <Image src={idPreview} alt="ID Preview" width={200} height={120} className="rounded-lg object-cover" />
+              <Image src={idPreview} alt="ID Preview" width={160} height={90} style={{borderRadius: "8px", objectFit: "cover"}} />
             ) : (
               <>
-                <span className="text-3xl mb-2">🪪</span>
-                <span className="upload-box-title">Tap to upload your Student ID</span>
-                <span className="upload-box-sub">JPG or PNG · max 2MB · auto-approved</span>
+                <span style={{fontSize: "1.6rem", marginBottom: "4px"}}>🪪</span>
+                <span style={{fontSize: "0.8rem", fontWeight: 600, color: "#0F6E56"}}>Tap to upload your Student ID</span>
+                <span style={{fontSize: "0.7rem", color: "#888", marginTop: "2px"}}>JPG or PNG · max 2MB · auto-approved</span>
               </>
             )}
-            <input type="file" accept="image/*" className="hidden" onChange={handleIdUpload} />
+            <input type="file" accept="image/*" style={{display: "none"}} onChange={handleIdUpload} />
           </label>
         </div>
 
-        <button type="submit" disabled={loading} className="btn-primary">
+        <button type="submit" disabled={loading} style={{width: "100%", backgroundColor: loading ? "#888" : "#1D9E75", color: "#fff", padding: "12px", borderRadius: "10px", fontWeight: 600, fontSize: "0.875rem", border: "none", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
           {loading ? "Creating account..." : "Join Konek"}
         </button>
 
-        <p className="text-center text-xs pb-6" style={{color: "var(--color-text-secondary)"}}>
+        <p style={{textAlign: "center", fontSize: "0.75rem", color: "#888", paddingBottom: "16px"}}>
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold" style={{color: "var(--color-primary)"}}>
+          <Link href="/login" style={{color: "#1D9E75", fontWeight: 600, textDecoration: "none"}}>
             Log in
           </Link>
         </p>
+
       </form>
     </div>
   );
