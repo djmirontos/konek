@@ -401,8 +401,9 @@ export default function PostDetailPage() {
                       {comment.userReaction ? <><img src={comment.userReaction} alt="reaction" style={{width: "14px", height: "14px", marginRight: "3px"}} />{REACTION_NAMES[REACTIONS.indexOf(comment.userReaction)] || "Like"}</> : "Like"}
                     </button>
                     {Object.values(comment.reactionCounts || {}).reduce((a,b) => a+b, 0) > 0 && (
-                      <span style={{fontSize: "0.68rem", color: "#888", marginLeft: "4px"}}>
-                        {Object.entries(comment.reactionCounts || {}).sort((a,b) => b[1]-a[1]).slice(0,3).map(([k]) => k).join("")} {Object.values(comment.reactionCounts || {}).reduce((a,b) => a+b, 0)}
+                      <span style={{display: "flex", alignItems: "center", gap: "2px", marginLeft: "4px"}}>
+                        {Object.entries(comment.reactionCounts || {}).sort((a,b) => b[1]-a[1]).slice(0,3).map(([k]) => <img key={k} src={k} alt="" style={{width: "12px", height: "12px"}} />)}
+                        <span style={{fontSize: "0.68rem", color: "#888"}}>{Object.values(comment.reactionCounts || {}).reduce((a,b) => a+b, 0)}</span>
                       </span>
                     )}
                     {showCommentReactionPicker === comment.id && (
@@ -451,8 +452,9 @@ export default function PostDetailPage() {
                                 {reply.userReaction ? <><img src={reply.userReaction} alt="reaction" style={{width: "14px", height: "14px", marginRight: "3px"}} />{REACTION_NAMES[REACTIONS.indexOf(reply.userReaction)] || "Like"}</> : "Like"}
                               </button>
                               {Object.values(reply.reactionCounts || {}).reduce((a,b) => a+b, 0) > 0 && (
-                                <span style={{fontSize: "0.65rem", color: "#888", marginLeft: "4px"}}>
-                                  {Object.entries(reply.reactionCounts || {}).sort((a,b) => b[1]-a[1]).slice(0,3).map(([k]) => k).join("")} {Object.values(reply.reactionCounts || {}).reduce((a,b) => a+b, 0)}
+                                <span style={{display: "flex", alignItems: "center", gap: "2px", marginLeft: "4px"}}>
+                                  {Object.entries(reply.reactionCounts || {}).sort((a,b) => b[1]-a[1]).slice(0,3).map(([k]) => <img key={k} src={k} alt="" style={{width: "12px", height: "12px"}} />)}
+                                  <span style={{fontSize: "0.65rem", color: "#888"}}>{Object.values(reply.reactionCounts || {}).reduce((a,b) => a+b, 0)}</span>
                                 </span>
                               )}
                               {showCommentReactionPicker === reply.id && (
