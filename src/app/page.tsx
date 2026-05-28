@@ -8,7 +8,7 @@ export default function Home() {
       <div className="bg-primary px-6 pt-16 pb-10 text-center">
         <div className="w-20 h-20 flex items-center justify-center mx-auto mb-4">
           <Image
-            src="/Konek.png"
+            src="/logo.png"
             alt="Konek Logo"
             width={80}
             height={80}
