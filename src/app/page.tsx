@@ -5,17 +5,17 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white flex flex-col max-w-lg mx-auto">
       {/* Header */}
-      <div className="bg-primary px-6 pt-16 pb-10 text-center">
-        <div className="flex items-center justify-center mx-auto mb-4">
+      <div style={{backgroundColor: "#1D9E75"}} className="px-6 pt-16 pb-10 text-center">
+        <div className="flex items-center justify-center mx-auto mb-2">
           <Image
             src="/konek.svg"
             alt="Konek Logo"
-            width={120}
-            height={120}
+            width={280}
+            height={155}
+            priority
           />
         </div>
-        <h1 className="text-3xl font-semibold text-white tracking-tight">Konek</h1>
-        <p className="text-white/80 text-sm mt-1">Your Campus. Your Community.</p>
+        <p className="text-sm mt-1" style={{color: "rgba(255,255,255,0.8)"}}>Your Campus. Your Community.</p>
       </div>
 
       {/* Features */}
@@ -28,7 +28,7 @@ export default function Home() {
           { icon: "🏠", name: "Living", desc: "Find your boarding house" },
         ].map((f) => (
           <div key={f.name} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
-            <div className="w-10 h-10 bg-primary-light rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{backgroundColor: "#E1F5EE"}}>
               {f.icon}
             </div>
             <div>
@@ -43,13 +43,14 @@ export default function Home() {
       <div className="px-6 pb-10 space-y-3">
         <Link
           href="/signup"
-          className="block w-full bg-primary text-white text-center py-3 rounded-xl font-semibold text-sm"
+          className="block w-full text-white text-center py-3 rounded-xl font-semibold text-sm"
+          style={{backgroundColor: "#1D9E75"}}
         >
           Get started — it's free
         </Link>
         <p className="text-center text-xs text-gray-400">
           Already have an account?{" "}
-          <Link href="/login" className="text-primary font-semibold">
+          <Link href="/login" className="font-semibold" style={{color: "#1D9E75"}}>
             Log in
           </Link>
         </p>
