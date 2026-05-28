@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 const TAGS = ["#lihok", "#feelings", "#announcements", "#free-stuff", "#groupmates-needed", "#org-recruitment", "#review-session"];
 const REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "😡", "🤝"];
+const REACTION_VALUES = ["like", "love", "haha", "wow", "sad", "grabe", "laban"];
 const REACTION_NAMES = ["Like", "Love", "Haha", "Wow", "Sad", "Grabe", "Laban"];
 
 type School = { id: string; name: string; abbreviation: string; };
@@ -39,13 +40,8 @@ export default function FeedsPage() {
   const [showReactionPicker, setShowReactionPicker] = useState<string | null>(null);
   const [postError, setPostError] = useState("");
 
-  useEffect(() => {
-    initPage();
-  }, []);
-
-  useEffect(() => {
-    if (currentUser) fetchPosts();
-  }, [currentUser, selectedSchool]);
+  useEffect(() => { initPage(); }, []);
+  useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
 
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -66,22 +62,21 @@ export default function FeedsPage() {
       .eq("is_hidden", false)
       .order("created_at", { ascending: false })
       .limit(30);
-
     if (selectedSchool === "own") {
       query = query.eq("school_id", currentUser.school_id);
     } else if (selectedSchool !== "all") {
       query = query.eq("school_id", selectedSchool);
     }
-
     const { data } = await query;
     if (data) {
       const enriched = await Promise.all(data.map(async (post) => {
         const { data: reactions } = await supabase.from("reactions").select("type, user_id").eq("post_id", post.id);
         const reactionCounts: Record<string, number> = {};
-        let userReaction = null;
+        let userReaction: string | null = null;
         (reactions || []).forEach((r) => {
-          reactionCounts[r.type] = (reactionCounts[r.type] || 0) + 1;
-          if (r.user_id === currentUser.id) userReaction = r.type;
+          const emoji = REACTIONS[REACTION_VALUES.indexOf(r.type)] || r.type;
+          reactionCounts[emoji] = (reactionCounts[emoji] || 0) + 1;
+          if (r.user_id === currentUser.id) userReaction = emoji;
         });
         const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", post.id);
         return { ...post, reactionCounts, userReaction, commentCount: count || 0 };
@@ -153,10 +148,11 @@ export default function FeedsPage() {
     if (!currentUser) return;
     const post = posts.find(p => p.id === postId);
     if (!post) return;
+    const reactionValue = REACTION_VALUES[REACTIONS.indexOf(emoji)] || "like";
     if (post.userReaction === emoji) {
       await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", currentUser.id);
     } else {
-      await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: emoji }, { onConflict: "post_id,user_id" });
+      await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: reactionValue }, { onConflict: "post_id,user_id" });
     }
     setShowReactionPicker(null);
     fetchPosts();
@@ -169,7 +165,7 @@ export default function FeedsPage() {
     if (post.userReaction) {
       await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", currentUser.id);
     } else {
-      await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, reaction_type: "👍" }, { onConflict: "post_id,user_id" });
+      await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: "like" }, { onConflict: "post_id,user_id" });
     }
     fetchPosts();
   }
@@ -218,19 +214,15 @@ export default function FeedsPage() {
   return (
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
-      {/* Top Header */}
       <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
         <Image src="/konek.svg" alt="Konek" width={80} height={28} priority />
         <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-          {/* School Filter Button */}
           <button onClick={() => setShowSchoolPicker(!showSchoolPicker)} style={{backgroundColor: "rgba(255,255,255,0.2)", border: "none", borderRadius: "20px", padding: "6px 12px", color: "#fff", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
             📍 {getSchoolLabel()} ▾
           </button>
-          {/* Notification Bell */}
           <button style={{background: "none", border: "none", cursor: "pointer", position: "relative", padding: "4px"}}>
             <Image src="/notification.png" alt="notifications" width={25} height={25} />
           </button>
-          {/* Avatar */}
           <button onClick={handleLogout} style={{background: "none", border: "none", cursor: "pointer", padding: 0}}>
             {currentUser?.avatar_url
               ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", border: "2px solid #fff"}} />
@@ -240,7 +232,6 @@ export default function FeedsPage() {
         </div>
       </div>
 
-      {/* School Picker Dropdown */}
       {showSchoolPicker && (
         <div style={{position: "fixed", top: "60px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.15)", borderRadius: "0 0 16px 16px", overflow: "hidden"}}>
           {[
@@ -257,10 +248,8 @@ export default function FeedsPage() {
         </div>
       )}
 
-      {/* Overlay to close school picker */}
       {showSchoolPicker && <div onClick={() => setShowSchoolPicker(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />}
 
-      {/* Post Composer */}
       <div style={{backgroundColor: "#fff", padding: "12px 16px", borderBottom: "1px solid #F0F0F0"}}>
         <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
           {currentUser?.avatar_url
@@ -275,8 +264,6 @@ export default function FeedsPage() {
               rows={3}
               style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}}
             />
-
-            {/* Image Previews */}
             {imagePreviews.length > 0 && (
               <div style={{display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap"}}>
                 {imagePreviews.map((src, i) => (
@@ -287,8 +274,6 @@ export default function FeedsPage() {
                 ))}
               </div>
             )}
-
-            {/* Tags */}
             <div style={{display: "flex", gap: "6px", marginTop: "8px", flexWrap: "wrap"}}>
               {TAGS.map(tag => (
                 <button key={tag} onClick={() => setSelectedTag(selectedTag === tag ? "" : tag)}
@@ -297,10 +282,7 @@ export default function FeedsPage() {
                 </button>
               ))}
             </div>
-
             {postError && <div style={{color: "#EF4444", fontSize: "0.75rem", marginTop: "6px"}}>{postError}</div>}
-
-            {/* Composer Actions */}
             <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px"}}>
               <div style={{display: "flex", gap: "12px"}}>
                 <button onClick={() => fileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "0"}} title="Add photos"><Image src="/photos.png" alt="photos" width={22} height={22} /></button>
@@ -316,7 +298,6 @@ export default function FeedsPage() {
         </div>
       </div>
 
-      {/* Feed */}
       <div style={{flex: 1, paddingBottom: "80px"}}>
         {loading ? (
           <div style={{textAlign: "center", padding: "48px 16px", color: "#888"}}>
@@ -331,8 +312,6 @@ export default function FeedsPage() {
           </div>
         ) : posts.map(post => (
           <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0"}}>
-
-            {/* Post Header */}
             <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
               {post.users?.avatar_url
                 ? <img src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
@@ -348,10 +327,8 @@ export default function FeedsPage() {
               <button style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.2rem", padding: "4px"}}>•••</button>
             </div>
 
-            {/* Post Content */}
             <div style={{padding: "0 16px 10px", fontSize: "0.9rem", color: "#1A1A1A", lineHeight: 1.5}}>{post.content}</div>
 
-            {/* Post Images */}
             {post.images && post.images.length > 0 && (
               <div style={{display: "grid", gridTemplateColumns: post.images.length === 1 ? "1fr" : "1fr 1fr", gap: "2px", marginBottom: "8px"}}>
                 {post.images.map((url, i) => (
@@ -360,7 +337,6 @@ export default function FeedsPage() {
               </div>
             )}
 
-            {/* Reaction Summary */}
             {getTotalReactions(post.reactionCounts || {}) > 0 && (
               <div style={{padding: "4px 16px", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                 <div style={{display: "flex", alignItems: "center", gap: "4px"}}>
@@ -371,12 +347,9 @@ export default function FeedsPage() {
               </div>
             )}
 
-            {/* Divider */}
             <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
 
-            {/* Action Buttons */}
             <div style={{display: "flex", padding: "4px 8px"}}>
-              {/* Like Button with long press */}
               <div style={{position: "relative", flex: 1}}>
                 <button
                   onMouseDown={() => startLongPress(post.id)}
@@ -390,13 +363,11 @@ export default function FeedsPage() {
                     {post.userReaction ? REACTION_NAMES[REACTIONS.indexOf(post.userReaction)] || "Like" : "Like"}
                   </span>
                 </button>
-
-                {/* Reaction Picker */}
                 {showReactionPicker === post.id && (
                   <div style={{position: "absolute", bottom: "48px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "8px", zIndex: 300, border: "1px solid #F0F0F0"}}>
                     {REACTIONS.map((emoji, i) => (
                       <button key={emoji} onClick={() => handleReaction(post.id, emoji)} title={REACTION_NAMES[i]}
-                        style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.5rem", padding: "2px", borderRadius: "50%", transition: "transform 0.1s"}}
+                        style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.5rem", padding: "2px", borderRadius: "50%"}}
                         onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
                         onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
                         {emoji}
@@ -406,24 +377,20 @@ export default function FeedsPage() {
                 )}
               </div>
 
-              {/* Comment Button */}
               <button style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
                 <Image src="/comment.png" alt="comment" width={20} height={20} />
                 <span style={{fontSize: "0.78rem", color: "#888"}}>Comment</span>
               </button>
 
-              {/* Share Button */}
               <button style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
                 <Image src="/share.png" alt="share" width={20} height={20} />
                 <span style={{fontSize: "0.78rem", color: "#888"}}>Share</span>
               </button>
             </div>
-
           </div>
         ))}
       </div>
 
-      {/* Bottom Navigation */}
       <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", display: "flex", zIndex: 100, paddingBottom: "env(safe-area-inset-bottom)"}}>
         {[
           { href: "/feeds", icon: "/feed.png", label: "Feeds", active: true },
@@ -439,9 +406,7 @@ export default function FeedsPage() {
         ))}
       </div>
 
-      {/* Close reaction picker on outside click */}
       {showReactionPicker && <div onClick={() => setShowReactionPicker(null)} style={{position: "fixed", inset: 0, zIndex: 250}} />}
-
     </div>
   );
 }
