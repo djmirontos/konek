@@ -76,12 +76,12 @@ export default function FeedsPage() {
     const { data } = await query;
     if (data) {
       const enriched = await Promise.all(data.map(async (post) => {
-        const { data: reactions } = await supabase.from("reactions").select("reaction_type, user_id").eq("post_id", post.id);
+        const { data: reactions } = await supabase.from("reactions").select("type, user_id").eq("post_id", post.id);
         const reactionCounts: Record<string, number> = {};
         let userReaction = null;
         (reactions || []).forEach((r) => {
-          reactionCounts[r.reaction_type] = (reactionCounts[r.reaction_type] || 0) + 1;
-          if (r.user_id === currentUser.id) userReaction = r.reaction_type;
+          reactionCounts[r.type] = (reactionCounts[r.type] || 0) + 1;
+          if (r.user_id === currentUser.id) userReaction = r.type;
         });
         const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", post.id);
         return { ...post, reactionCounts, userReaction, commentCount: count || 0 };
@@ -156,7 +156,7 @@ export default function FeedsPage() {
     if (post.userReaction === emoji) {
       await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", currentUser.id);
     } else {
-      await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, reaction_type: emoji }, { onConflict: "post_id,user_id" });
+      await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: emoji }, { onConflict: "post_id,user_id" });
     }
     setShowReactionPicker(null);
     fetchPosts();
