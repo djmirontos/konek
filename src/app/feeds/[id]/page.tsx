@@ -104,6 +104,26 @@ export default function PostDetailPage() {
         is_flagged: false,
         is_hidden: false,
       });
+      if (post && post.user_id !== currentUser.id) {
+        await supabase.from("notifications").insert({
+          recipient_id: post.user_id,
+          sender_id: currentUser.id,
+          type: "comment",
+          post_id: postId,
+          message: currentUser.full_name + (replyTo ? " replied to a comment on your post" : " commented on your post"),
+          is_read: false,
+        });
+      }
+      if (post && post.user_id !== currentUser.id) {
+        await supabase.from("notifications").insert({
+          recipient_id: post.user_id,
+          sender_id: currentUser.id,
+          type: "comment",
+          post_id: postId,
+          message: currentUser.full_name + (replyTo ? " replied to a comment on your post" : " commented on your post"),
+          is_read: false,
+        });
+      }
       setCommentText("");
       setReplyTo(null);
       await fetchComments();

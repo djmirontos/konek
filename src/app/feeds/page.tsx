@@ -38,7 +38,7 @@ export default function FeedsPage() {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [showReactionPicker, setShowReactionPicker] = useState<string | null>(null);
-  const [postError, setPostError] = useState("");
+  const [postError, setPostError] = useState(""); const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => { initPage(); }, []);
   useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
@@ -48,11 +48,15 @@ export default function FeedsPage() {
     if (!user) { router.push("/login"); return; }
     const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (userData) setCurrentUser(userData);
-    const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
-    if (schoolData) setSchools(schoolData);
+    const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");   if (schoolData) setSchools(schoolData);   fetchUnreadCount(userData);
   }
 
-  async function fetchPosts() {
+  async function fetchUnreadCount(user: User | null) {
+if (!user) return;
+const { count } = await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_id", user.id).eq("is_read", false);
+setUnreadCount(count || 0);
+}
+async function fetchPosts() {
     if (!currentUser) return;
     setLoading(true);
     let query = supabase
@@ -155,6 +159,16 @@ export default function FeedsPage() {
       await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: reactionValue }, { onConflict: "post_id,user_id" });
     }
     setShowReactionPicker(null);
+    if (post.user_id !== currentUser.id) {
+      await supabase.from("notifications").insert({
+        recipient_id: post.user_id,
+        sender_id: currentUser.id,
+        type: "reaction",
+        post_id: postId,
+        message: currentUser.full_name + " reacted " + emoji + " to your post",
+        is_read: false,
+      });
+    }
     fetchPosts();
   }
 
@@ -162,10 +176,20 @@ export default function FeedsPage() {
     if (!currentUser) return;
     const post = posts.find(p => p.id === postId);
     if (!post) return;
-    if (post.userReaction) {
+   if (post.userReaction) {
       await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", currentUser.id);
     } else {
       await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: "like" }, { onConflict: "post_id,user_id" });
+      if (post.user_id !== currentUser.id) {
+        await supabase.from("notifications").insert({
+          recipient_id: post.user_id,
+          sender_id: currentUser.id,
+          type: "reaction",
+          post_id: postId,
+          message: currentUser.full_name + " liked your post",
+          is_read: false,
+        });
+      }
     }
     fetchPosts();
   }
@@ -222,6 +246,11 @@ export default function FeedsPage() {
           </button>
           <button style={{background: "none", border: "none", cursor: "pointer", position: "relative", padding: "4px"}}>
             <Image src="/notification.png" alt="notifications" width={25} height={25} />
+            {unreadCount > 0 && (
+              <div style={{position: "absolute", top: "0px", right: "0px", backgroundColor: "#EF4444", color: "#fff", borderRadius: "50%", width: "16px", height: "16px", fontSize: "0.6rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #1D9E75"}}>
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </div>
+            )}
           </button>
           <button onClick={handleLogout} style={{background: "none", border: "none", cursor: "pointer", padding: 0}}>
             {currentUser?.avatar_url
