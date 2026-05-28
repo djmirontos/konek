@@ -343,7 +343,7 @@ export default function FeedsPage() {
                   <span style={{fontSize: "0.85rem"}}>{getTopReactions(post.reactionCounts || {}).join("")}</span>
                   <span style={{fontSize: "0.75rem", color: "#888"}}>{getTotalReactions(post.reactionCounts || {})}</span>
                 </div>
-                <span style={{fontSize: "0.75rem", color: "#888"}}>{post.commentCount} comment{post.commentCount !== 1 ? "s" : ""}</span>
+                <span onClick={() => router.push("/feeds/" + post.id)} style={{fontSize: "0.75rem", color: "#888", cursor: "pointer"}}>{post.commentCount} comment{post.commentCount !== 1 ? "s" : ""}</span>
               </div>
             )}
 
@@ -377,9 +377,7 @@ export default function FeedsPage() {
                 )}
               </div>
 
-              <button style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
-                <Image src="/comment.png" alt="comment" width={20} height={20} />
-                <span style={{fontSize: "0.78rem", color: "#888"}}>Comment</span>
+              <button onClick={() => router.push("/feeds/" + post.id)} style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>               <Image src="/comment.png" alt="comment" width={20} height={20} />               <span style={{fontSize: "0.78rem", color: "#888"}}>Comment</span>             
               </button>
 
               <button style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
