@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
+import PhotoViewer from "@/components/PhotoViewer";
 
 const REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "😡", "🤝"];
 const REACTION_VALUES = ["like", "love", "haha", "wow", "sad", "grabe", "laban"];
@@ -40,6 +41,8 @@ export default function PostDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
   const [showReactionPicker, setShowReactionPicker] = useState(false);
+  const [viewerImages, setViewerImages] = useState<string[]>([]);
+  const [viewerIndex, setViewerIndex] = useState(0);
 
   useEffect(() => { initPage(); }, []);
 
@@ -229,7 +232,7 @@ export default function PostDetailPage() {
         {post.images && post.images.length > 0 && (
           <div style={{display: "grid", gridTemplateColumns: post.images.length === 1 ? "1fr" : "1fr 1fr", gap: "2px", marginBottom: "8px"}}>
             {post.images.map((url, i) => (
-              <img key={i} src={url} alt="" style={{width: "100%", aspectRatio: post.images!.length === 1 ? "16/9" : "1/1", objectFit: "cover"}} />
+              <img key={i} src={url} alt="" onClick={() => { setViewerImages(post.images!); setViewerIndex(i); }} style={{width: "100%", aspectRatio: post.images!.length === 1 ? "16/9" : "1/1", objectFit: "cover", cursor: "pointer"}} />
             ))}
           </div>
         )}
@@ -374,6 +377,15 @@ export default function PostDetailPage() {
       </div>
 
       {showReactionPicker && <div onClick={() => setShowReactionPicker(false)} style={{position: "fixed", inset: 0, zIndex: 250}} />}
+      {viewerImages.length > 0 && (
+        <PhotoViewer
+          images={viewerImages}
+          startIndex={viewerIndex}
+          currentIndex={viewerIndex}
+          onIndexChange={setViewerIndex}
+          onClose={() => setViewerImages([])}
+        />
+      )}
     </div>
   );
 }

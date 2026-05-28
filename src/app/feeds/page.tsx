@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import PhotoViewer from "@/components/PhotoViewer";
 
 const TAGS = ["#lihok", "#feelings", "#announcements", "#free-stuff", "#groupmates-needed", "#org-recruitment", "#review-session"];
 const REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "😡", "🤝"];
@@ -53,6 +54,8 @@ export default function FeedsPage() {
   const [reactionList, setReactionList] = useState<ReactionUser[]>([]);
   const [reactionTab, setReactionTab] = useState("All");
   const [loadingReactions, setLoadingReactions] = useState(false);
+  const [viewerImages, setViewerImages] = useState<string[]>([]);
+  const [viewerIndex, setViewerIndex] = useState(0);
 
   useEffect(() => { initPage(); }, []);
   useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
@@ -489,7 +492,7 @@ export default function FeedsPage() {
             {post.images && post.images.length > 0 && (
               <div style={{display: "grid", gridTemplateColumns: post.images.length === 1 ? "1fr" : "1fr 1fr", gap: "2px", marginBottom: "8px"}}>
                 {post.images.map((url, i) => (
-                  <img key={i} src={url} alt="" style={{width: "100%", aspectRatio: post.images!.length === 1 ? "16/9" : "1/1", objectFit: "cover"}} />
+                  <img key={i} src={url} alt="" onClick={() => { setViewerImages(post.images!); setViewerIndex(i); }} style={{width: "100%", aspectRatio: post.images!.length === 1 ? "16/9" : "1/1", objectFit: "cover", cursor: "pointer"}} />
                 ))}
               </div>
             )}
@@ -565,6 +568,15 @@ export default function FeedsPage() {
       </div>
 
       {showReactionPicker && <div onClick={() => setShowReactionPicker(null)} style={{position: "fixed", inset: 0, zIndex: 250}} />}
+      {viewerImages.length > 0 && (
+        <PhotoViewer
+          images={viewerImages}
+          startIndex={viewerIndex}
+          currentIndex={viewerIndex}
+          onIndexChange={setViewerIndex}
+          onClose={() => setViewerImages([])}
+        />
+      )}
     </div>
   );
 }
