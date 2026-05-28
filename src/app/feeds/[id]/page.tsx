@@ -60,7 +60,7 @@ export default function PostDetailPage() {
     const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (userData) setCurrentUser(userData);
     await fetchPost(userData);
-    await fetchComments();
+    await fetchComments(userData);
     setLoading(false);
   }
 
@@ -84,14 +84,15 @@ export default function PostDetailPage() {
     }
   }
 
-  async function fetchComments() {
+  async function fetchComments(userData?: User | null) {
+    const user = userData ?? currentUser;
     const { data } = await supabase
       .from("comments")
       .select("id, user_id, content, created_at, parent_id, is_hidden, users(full_name, avatar_url)")
       .eq("post_id", postId)
       .eq("is_hidden", false)
       .order("created_at", { ascending: true });
-    if (data && currentUser) {
+    if (data && user) {
       const enriched = await Promise.all(data.map(async (c) => {
         const { data: reactions } = await supabase.from("comment_reactions").select("type, user_id").eq("comment_id", c.id);
         const reactionCounts: Record<string, number> = {};
@@ -99,7 +100,7 @@ export default function PostDetailPage() {
         (reactions || []).forEach((r) => {
           const emoji = REACTIONS[REACTION_VALUES.indexOf(r.type)] || r.type;
           reactionCounts[emoji] = (reactionCounts[emoji] || 0) + 1;
-          if (r.user_id === currentUser.id) userReaction = emoji;
+          if (r.user_id === user.id) userReaction = emoji;
         });
         return { ...c, reactionCounts, userReaction };
       }));
