@@ -360,17 +360,17 @@ export default function FeedsPage() {
       )}
       {showSchoolPicker && <div onClick={() => setShowSchoolPicker(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />}
 
-      {/* Reaction List Bottom Sheet */}
+      {/* Reaction Slide Panel */}
       {showReactionList && (
         <>
-          <div onClick={() => setShowReactionList(false)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
-          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, maxHeight: "70vh", display: "flex", flexDirection: "column"}}>
-            <div style={{padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-              <span style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A"}}>Reactions</span>
-              <button onClick={() => setShowReactionList(false)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem"}}>✕</button>
+          <div onClick={() => setShowReactionList(false)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 400}} />
+          <div style={{position: "fixed", top: 0, right: 0, width: "85%", maxWidth: "408px", height: "100vh", backgroundColor: "#fff", zIndex: 500, display: "flex", flexDirection: "column", boxShadow: "-4px 0 20px rgba(0,0,0,0.2)", animation: "slideInRight 0.25s ease-out"}}>
+            <style>{`@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
+            <div style={{padding: "16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1D9E75"}}>
+              <span style={{fontWeight: 700, fontSize: "1rem", color: "#fff"}}>Reactions</span>
+              <button onClick={() => setShowReactionList(false)} style={{background: "rgba(255,255,255,0.2)", border: "none", cursor: "pointer", color: "#fff", fontSize: "1rem", width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center"}}>X</button>
             </div>
-            {/* Reaction Tabs */}
-            <div style={{display: "flex", gap: "4px", padding: "8px 16px", borderBottom: "1px solid #F0F0F0", overflowX: "auto"}}>
+            <div style={{display: "flex", gap: "4px", padding: "10px 12px", borderBottom: "1px solid #F0F0F0", overflowX: "auto"}}>
               {getReactionTabs().map(tab => {
                 const idx = REACTION_NAMES.indexOf(tab);
                 const emoji = idx >= 0 ? REACTIONS[idx] : "";
@@ -382,24 +382,25 @@ export default function FeedsPage() {
                 );
               })}
             </div>
-            {/* Reaction Users List */}
             <div style={{overflowY: "auto", flex: 1}}>
               {loadingReactions ? (
                 <div style={{textAlign: "center", padding: "32px", color: "#888", fontSize: "0.85rem"}}>Loading...</div>
               ) : getFilteredReactions().length === 0 ? (
                 <div style={{textAlign: "center", padding: "32px", color: "#888", fontSize: "0.85rem"}}>No reactions yet.</div>
               ) : getFilteredReactions().map((r, i) => {
-                const emoji = REACTIONS[REACTION_VALUES.indexOf(r.type)] || "👍";
+                const emoji = REACTIONS[REACTION_VALUES.indexOf(r.type)] || REACTIONS[0];
                 return (
-                  <div key={i} style={{display: "flex", alignItems: "center", gap: "12px", padding: "10px 16px", borderBottom: "1px solid #F0F0F0"}}>
-                    <div style={{position: "relative"}}>
+                  <div key={i} style={{display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", cursor: "pointer"}}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F7F7F7")}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
+                    <div style={{position: "relative", flexShrink: 0}}>
                       {r.users?.avatar_url
-                        ? <img src={r.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
-                        : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem"}}>{r.users?.full_name?.charAt(0).toUpperCase()}</div>
+                        ? <img src={r.users.avatar_url} alt="" style={{width: "46px", height: "46px", borderRadius: "50%", objectFit: "cover"}} />
+                        : <div style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem"}}>{r.users?.full_name?.charAt(0).toUpperCase()}</div>
                       }
-                      <div style={{position: "absolute", bottom: "-2px", right: "-2px", fontSize: "0.85rem"}}>{emoji}</div>
+                      <div style={{position: "absolute", bottom: "-2px", right: "-2px", fontSize: "1rem", backgroundColor: "#fff", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.15)"}}>{emoji}</div>
                     </div>
-                    <span style={{fontWeight: 600, fontSize: "0.875rem", color: "#1A1A1A"}}>{r.users?.full_name}</span>
+                    <span style={{fontWeight: 600, fontSize: "0.9rem", color: "#1A1A1A"}}>{r.users?.full_name}</span>
                   </div>
                 );
               })}
