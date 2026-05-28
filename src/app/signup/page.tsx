@@ -163,7 +163,7 @@ export default function SignupPage() {
               <>
                 <span className="text-3xl mb-2">🪪</span>
                 <span className="text-sm font-semibold" style={{color: "#0F6E56"}}>Tap to upload your Student ID</span>
-                <span className="text-xs text-gray-400 mt-1">JPG or PNG · max 2MB · auto-approved</span>
+                <span className="text-xs text-gray-400 mt-1">JPG or PNG · max 2MB </span>
               </>
             )}
             <input type="file" accept="image/*" className="hidden" onChange={handleIdUpload} />
