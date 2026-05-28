@@ -228,7 +228,7 @@ export default function FeedsPage() {
           </button>
           {/* Notification Bell */}
           <button style={{background: "none", border: "none", cursor: "pointer", position: "relative", padding: "4px"}}>
-            <span style={{fontSize: "1.3rem"}}>🔔</span>
+            <Image src="/notification.png" alt="notifications" width={25} height={25} />
           </button>
           {/* Avatar */}
           <button onClick={handleLogout} style={{background: "none", border: "none", cursor: "pointer", padding: 0}}>
@@ -303,7 +303,7 @@ export default function FeedsPage() {
             {/* Composer Actions */}
             <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px"}}>
               <div style={{display: "flex", gap: "12px"}}>
-                <button onClick={() => fileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.2rem", padding: 0}} title="Add photos">🖼️</button>
+                <button onClick={() => fileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "0"}} title="Add photos"><Image src="/photos.png" alt="photos" width={22} height={22} /></button>
                 <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" multiple style={{display: "none"}} onChange={handleImageSelect} />
                 <span style={{fontSize: "0.7rem", color: "#aaa", alignSelf: "center"}}>{selectedImages.length}/4 photos</span>
               </div>
@@ -385,7 +385,7 @@ export default function FeedsPage() {
                   onTouchStart={() => startLongPress(post.id)}
                   onTouchEnd={() => { cancelLongPress(); if (showReactionPicker !== post.id) handleQuickLike(post.id); }}
                   style={{width: "100%", background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
-                  <span style={{fontSize: "1.1rem"}}>{post.userReaction || "👍"}</span>
+                  {post.userReaction ? <span style={{fontSize: "1.1rem"}}>{post.userReaction}</span> : <Image src="/like.png" alt="like" width={20} height={20} />}
                   <span style={{fontSize: "0.78rem", fontWeight: post.userReaction ? 700 : 400, color: post.userReaction ? "#1D9E75" : "#888"}}>
                     {post.userReaction ? REACTION_NAMES[REACTIONS.indexOf(post.userReaction)] || "Like" : "Like"}
                   </span>
@@ -408,13 +408,13 @@ export default function FeedsPage() {
 
               {/* Comment Button */}
               <button style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
-                <span style={{fontSize: "1.1rem"}}>💬</span>
+                <Image src="/comment.png" alt="comment" width={20} height={20} />
                 <span style={{fontSize: "0.78rem", color: "#888"}}>Comment</span>
               </button>
 
               {/* Share Button */}
               <button style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
-                <span style={{fontSize: "1.1rem"}}>↗️</span>
+                <Image src="/share.png" alt="share" width={20} height={20} />
                 <span style={{fontSize: "0.78rem", color: "#888"}}>Share</span>
               </button>
             </div>
