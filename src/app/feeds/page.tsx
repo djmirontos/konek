@@ -19,6 +19,9 @@ type Post = {
   userReaction?: string | null;
   commentCount?: number;
 };
+type Notification = {
+  id: string; message: string; is_read: boolean; created_at: string; post_id: string | null; type: string;
+};
 
 export default function FeedsPage() {
   const router = useRouter();
@@ -38,7 +41,10 @@ export default function FeedsPage() {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [showReactionPicker, setShowReactionPicker] = useState<string | null>(null);
-  const [postError, setPostError] = useState(""); const [unreadCount, setUnreadCount] = useState(0);
+  const [postError, setPostError] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => { initPage(); }, []);
   useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
@@ -48,15 +54,26 @@ export default function FeedsPage() {
     if (!user) { router.push("/login"); return; }
     const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (userData) setCurrentUser(userData);
-    const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");   if (schoolData) setSchools(schoolData);   fetchUnreadCount(userData);
+    const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
+    if (schoolData) setSchools(schoolData);
+    fetchUnreadCount(userData);
   }
 
   async function fetchUnreadCount(user: User | null) {
-if (!user) return;
-const { count } = await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_id", user.id).eq("is_read", false);
-setUnreadCount(count || 0);
-}
-async function fetchPosts() {
+    if (!user) return;
+    const { count } = await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_id", user.id).eq("is_read", false);
+    setUnreadCount(count || 0);
+  }
+
+  async function fetchNotifications() {
+    if (!currentUser) return;
+    const { data } = await supabase.from("notifications").select("*").eq("recipient_id", currentUser.id).order("created_at", { ascending: false }).limit(20);
+    if (data) setNotifications(data);
+    await supabase.from("notifications").update({ is_read: true }).eq("recipient_id", currentUser.id).eq("is_read", false);
+    setUnreadCount(0);
+  }
+
+  async function fetchPosts() {
     if (!currentUser) return;
     setLoading(true);
     let query = supabase
@@ -157,18 +174,14 @@ async function fetchPosts() {
       await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", currentUser.id);
     } else {
       await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: reactionValue }, { onConflict: "post_id,user_id" });
+      if (post.user_id !== currentUser.id) {
+        await supabase.from("notifications").insert({
+          recipient_id: post.user_id, sender_id: currentUser.id, type: "reaction",
+          post_id: postId, message: currentUser.full_name + " reacted " + emoji + " to your post", is_read: false,
+        });
+      }
     }
     setShowReactionPicker(null);
-    if (post.user_id !== currentUser.id) {
-      await supabase.from("notifications").insert({
-        recipient_id: post.user_id,
-        sender_id: currentUser.id,
-        type: "reaction",
-        post_id: postId,
-        message: currentUser.full_name + " reacted " + emoji + " to your post",
-        is_read: false,
-      });
-    }
     fetchPosts();
   }
 
@@ -176,18 +189,14 @@ async function fetchPosts() {
     if (!currentUser) return;
     const post = posts.find(p => p.id === postId);
     if (!post) return;
-   if (post.userReaction) {
+    if (post.userReaction) {
       await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", currentUser.id);
     } else {
       await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: "like" }, { onConflict: "post_id,user_id" });
       if (post.user_id !== currentUser.id) {
         await supabase.from("notifications").insert({
-          recipient_id: post.user_id,
-          sender_id: currentUser.id,
-          type: "reaction",
-          post_id: postId,
-          message: currentUser.full_name + " liked your post",
-          is_read: false,
+          recipient_id: post.user_id, sender_id: currentUser.id, type: "reaction",
+          post_id: postId, message: currentUser.full_name + " liked your post", is_read: false,
         });
       }
     }
@@ -235,16 +244,24 @@ async function fetchPosts() {
     router.push("/login");
   }
 
+  function getNotifIcon(type: string) {
+    if (type === "reaction") return "👍";
+    if (type === "comment") return "💬";
+    if (type === "reply") return "↩️";
+    return "🔔";
+  }
+
   return (
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
+      {/* Top Header */}
       <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
         <Image src="/konek.svg" alt="Konek" width={80} height={28} priority />
         <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
           <button onClick={() => setShowSchoolPicker(!showSchoolPicker)} style={{backgroundColor: "rgba(255,255,255,0.2)", border: "none", borderRadius: "20px", padding: "6px 12px", color: "#fff", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
             📍 {getSchoolLabel()} ▾
           </button>
-          <button style={{background: "none", border: "none", cursor: "pointer", position: "relative", padding: "4px"}}>
+          <button onClick={() => { setShowNotifications(!showNotifications); if (!showNotifications) fetchNotifications(); }} style={{background: "none", border: "none", cursor: "pointer", position: "relative", padding: "4px"}}>
             <Image src="/notification.png" alt="notifications" width={25} height={25} />
             {unreadCount > 0 && (
               <div style={{position: "absolute", top: "0px", right: "0px", backgroundColor: "#EF4444", color: "#fff", borderRadius: "50%", width: "16px", height: "16px", fontSize: "0.6rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #1D9E75"}}>
@@ -261,6 +278,36 @@ async function fetchPosts() {
         </div>
       </div>
 
+      {/* Notification Dropdown */}
+      {showNotifications && (
+        <div style={{position: "fixed", top: "56px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.15)", maxHeight: "70vh", overflowY: "auto", borderRadius: "0 0 16px 16px"}}>
+          <div style={{padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+            <span style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A"}}>Notifications</span>
+            <button onClick={() => setShowNotifications(false)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem"}}>✕</button>
+          </div>
+          {notifications.length === 0 ? (
+            <div style={{textAlign: "center", padding: "32px 16px", color: "#888"}}>
+              <div style={{fontSize: "2rem", marginBottom: "8px"}}>🔔</div>
+              <div style={{fontSize: "0.85rem"}}>Walay notifications pa.</div>
+            </div>
+          ) : notifications.map(notif => (
+            <div key={notif.id} onClick={() => { setShowNotifications(false); if (notif.post_id) router.push("/feeds/" + notif.post_id); }}
+              style={{padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer", backgroundColor: notif.is_read ? "#fff" : "#E1F5EE"}}>
+              <div style={{fontSize: "1.4rem", flexShrink: 0}}>{getNotifIcon(notif.type)}</div>
+              <div style={{flex: 1}}>
+                <div style={{fontSize: "0.85rem", color: "#1A1A1A", lineHeight: 1.4}}>{notif.message}</div>
+                <div style={{fontSize: "0.72rem", color: "#888", marginTop: "3px"}}>{formatTime(notif.created_at)}</div>
+              </div>
+              {!notif.is_read && <div style={{width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#1D9E75", flexShrink: 0, marginTop: "4px"}}></div>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Overlay to close notifications */}
+      {showNotifications && <div onClick={() => setShowNotifications(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />}
+
+      {/* School Picker Dropdown */}
       {showSchoolPicker && (
         <div style={{position: "fixed", top: "60px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.15)", borderRadius: "0 0 16px 16px", overflow: "hidden"}}>
           {[
@@ -279,6 +326,7 @@ async function fetchPosts() {
 
       {showSchoolPicker && <div onClick={() => setShowSchoolPicker(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />}
 
+      {/* Post Composer */}
       <div style={{backgroundColor: "#fff", padding: "12px 16px", borderBottom: "1px solid #F0F0F0"}}>
         <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
           {currentUser?.avatar_url
@@ -327,6 +375,7 @@ async function fetchPosts() {
         </div>
       </div>
 
+      {/* Feed */}
       <div style={{flex: 1, paddingBottom: "80px"}}>
         {loading ? (
           <div style={{textAlign: "center", padding: "48px 16px", color: "#888"}}>
@@ -406,7 +455,9 @@ async function fetchPosts() {
                 )}
               </div>
 
-              <button onClick={() => router.push("/feeds/" + post.id)} style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>               <Image src="/comment.png" alt="comment" width={20} height={20} />               <span style={{fontSize: "0.78rem", color: "#888"}}>Comment</span>             
+              <button onClick={() => router.push("/feeds/" + post.id)} style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
+                <Image src="/comment.png" alt="comment" width={20} height={20} />
+                <span style={{fontSize: "0.78rem", color: "#888"}}>Comment</span>
               </button>
 
               <button style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
@@ -418,6 +469,7 @@ async function fetchPosts() {
         ))}
       </div>
 
+      {/* Bottom Navigation */}
       <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", display: "flex", zIndex: 100, paddingBottom: "env(safe-area-inset-bottom)"}}>
         {[
           { href: "/feeds", icon: "/feed.png", label: "Feeds", active: true },
