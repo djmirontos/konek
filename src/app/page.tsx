@@ -6,13 +6,12 @@ export default function Home() {
     <div className="min-h-screen bg-white flex flex-col max-w-lg mx-auto">
       {/* Header */}
       <div className="bg-primary px-6 pt-16 pb-10 text-center">
-        <div className="w-20 h-20 flex items-center justify-center mx-auto mb-4">
+        <div className="flex items-center justify-center mx-auto mb-4">
           <Image
-            src="/logo.png"
+            src="/konek.svg"
             alt="Konek Logo"
-            width={80}
-            height={80}
-            className="rounded-2xl"
+            width={120}
+            height={120}
           />
         </div>
         <h1 className="text-3xl font-semibold text-white tracking-tight">Konek</h1>
