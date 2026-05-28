@@ -114,11 +114,11 @@ export default function SignupPage() {
             {idPreview ? (
               <img src={idPreview} alt="ID Preview" style={{width: "160px", height: "90px", borderRadius: "8px", objectFit: "cover"}} />
             ) : (
-              <>
-                <span style={{fontSize: "1.6rem", marginBottom: "4px"}}>??</span>
-                <span style={{fontSize: "0.8rem", fontWeight: 600, color: "#0F6E56"}}>Tap to upload your Student ID</span>
-                <span style={{fontSize: "0.7rem", color: "#888", marginTop: "2px"}}>JPG or PNG · max 2MB · auto-approved</span>
-              </>
+              <div>
+                <div style={{fontSize: "1.6rem", marginBottom: "4px"}}>ðŸªª</div>
+                <div style={{fontSize: "0.8rem", fontWeight: 600, color: "#0F6E56"}}>Tap to upload your Student ID</div>
+                <div style={{fontSize: "0.7rem", color: "#888", marginTop: "2px"}}>JPG or PNG - max 2MB - auto-approved</div>
+              </div>
             )}
             <input type="file" accept="image/*" style={{display: "none"}} onChange={handleIdUpload} />
           </label>
