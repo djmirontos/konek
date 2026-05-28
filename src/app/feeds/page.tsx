@@ -22,6 +22,10 @@ type Post = {
 type Notification = {
   id: string; message: string; is_read: boolean; created_at: string; post_id: string | null; type: string;
 };
+type ReactionUser = {
+  user_id: string; type: string;
+  users: { full_name: string; avatar_url: string | null; } | null;
+};
 
 export default function FeedsPage() {
   const router = useRouter();
@@ -45,6 +49,10 @@ export default function FeedsPage() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [showReactionList, setShowReactionList] = useState(false);
+  const [reactionList, setReactionList] = useState<ReactionUser[]>([]);
+  const [reactionTab, setReactionTab] = useState("All");
+  const [loadingReactions, setLoadingReactions] = useState(false);
 
   useEffect(() => { initPage(); }, []);
   useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
@@ -71,6 +79,15 @@ export default function FeedsPage() {
     if (data) setNotifications(data);
     await supabase.from("notifications").update({ is_read: true }).eq("recipient_id", currentUser.id).eq("is_read", false);
     setUnreadCount(0);
+  }
+
+  async function fetchReactionList(postId: string) {
+    setLoadingReactions(true);
+    setShowReactionList(true);
+    setReactionTab("All");
+    const { data } = await supabase.from("reactions").select("user_id, type, users(full_name, avatar_url)").eq("post_id", postId);
+    if (data) setReactionList(data);
+    setLoadingReactions(false);
   }
 
   async function fetchPosts() {
@@ -251,6 +268,23 @@ export default function FeedsPage() {
     return "🔔";
   }
 
+  function getFilteredReactions() {
+    if (reactionTab === "All") return reactionList;
+    const value = REACTION_VALUES[REACTION_NAMES.indexOf(reactionTab)];
+    return reactionList.filter(r => r.type === value);
+  }
+
+  function getReactionTabs() {
+    const tabs: string[] = ["All"];
+    const seen = new Set<string>();
+    reactionList.forEach(r => {
+      const emoji = REACTIONS[REACTION_VALUES.indexOf(r.type)];
+      const name = REACTION_NAMES[REACTION_VALUES.indexOf(r.type)];
+      if (emoji && !seen.has(r.type)) { seen.add(r.type); tabs.push(name); }
+    });
+    return tabs;
+  }
+
   return (
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
@@ -303,11 +337,9 @@ export default function FeedsPage() {
           ))}
         </div>
       )}
-
-      {/* Overlay to close notifications */}
       {showNotifications && <div onClick={() => setShowNotifications(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />}
 
-      {/* School Picker Dropdown */}
+      {/* School Picker */}
       {showSchoolPicker && (
         <div style={{position: "fixed", top: "60px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.15)", borderRadius: "0 0 16px 16px", overflow: "hidden"}}>
           {[
@@ -323,8 +355,55 @@ export default function FeedsPage() {
           ))}
         </div>
       )}
-
       {showSchoolPicker && <div onClick={() => setShowSchoolPicker(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />}
+
+      {/* Reaction List Bottom Sheet */}
+      {showReactionList && (
+        <>
+          <div onClick={() => setShowReactionList(false)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, maxHeight: "70vh", display: "flex", flexDirection: "column"}}>
+            <div style={{padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+              <span style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A"}}>Reactions</span>
+              <button onClick={() => setShowReactionList(false)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem"}}>✕</button>
+            </div>
+            {/* Reaction Tabs */}
+            <div style={{display: "flex", gap: "4px", padding: "8px 16px", borderBottom: "1px solid #F0F0F0", overflowX: "auto"}}>
+              {getReactionTabs().map(tab => {
+                const idx = REACTION_NAMES.indexOf(tab);
+                const emoji = idx >= 0 ? REACTIONS[idx] : "";
+                return (
+                  <button key={tab} onClick={() => setReactionTab(tab)}
+                    style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: reactionTab === tab ? "#E1F5EE" : "#F7F7F7", color: reactionTab === tab ? "#1D9E75" : "#888", fontWeight: reactionTab === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0}}>
+                    {tab === "All" ? "All " + reactionList.length : emoji + " " + tab}
+                  </button>
+                );
+              })}
+            </div>
+            {/* Reaction Users List */}
+            <div style={{overflowY: "auto", flex: 1}}>
+              {loadingReactions ? (
+                <div style={{textAlign: "center", padding: "32px", color: "#888", fontSize: "0.85rem"}}>Loading...</div>
+              ) : getFilteredReactions().length === 0 ? (
+                <div style={{textAlign: "center", padding: "32px", color: "#888", fontSize: "0.85rem"}}>No reactions yet.</div>
+              ) : getFilteredReactions().map((r, i) => {
+                const emoji = REACTIONS[REACTION_VALUES.indexOf(r.type)] || "👍";
+                return (
+                  <div key={i} style={{display: "flex", alignItems: "center", gap: "12px", padding: "10px 16px", borderBottom: "1px solid #F0F0F0"}}>
+                    <div style={{position: "relative"}}>
+                      {r.users?.avatar_url
+                        ? <img src={r.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
+                        : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem"}}>{r.users?.full_name?.charAt(0).toUpperCase()}</div>
+                      }
+                      <div style={{position: "absolute", bottom: "-2px", right: "-2px", fontSize: "0.85rem"}}>{emoji}</div>
+                    </div>
+                    <span style={{fontWeight: 600, fontSize: "0.875rem", color: "#1A1A1A"}}>{r.users?.full_name}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Post Composer */}
       <div style={{backgroundColor: "#fff", padding: "12px 16px", borderBottom: "1px solid #F0F0F0"}}>
@@ -417,7 +496,7 @@ export default function FeedsPage() {
 
             {getTotalReactions(post.reactionCounts || {}) > 0 && (
               <div style={{padding: "4px 16px", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                <div style={{display: "flex", alignItems: "center", gap: "4px"}}>
+                <div onClick={() => fetchReactionList(post.id)} style={{display: "flex", alignItems: "center", gap: "4px", cursor: "pointer"}}>
                   <span style={{fontSize: "0.85rem"}}>{getTopReactions(post.reactionCounts || {}).join("")}</span>
                   <span style={{fontSize: "0.75rem", color: "#888"}}>{getTotalReactions(post.reactionCounts || {})}</span>
                 </div>
