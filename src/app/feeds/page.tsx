@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import PhotoViewer from "@/components/PhotoViewer";
 
 const TAGS = ["#lihok", "#feelings", "#announcements", "#free-stuff", "#groupmates-needed", "#org-recruitment", "#review-session"];
-const REACTIONS = ["👍", "❤️", "😂", "😮", "😢", "😡", "🤝"];
+const REACTIONS = ["/like.png", "/love.png", "/haha.png", "/wow.png", "/sad.png", "/grabe.png", "/laban.png"];
 const REACTION_VALUES = ["like", "love", "haha", "wow", "sad", "grabe", "laban"];
 const REACTION_NAMES = ["Like", "Love", "Haha", "Wow", "Sad", "Grabe", "Laban"];
 
@@ -373,11 +373,11 @@ export default function FeedsPage() {
             <div style={{display: "flex", gap: "4px", padding: "10px 12px", borderBottom: "1px solid #F0F0F0", overflowX: "auto"}}>
               {getReactionTabs().map(tab => {
                 const idx = REACTION_NAMES.indexOf(tab);
-                const emoji = idx >= 0 ? REACTIONS[idx] : "";
+                const img = idx >= 0 ? REACTIONS[idx] : "";
                 return (
                   <button key={tab} onClick={() => setReactionTab(tab)}
-                    style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: reactionTab === tab ? "#E1F5EE" : "#F7F7F7", color: reactionTab === tab ? "#1D9E75" : "#888", fontWeight: reactionTab === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0}}>
-                    {tab === "All" ? "All " + reactionList.length : emoji + " " + tab}
+                    style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: reactionTab === tab ? "#E1F5EE" : "#F7F7F7", color: reactionTab === tab ? "#1D9E75" : "#888", fontWeight: reactionTab === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0, display: "flex", alignItems: "center", gap: "4px"}}>
+                    {tab === "All" ? "All " + reactionList.length : <><img src={img} alt={tab} style={{width: "16px", height: "16px"}} /> {tab}</>}
                   </button>
                 );
               })}
@@ -388,7 +388,7 @@ export default function FeedsPage() {
               ) : getFilteredReactions().length === 0 ? (
                 <div style={{textAlign: "center", padding: "32px", color: "#888", fontSize: "0.85rem"}}>No reactions yet.</div>
               ) : getFilteredReactions().map((r, i) => {
-                const emoji = REACTIONS[REACTION_VALUES.indexOf(r.type)] || REACTIONS[0];
+                const reactionImg = REACTIONS[REACTION_VALUES.indexOf(r.type)] || REACTIONS[0];
                 return (
                   <div key={i} style={{display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", cursor: "pointer"}}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F7F7F7")}
@@ -398,7 +398,7 @@ export default function FeedsPage() {
                         ? <img src={r.users.avatar_url} alt="" style={{width: "46px", height: "46px", borderRadius: "50%", objectFit: "cover"}} />
                         : <div style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem"}}>{r.users?.full_name?.charAt(0).toUpperCase()}</div>
                       }
-                      <div style={{position: "absolute", bottom: "-2px", right: "-2px", fontSize: "1rem", backgroundColor: "#fff", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.15)"}}>{emoji}</div>
+                      <div style={{position: "absolute", bottom: "-2px", right: "-2px", backgroundColor: "#fff", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.15)"}}><img src={reactionImg} alt="" style={{width: "16px", height: "16px"}} /></div>
                     </div>
                     <span style={{fontWeight: 600, fontSize: "0.9rem", color: "#1A1A1A"}}>{r.users?.full_name}</span>
                   </div>
@@ -501,7 +501,7 @@ export default function FeedsPage() {
             {getTotalReactions(post.reactionCounts || {}) > 0 && (
               <div style={{padding: "4px 16px", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                 <div onClick={() => fetchReactionList(post.id)} style={{display: "flex", alignItems: "center", gap: "4px", cursor: "pointer"}}>
-                  <span style={{fontSize: "0.85rem"}}>{getTopReactions(post.reactionCounts || {}).join("")}</span>
+                  <span style={{display: "flex", gap: "2px"}}>{getTopReactions(post.reactionCounts || {}).map((img, i) => <img key={i} src={img} alt="" style={{width: "16px", height: "16px"}} />)}</span>
                   <span style={{fontSize: "0.75rem", color: "#888"}}>{getTotalReactions(post.reactionCounts || {})}</span>
                 </div>
                 <span onClick={() => router.push("/feeds/" + post.id)} style={{fontSize: "0.75rem", color: "#888", cursor: "pointer"}}>{post.commentCount} comment{post.commentCount !== 1 ? "s" : ""}</span>
@@ -519,19 +519,19 @@ export default function FeedsPage() {
                   onTouchStart={() => startLongPress(post.id)}
                   onTouchEnd={() => { cancelLongPress(); if (showReactionPicker !== post.id) handleQuickLike(post.id); }}
                   style={{width: "100%", background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
-                  {post.userReaction ? <span style={{fontSize: "1.1rem"}}>{post.userReaction}</span> : <Image src="/like.png" alt="like" width={20} height={20} />}
+                  {post.userReaction ? <img src={post.userReaction} alt="reaction" style={{width: "20px", height: "20px"}} /> : <Image src="/like.png" alt="like" width={20} height={20} />}
                   <span style={{fontSize: "0.78rem", fontWeight: post.userReaction ? 700 : 400, color: post.userReaction ? "#1D9E75" : "#888"}}>
                     {post.userReaction ? REACTION_NAMES[REACTIONS.indexOf(post.userReaction)] || "Like" : "Like"}
                   </span>
                 </button>
                 {showReactionPicker === post.id && (
                   <div style={{position: "absolute", bottom: "48px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "8px", zIndex: 300, border: "1px solid #F0F0F0"}}>
-                    {REACTIONS.map((emoji, i) => (
-                      <button key={emoji} onClick={() => handleReaction(post.id, emoji)} title={REACTION_NAMES[i]}
-                        style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.5rem", padding: "2px", borderRadius: "50%"}}
+                    {REACTIONS.map((img, i) => (
+                      <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]}
+                        style={{background: "none", border: "none", cursor: "pointer", padding: "2px", borderRadius: "50%"}}
                         onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
                         onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
-                        {emoji}
+                        <img src={img} alt={REACTION_NAMES[i]} style={{width: "32px", height: "32px"}} />
                       </button>
                     ))}
                   </div>
