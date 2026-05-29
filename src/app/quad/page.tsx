@@ -45,6 +45,7 @@ export default function QuadPage() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [toast, setToast] = useState("");
+  const [showTagPicker, setShowTagPicker] = useState(false);
 
   useEffect(() => { initPage(); }, []);
   useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
@@ -311,7 +312,7 @@ export default function QuadPage() {
             {HANGOUT_TAG_SET.has(selectedTag) && (
               <div style={{marginTop: "8px"}}>
                 <input
-                  placeholder="📍 Where are you? (e.g. Library 2nd floor, Canteen)"
+                  placeholder="📍 Nasaan ka? (e.g. Library, Canteen, Gym)"
                   value={location}
                   onChange={e => setLocation(e.target.value)}
                   style={{width: "100%", border: "1px solid #1D9E75", borderRadius: "10px", padding: "8px 12px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box", color: "#1A1A1A"}}
@@ -324,25 +325,33 @@ export default function QuadPage() {
                 <button onClick={() => { setSelectedImage(null); setImagePreview(""); }} style={{position: "absolute", top: "-6px", right: "-6px", backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", fontSize: "0.65rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>✕</button>
               </div>
             )}
-            <div style={{marginTop: "8px"}}>
-              <div style={{fontSize: "0.7rem", color: "#888", fontWeight: 600, marginBottom: "5px"}}>🟢 Hangout</div>
-              <div style={{display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "6px"}}>
-                {HANGOUT_TAGS.map(tag => (
-                  <button key={tag} onClick={() => setSelectedTag(selectedTag === tag ? "" : tag)}
-                    style={{padding: "4px 10px", borderRadius: "20px", border: "1px solid " + (selectedTag === tag ? "#1D9E75" : "#F0F0F0"), backgroundColor: selectedTag === tag ? "#E1F5EE" : "#fff", color: selectedTag === tag ? "#1D9E75" : "#888", fontSize: "0.7rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
-                    {tag}
-                  </button>
-                ))}
-              </div>
-              <div style={{fontSize: "0.7rem", color: "#888", fontWeight: 600, marginBottom: "5px"}}>🟡 Help</div>
-              <div style={{display: "flex", gap: "6px", flexWrap: "wrap"}}>
-                {HELP_TAGS.map(tag => (
-                  <button key={tag} onClick={() => setSelectedTag(selectedTag === tag ? "" : tag)}
-                    style={{padding: "4px 10px", borderRadius: "20px", border: "1px solid " + (selectedTag === tag ? "#F59E0B" : "#F0F0F0"), backgroundColor: selectedTag === tag ? "#FEF3C7" : "#fff", color: selectedTag === tag ? "#F59E0B" : "#888", fontSize: "0.7rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
-                    {tag}
-                  </button>
-                ))}
-              </div>
+            <div style={{marginTop: "8px", position: "relative"}}>
+              <button onClick={() => setShowTagPicker(!showTagPicker)}
+                style={{width: "100%", padding: "9px 14px", borderRadius: "10px", border: "1px solid " + (selectedTag ? (HANGOUT_TAG_SET.has(selectedTag) ? "#1D9E75" : "#F59E0B") : "#F0F0F0"), backgroundColor: selectedTag ? (HANGOUT_TAG_SET.has(selectedTag) ? "#E1F5EE" : "#FEF3C7") : "#F7F7F7", color: selectedTag ? (HANGOUT_TAG_SET.has(selectedTag) ? "#1D9E75" : "#F59E0B") : "#888", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center", textAlign: "left"}}>
+                <span>{selectedTag || "Select a tag (required)"}</span>
+                <span style={{fontSize: "0.7rem"}}>{showTagPicker ? "▲" : "▾"}</span>
+              </button>
+              {showTagPicker && (
+                <>
+                  <div onClick={() => setShowTagPicker(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />
+                  <div style={{position: "absolute", top: "42px", left: 0, right: 0, backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", zIndex: 200, overflow: "hidden", border: "1px solid #F0F0F0"}}>
+                    <div style={{padding: "8px 12px 4px", fontSize: "0.68rem", color: "#888", fontWeight: 700, letterSpacing: "0.05em"}}>🟢 HANGOUT</div>
+                    {HANGOUT_TAGS.map(tag => (
+                      <button key={tag} onClick={() => { setSelectedTag(tag); setShowTagPicker(false); }}
+                        style={{width: "100%", padding: "9px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: selectedTag === tag ? "#E1F5EE" : "#fff", color: selectedTag === tag ? "#1D9E75" : "#1A1A1A", fontWeight: selectedTag === tag ? 700 : 400, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left"}}>
+                        {tag}
+                      </button>
+                    ))}
+                    <div style={{padding: "8px 12px 4px", fontSize: "0.68rem", color: "#888", fontWeight: 700, letterSpacing: "0.05em"}}>🟡 HELP</div>
+                    {HELP_TAGS.map(tag => (
+                      <button key={tag} onClick={() => { setSelectedTag(tag); setShowTagPicker(false); }}
+                        style={{width: "100%", padding: "9px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: selectedTag === tag ? "#FEF3C7" : "#fff", color: selectedTag === tag ? "#F59E0B" : "#1A1A1A", fontWeight: selectedTag === tag ? 700 : 400, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left"}}>
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
             {postError && <div style={{color: "#EF4444", fontSize: "0.75rem", marginTop: "6px"}}>{postError}</div>}
             <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px"}}>
