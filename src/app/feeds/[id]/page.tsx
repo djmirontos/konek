@@ -346,7 +346,7 @@ export default function PostDetailPage() {
                     style={{background: "none", border: "none", cursor: "pointer", padding: "2px", borderRadius: "50%"}}
                     onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
                     onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
-                    <img src={img} alt={REACTION_NAMES[i]} style={{width: "40px", height: "40px", objectFit: "contain"}} />
+                    <img src={img} alt={REACTION_NAMES[i]} style={{width: "32px", height: "32px", objectFit: "contain"}} />
                   </button>
                 ))}
               </div>
@@ -413,7 +413,7 @@ export default function PostDetailPage() {
                             style={{background: "none", border: "none", cursor: "pointer", padding: "2px", borderRadius: "50%"}}
                             onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
                             onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
-                            <img src={img} alt={REACTION_NAMES[i]} style={{width: "40px", height: "40px", objectFit: "contain"}} />
+                            <img src={img} alt={REACTION_NAMES[i]} style={{width: "32px", height: "32px", objectFit: "contain"}} />
                           </button>
                         ))}
                       </div>
@@ -464,7 +464,7 @@ export default function PostDetailPage() {
                                       style={{background: "none", border: "none", cursor: "pointer", padding: "2px", borderRadius: "50%"}}
                                       onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
                                       onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
-                                      <img src={img} alt={REACTION_NAMES[i]} style={{width: "40px", height: "40px", objectFit: "contain"}} />
+                                      <img src={img} alt={REACTION_NAMES[i]} style={{width: "32px", height: "32px", objectFit: "contain"}} />
                                     </button>
                                   ))}
                                 </div>
