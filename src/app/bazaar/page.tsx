@@ -339,7 +339,7 @@ export default function BazaarPage() {
           <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", padding: "12px"}}>
             {listings.map(listing => (
               <div key={listing.id} onClick={() => router.push("/bazaar/" + listing.id)}
-                style={{backgroundColor: "#fff", borderRadius: "12px", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", cursor: "pointer", position: "relative"}}>
+                style={{backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", cursor: "pointer", position: "relative"}}>
                 {listing.is_sold && (
                   <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#EF4444", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", zIndex: 2}}>SOLD</div>
                 )}
@@ -347,9 +347,9 @@ export default function BazaarPage() {
                   <div style={{position: "absolute", top: "8px", right: "8px", backgroundColor: "#1D9E75", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", zIndex: 2}}>FOR RENT</div>
                 )}
                 {listing.images && listing.images.length > 0 ? (
-                  <img src={listing.images[0]} alt="" style={{width: "100%", height: "140px", objectFit: "cover"}} />
+                  <img src={listing.images[0]} alt="" style={{width: "100%", height: "140px", objectFit: "cover", borderRadius: "12px 12px 0 0"}} />
                 ) : (
-                  <div style={{width: "100%", height: "140px", backgroundColor: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.5rem"}}>
+                  <div style={{width: "100%", height: "140px", backgroundColor: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.5rem", borderRadius: "12px 12px 0 0"}}>
                     {CATEGORY_ICONS[listing.category] || "📦"}
                   </div>
                 )}
