@@ -150,6 +150,8 @@ export default function SoapboxDetailPage({ params }: { params: { id: string } }
       setCommentText("");
       await fetchComments(currentUser);
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      setSubmitting(false);
     }
     setSubmitting(false);
   }
@@ -335,7 +337,7 @@ export default function SoapboxDetailPage({ params }: { params: { id: string } }
           />
           <button onClick={handleComment} disabled={submitting || !commentText.trim()}
             style={{backgroundColor: submitting || !commentText.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 18px", fontWeight: 700, fontSize: "0.8rem", cursor: submitting || !commentText.trim() ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
-            {submitting ? "..." : "Send"}
+            {submitting ? "..." : "Comment"}
           </button>
         </div>
       </div>
