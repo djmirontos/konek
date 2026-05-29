@@ -342,12 +342,7 @@ export default function PostDetailPage() {
             {showReactionPicker && (
               <div style={{position: "absolute", bottom: "48px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "6px", zIndex: 300, border: "1px solid #F0F0F0", whiteSpace: "nowrap"}}>
                 {REACTIONS.map((img, i) => (
-                  <button key={img} onClick={() => handleReaction(img)} title={REACTION_NAMES[i]}
-                    style={{background: "none", border: "none", cursor: "pointer", padding: "2px", borderRadius: "50%"}}
-                    onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
-                    onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
-                    <img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} />
-                  </button>
+                  <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
                 ))}
               </div>
             )}
@@ -407,14 +402,9 @@ export default function PostDetailPage() {
                       </span>
                     )}
                     {showCommentReactionPicker === comment.id && (
-                      <div style={{position: "absolute", bottom: "24px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "6px", zIndex: 300, border: "1px solid #F0F0F0", whiteSpace: "nowrap"}}>
+                      <div style={{position: "fixed", bottom: "64px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "12px 8px", boxShadow: "0 -4px 20px rgba(0,0,0,0.12)", display: "flex", justifyContent: "space-around", alignItems: "center", zIndex: 600}}>
                         {REACTIONS.map((img, i) => (
-                          <button key={img} onClick={() => handleCommentReaction(comment.id, img, comment.userReaction || null)} title={REACTION_NAMES[i]}
-                            style={{background: "none", border: "none", cursor: "pointer", padding: "2px", borderRadius: "50%"}}
-                            onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
-                            onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
-                            <img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} />
-                          </button>
+                          <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
                         ))}
                       </div>
                     )}
@@ -458,14 +448,9 @@ export default function PostDetailPage() {
                                 </span>
                               )}
                               {showCommentReactionPicker === reply.id && (
-                                <div style={{position: "absolute", bottom: "24px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "6px", zIndex: 300, border: "1px solid #F0F0F0", whiteSpace: "nowrap"}}>
+                                <div style={{position: "fixed", bottom: "64px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "12px 8px", boxShadow: "0 -4px 20px rgba(0,0,0,0.12)", display: "flex", justifyContent: "space-around", alignItems: "center", zIndex: 600}}>
                                   {REACTIONS.map((img, i) => (
-                                    <button key={img} onClick={() => handleCommentReaction(reply.id, img, reply.userReaction || null)} title={REACTION_NAMES[i]}
-                                      style={{background: "none", border: "none", cursor: "pointer", padding: "2px", borderRadius: "50%"}}
-                                      onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
-                                      onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
-                                      <img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} />
-                                    </button>
+                                    <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
                                   ))}
                                 </div>
                               )}
