@@ -498,16 +498,6 @@ export default function FeedsPage() {
               </div>
             )}
 
-            {getTotalReactions(post.reactionCounts || {}) > 0 && (
-              <div style={{padding: "4px 16px", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                <div onClick={() => fetchReactionList(post.id)} style={{display: "flex", alignItems: "center", gap: "4px", cursor: "pointer"}}>
-                  <span style={{display: "flex", gap: "2px"}}>{getTopReactions(post.reactionCounts || {}).map((img, i) => <img key={i} src={img} alt="" style={{width: "16px", height: "16px"}} />)}</span>
-                  <span style={{fontSize: "0.75rem", color: "#888"}}>{getTotalReactions(post.reactionCounts || {})}</span>
-                </div>
-                <span onClick={() => router.push("/feeds/" + post.id)} style={{fontSize: "0.75rem", color: "#888", cursor: "pointer"}}>{post.commentCount} comment{post.commentCount !== 1 ? "s" : ""}</span>
-              </div>
-            )}
-
             <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
 
             <div style={{display: "flex", padding: "6px 12px", alignItems: "center", justifyContent: "space-between"}}>
