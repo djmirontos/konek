@@ -497,7 +497,7 @@ export default function FeedsPage() {
                 <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{post.users?.full_name}</div>
                 <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px"}}>
                   {formatTime(post.created_at)}
-                  
+                  {post.edited_at && <span style={{marginLeft: "6px", color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
                 </div>
               </div>
               {currentUser?.id === post.user_id && (
