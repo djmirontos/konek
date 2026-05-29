@@ -550,6 +550,7 @@ export default function FeedsPage() {
                 </div>
               )}
             </div>
+          </div>
         ))}
       </div>
 
