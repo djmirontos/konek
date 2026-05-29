@@ -434,14 +434,7 @@ export default function FeedsPage() {
                 ))}
               </div>
             )}
-            <div style={{display: "flex", gap: "6px", marginTop: "8px", flexWrap: "wrap"}}>
-              {TAGS.map(tag => (
-                <button key={tag} onClick={() => setSelectedTag(selectedTag === tag ? "" : tag)}
-                  style={{padding: "4px 10px", borderRadius: "20px", border: `1px solid ${selectedTag === tag ? "#1D9E75" : "#F0F0F0"}`, backgroundColor: selectedTag === tag ? "#E1F5EE" : "#fff", color: selectedTag === tag ? "#1D9E75" : "#888", fontSize: "0.7rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
-                  {tag}
-                </button>
-              ))}
-            </div>
+
             {postError && <div style={{color: "#EF4444", fontSize: "0.75rem", marginTop: "6px"}}>{postError}</div>}
             <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px"}}>
               <div style={{display: "flex", gap: "12px"}}>
@@ -482,7 +475,7 @@ export default function FeedsPage() {
                 <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{post.users?.full_name}</div>
                 <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px"}}>
                   {formatTime(post.created_at)}
-                  {post.tag && <span style={{marginLeft: "8px", color: "#1D9E75", fontWeight: 600}}>{post.tag}</span>}
+                  
                 </div>
               </div>
               <button style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.2rem", padding: "4px"}}>•••</button>
