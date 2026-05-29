@@ -510,7 +510,7 @@ export default function FeedsPage() {
             {post.images && post.images.length > 0 && (
               <div style={{display: "grid", gridTemplateColumns: post.images.length === 1 ? "1fr" : "1fr 1fr", gap: "2px", marginBottom: "8px"}}>
                 {post.images.map((url, i) => (
-                  <img key={i} src={url} alt="" onClick={() => { setViewerImages(post.images!); setViewerIndex(i); }} style={{width: "100%", aspectRatio: post.images!.length === 1 ? "16/9" : "1/1", objectFit: "cover", cursor: "pointer"}} />
+                  <img key={i} src={url} alt="" onClick={() => { setViewerImages(post.images!); setViewerIndex(i); }} style={{width: "100%", maxHeight: "480px", objectFit: "contain", backgroundColor: "#000", cursor: "pointer", display: "block"}} />
                 ))}
               </div>
             )}
