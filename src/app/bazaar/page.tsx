@@ -107,9 +107,13 @@ export default function BazaarPage() {
   }
 
   async function handlePost() {
-    if (!title.trim() || !description.trim() || !price || !category || !condition || !currentUser) {
-      setPostError("Please fill in all required fields."); return;
-    }
+    if (!title.trim()) { setPostError("Please enter a title."); return; }
+    if (!description.trim()) { setPostError("Please enter a description."); return; }
+    if (!price) { setPostError("Please enter a price."); return; }
+    if (!category) { setPostError("Please select a category."); return; }
+    if (!condition) { setPostError("Please select a condition."); return; }
+    if (isRental && !rentalPeriod.trim()) { setPostError("Please enter a rental period (e.g. day, week, month)."); return; }
+    if (!currentUser) return;
     setPosting(true);
     setPostError("");
     try {
