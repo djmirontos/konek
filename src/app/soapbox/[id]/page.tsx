@@ -59,7 +59,7 @@ type Comment = {
   replies?: Comment[];
 };
 
-export default function SoapboxDetailPage({ params }: { params: { id: string } }) {
+export default function SoapboxDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const supabase = createClient();
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -74,35 +74,37 @@ export default function SoapboxDetailPage({ params }: { params: { id: string } }
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [toast, setToast] = useState("");
+  const [postId, setPostId] = useState<string>("");
 
-  useEffect(() => { setTimeout(() => setMounted(true), 10); initPage(); }, []);
+  useEffect(() => { setTimeout(() => setMounted(true), 10); params.then(p => { setPostId(p.id); initPage(p.id); }); }, []);
 
-  async function initPage() {
+  async function initPage(id: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
     const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (userData) {
       setCurrentUser(userData);
-      await fetchPost(userData);
-      await fetchComments(userData);
+      await fetchPost(userData, id);
+      await fetchComments(userData, id);
     }
     setLoading(false);
   }
 
-  async function fetchPost(userData: User) {
-    const { data } = await supabase.from("posts").select("id, user_id, content, tag, images, created_at, school_id, pseudonym, upvotes, downvotes").eq("id", params.id).single();
+  async function fetchPost(userData: User, id: string) {
+    const { data } = await supabase.from("posts").select("id, user_id, content, tag, images, created_at, school_id, pseudonym, upvotes, downvotes").eq("id", id).single();
     if (data) {
-      const { data: myVote } = await supabase.from("reactions").select("type").eq("post_id", params.id).eq("user_id", userData.id).single();
+      const { data: myVote } = await supabase.from("reactions").select("type").eq("post_id", id).eq("user_id", userData.id).single();
       setPost({ ...data, userVote: myVote ? (myVote.type as "upvote" | "downvote") : null });
     }
   }
 
-  async function fetchComments(userData: User) {
-    const { data } = await supabase.from("comments").select("id, post_id, user_id, content, created_at, parent_id").eq("post_id", params.id).order("created_at", { ascending: true });
+  async function fetchComments(userData: User, id?: string) {
+    const useId = id || postId;
+    const { data } = await supabase.from("comments").select("id, post_id, user_id, content, created_at, parent_id").eq("post_id", useId).order("created_at", { ascending: true });
     if (data) {
       const withPseudonyms = data.map(c => ({
         ...c,
-        pseudonym: generatePseudonym(c.user_id, params.id),
+        pseudonym: generatePseudonym(c.user_id, useId),
         isOwn: c.user_id === userData.id,
       }));
       const topLevel = withPseudonyms.filter(c => !c.parent_id);
@@ -136,19 +138,19 @@ export default function SoapboxDetailPage({ params }: { params: { id: string } }
   async function handleComment() {
     if (!commentText.trim() || !currentUser || !post) return;
     setSubmitting(true);
-    const myPseudonym = generatePseudonym(currentUser.id, params.id);
+    const myPseudonym = generatePseudonym(currentUser.id, postId);
     const { error } = await supabase.from("comments").insert({
-      post_id: params.id, user_id: currentUser.id, content: commentText.trim(), parent_id: null,
+      post_id: postId, user_id: currentUser.id, content: commentText.trim(), parent_id: null,
     });
     if (!error) {
       if (post.user_id !== currentUser.id) {
         await supabase.from("notifications").insert({
           recipient_id: post.user_id, sender_id: currentUser.id, type: "comment",
-          post_id: params.id, message: myPseudonym + " commented on your Soapbox post", is_read: false,
+          post_id: postId, message: myPseudonym + " commented on your Soapbox post", is_read: false,
         });
       }
       setCommentText("");
-      await fetchComments(currentUser);
+      await fetchComments(currentUser, postId);
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     } else {
       setSubmitting(false);
@@ -159,21 +161,21 @@ export default function SoapboxDetailPage({ params }: { params: { id: string } }
   async function handleReply() {
     if (!replyText.trim() || !currentUser || !replyingTo || !post) return;
     setSubmitting(true);
-    const myPseudonym = generatePseudonym(currentUser.id, params.id);
+    const myPseudonym = generatePseudonym(currentUser.id, postId);
     const parentComment = comments.find(c => c.id === replyingTo);
     const { error } = await supabase.from("comments").insert({
-      post_id: params.id, user_id: currentUser.id, content: replyText.trim(), parent_id: replyingTo,
+      post_id: postId, user_id: currentUser.id, content: replyText.trim(), parent_id: replyingTo,
     });
     if (!error) {
       if (parentComment && parentComment.user_id !== currentUser.id) {
         await supabase.from("notifications").insert({
           recipient_id: parentComment.user_id, sender_id: currentUser.id, type: "reply",
-          post_id: params.id, message: myPseudonym + " replied to your comment", is_read: false,
+          post_id: postId, message: myPseudonym + " replied to your comment", is_read: false,
         });
       }
       setReplyText("");
       setReplyingTo(null);
-      await fetchComments(currentUser);
+      await fetchComments(currentUser, postId);
     }
     setSubmitting(false);
   }
