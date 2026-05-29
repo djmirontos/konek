@@ -340,13 +340,13 @@ export default function PostDetailPage() {
               </span>
             </button>
             {showReactionPicker && (
-              <div style={{position: "absolute", bottom: "48px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "8px", zIndex: 300, border: "1px solid #F0F0F0"}}>
+              <div style={{position: "absolute", bottom: "48px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "6px", zIndex: 300, border: "1px solid #F0F0F0", whiteSpace: "nowrap"}}>
                 {REACTIONS.map((img, i) => (
                   <button key={img} onClick={() => handleReaction(img)} title={REACTION_NAMES[i]}
                     style={{background: "none", border: "none", cursor: "pointer", padding: "2px", borderRadius: "50%"}}
                     onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
                     onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
-                    <img src={img} alt={REACTION_NAMES[i]} style={{width: "32px", height: "32px"}} />
+                    <img src={img} alt={REACTION_NAMES[i]} style={{width: "40px", height: "40px", objectFit: "contain"}} />
                   </button>
                 ))}
               </div>
@@ -407,13 +407,13 @@ export default function PostDetailPage() {
                       </span>
                     )}
                     {showCommentReactionPicker === comment.id && (
-                      <div style={{position: "absolute", bottom: "24px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "8px", zIndex: 300, border: "1px solid #F0F0F0"}}>
+                      <div style={{position: "absolute", bottom: "24px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "6px", zIndex: 300, border: "1px solid #F0F0F0", whiteSpace: "nowrap"}}>
                         {REACTIONS.map((img, i) => (
                           <button key={img} onClick={() => handleCommentReaction(comment.id, img, comment.userReaction || null)} title={REACTION_NAMES[i]}
                             style={{background: "none", border: "none", cursor: "pointer", padding: "2px", borderRadius: "50%"}}
                             onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
                             onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
-                            <img src={img} alt={REACTION_NAMES[i]} style={{width: "32px", height: "32px"}} />
+                            <img src={img} alt={REACTION_NAMES[i]} style={{width: "40px", height: "40px", objectFit: "contain"}} />
                           </button>
                         ))}
                       </div>
@@ -458,13 +458,13 @@ export default function PostDetailPage() {
                                 </span>
                               )}
                               {showCommentReactionPicker === reply.id && (
-                                <div style={{position: "absolute", bottom: "24px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "8px", zIndex: 300, border: "1px solid #F0F0F0"}}>
+                                <div style={{position: "absolute", bottom: "24px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "6px", zIndex: 300, border: "1px solid #F0F0F0", whiteSpace: "nowrap"}}>
                                   {REACTIONS.map((img, i) => (
                                     <button key={img} onClick={() => handleCommentReaction(reply.id, img, reply.userReaction || null)} title={REACTION_NAMES[i]}
                                       style={{background: "none", border: "none", cursor: "pointer", padding: "2px", borderRadius: "50%"}}
                                       onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.3)")}
                                       onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
-                                      <img src={img} alt={REACTION_NAMES[i]} style={{width: "32px", height: "32px"}} />
+                                      <img src={img} alt={REACTION_NAMES[i]} style={{width: "40px", height: "40px", objectFit: "contain"}} />
                                     </button>
                                   ))}
                                 </div>
