@@ -16,7 +16,7 @@ type Post = {
 };
 type Comment = {
   id: string; post_id: string; user_id: string; content: string; created_at: string;
-  parent_id: string | null;
+  parent_id: string | null; edited_at?: string | null;
   users: { full_name: string; avatar_url: string | null; } | null;
   replies?: Comment[];
 };
@@ -37,6 +37,10 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
   const [mounted, setMounted] = useState(false);
   const [postId, setPostId] = useState<string>("");
   const [toast, setToast] = useState("");
+  const [showCommentMenu, setShowCommentMenu] = useState<string | null>(null);
+  const [editingComment, setEditingComment] = useState<string | null>(null);
+  const [editCommentContent, setEditCommentContent] = useState("");
+  const [showDeleteCommentConfirm, setShowDeleteCommentConfirm] = useState<string | null>(null);
 
   useEffect(() => { setTimeout(() => setMounted(true), 10); params.then(p => { setPostId(p.id); initPage(p.id); }); }, []);
 
@@ -61,7 +65,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   async function fetchComments(id: string) {
-    const { data } = await supabase.from("comments").select("id, post_id, user_id, content, created_at, parent_id, users(full_name, avatar_url)").eq("post_id", id).order("created_at", { ascending: true });
+    const { data } = await supabase.from("comments").select("id, post_id, user_id, content, created_at, parent_id, edited_at, users(full_name, avatar_url)").eq("post_id", id).order("created_at", { ascending: true });
     if (data) {
       const topLevel = data.filter(c => !c.parent_id);
       const withReplies = topLevel.map(c => ({
@@ -111,6 +115,17 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
       await fetchComments(postId);
     }
     setSubmitting(false);
+  }
+
+  async function handleEditComment(commentId: string) {
+    if (!editCommentContent.trim()) return;
+    const { error } = await supabase.from("comments").update({ content: editCommentContent.trim(), edited_at: new Date().toISOString() }).eq("id", commentId);
+    if (!error) { setEditingComment(null); setEditCommentContent(""); showToast("Comment updated!"); await fetchComments(postId); }
+  }
+
+  async function handleDeleteComment(commentId: string) {
+    const { error } = await supabase.from("comments").delete().eq("id", commentId);
+    if (!error) { setShowDeleteCommentConfirm(null); showToast("Comment deleted!"); await fetchComments(postId); }
   }
 
   function showToast(msg: string) {
@@ -237,11 +252,14 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
                   }
                   <div style={{flex: 1}}>
                     <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "8px 12px"}}>
-                      <div style={{fontWeight: 700, fontSize: "0.78rem", color: "#1D9E75", marginBottom: "3px"}}>{comment.users?.full_name}</div>
+                      <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start"}}>
+                        <div style={{fontWeight: 700, fontSize: "0.78rem", color: "#1D9E75", marginBottom: "3px"}}>{comment.users?.full_name}</div>
+                        {currentUser?.id === comment.user_id && !post?.isExpired && <button onClick={() => setShowCommentMenu(showCommentMenu === comment.id ? null : comment.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem", padding: "0 4px", lineHeight: 1}}>•••</button>}
+                      </div>
                       <div style={{fontSize: "0.85rem", color: "#1A1A1A", lineHeight: 1.4}}>{comment.content}</div>
                     </div>
                     <div style={{display: "flex", gap: "12px", marginTop: "4px", paddingLeft: "4px"}}>
-                      <span style={{fontSize: "0.7rem", color: "#888"}}>{formatTime(comment.created_at)}</span>
+                      <span style={{fontSize: "0.7rem", color: "#888"}}>{formatTime(comment.created_at)}{comment.edited_at && <span style={{marginLeft: "4px", fontStyle: "italic", color: "#aaa"}}>· Edited</span>}</span>
                       {!post?.isExpired && (
                         <button onClick={() => { setReplyingTo(replyingTo === comment.id ? null : comment.id); setReplyText(""); }}
                           style={{background: "none", border: "none", cursor: "pointer", fontSize: "0.7rem", color: "#1D9E75", fontWeight: 600, padding: 0, fontFamily: "inherit"}}>
@@ -279,10 +297,13 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
                             }
                             <div style={{flex: 1}}>
                               <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "7px 11px"}}>
-                                <div style={{fontWeight: 700, fontSize: "0.75rem", color: "#1D9E75", marginBottom: "2px"}}>{reply.users?.full_name}</div>
+                                <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start"}}>
+                                  <div style={{fontWeight: 700, fontSize: "0.75rem", color: "#1D9E75", marginBottom: "2px"}}>{reply.users?.full_name}</div>
+                                  {currentUser?.id === reply.user_id && !post?.isExpired && <button onClick={() => setShowCommentMenu(showCommentMenu === reply.id ? null : reply.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem", padding: "0 4px", lineHeight: 1}}>•••</button>}
+                                </div>
                                 <div style={{fontSize: "0.82rem", color: "#1A1A1A", lineHeight: 1.4}}>{reply.content}</div>
                               </div>
-                              <div style={{fontSize: "0.68rem", color: "#888", marginTop: "3px", paddingLeft: "4px"}}>{formatTime(reply.created_at)}</div>
+                              <div style={{fontSize: "0.68rem", color: "#888", marginTop: "3px", paddingLeft: "4px"}}>{formatTime(reply.created_at)}{reply.edited_at && <span style={{marginLeft: "4px", fontStyle: "italic", color: "#aaa"}}>· Edited</span>}</div>
                             </div>
                           </div>
                         ))}
@@ -320,6 +341,52 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
             </button>
           </div>
         )}
+      {showCommentMenu && (
+        <>
+          <div onClick={() => setShowCommentMenu(null)} style={{position: "fixed", inset: 0, zIndex: 400, backgroundColor: "rgba(0,0,0,0.3)"}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "8px 0 32px"}}>
+            <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "10px auto 16px"}}></div>
+            <button onClick={() => { const allComments = [...comments, ...comments.flatMap(c => c.replies || [])]; const c = allComments.find(c => c.id === showCommentMenu); if (c) { setEditingComment(c.id); setEditCommentContent(c.content); } setShowCommentMenu(null); }}
+              style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#1A1A1A"}}>
+              ✏️ Edit Comment
+            </button>
+            <button onClick={() => { setShowDeleteCommentConfirm(showCommentMenu); setShowCommentMenu(null); }}
+              style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#EF4444"}}>
+              🗑️ Delete Comment
+            </button>
+          </div>
+        </>
+      )}
+
+      {editingComment && (
+        <>
+          <div onClick={() => setEditingComment(null)} style={{position: "fixed", inset: 0, zIndex: 400, backgroundColor: "rgba(0,0,0,0.3)"}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "16px 16px 32px"}}>
+            <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "0 auto 16px"}}></div>
+            <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A", marginBottom: "12px"}}>Edit Comment</div>
+            <textarea value={editCommentContent} onChange={e => setEditCommentContent(e.target.value)} rows={3}
+              style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
+            <div style={{display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end"}}>
+              <button onClick={() => setEditingComment(null)} style={{padding: "9px 20px", borderRadius: "20px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
+              <button onClick={() => handleEditComment(editingComment)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {showDeleteCommentConfirm && (
+        <>
+          <div onClick={() => setShowDeleteCommentConfirm(null)} style={{position: "fixed", inset: 0, zIndex: 400, backgroundColor: "rgba(0,0,0,0.3)"}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "24px 16px 32px"}}>
+            <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "8px", textAlign: "center"}}>Delete Comment?</div>
+            <div style={{fontSize: "0.85rem", color: "#888", textAlign: "center", marginBottom: "20px"}}>This cannot be undone.</div>
+            <div style={{display: "flex", gap: "10px"}}>
+              <button onClick={() => setShowDeleteCommentConfirm(null)} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
+              <button onClick={() => handleDeleteComment(showDeleteCommentConfirm)} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: "#EF4444", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Delete</button>
+            </div>
+          </div>
+        </>
+      )}
       </div>
     </div>
   );
