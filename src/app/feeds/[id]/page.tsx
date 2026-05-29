@@ -278,7 +278,8 @@ export default function PostDetailPage() {
   );
 
   return (
-    <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", animation: "slideUp 0.3s ease-out"}}>
+      <style>{`@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
 
       {/* Header */}
       <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
@@ -367,9 +368,10 @@ export default function PostDetailPage() {
         </div>
 
         {comments.length === 0 ? (
-          <div style={{textAlign: "center", padding: "32px 16px", color: "#888"}}>
-            <div style={{fontSize: "2rem", marginBottom: "8px"}}>💬</div>
-            <div style={{fontSize: "0.85rem"}}>Walay comment pa. Be the first!</div>
+          <div style={{textAlign: "center", padding: "40px 16px", color: "#888", display: "flex", flexDirection: "column", alignItems: "center"}}>
+            <img src="/nocomment.png" alt="No comments" style={{width: "120px", height: "120px", objectFit: "contain", marginBottom: "12px", opacity: 0.7}} />
+            <div style={{fontSize: "0.95rem", fontWeight: 700, color: "#1A1A1A", marginBottom: "4px"}}>Walay comment pa!</div>
+            <div style={{fontSize: "0.82rem", color: "#888"}}>Be the first to comment. Go!</div>
           </div>
         ) : comments.map(comment => (
           <div key={comment.id} style={{backgroundColor: "#fff", marginBottom: "4px", padding: "12px 16px"}}>
