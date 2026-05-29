@@ -4,60 +4,59 @@ import { createClient } from "@/lib/supabase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const CATEGORIES = ["Textbooks", "Uniforms", "Gadgets", "School Supplies", "Dorm Essentials", "Food", "Entertainment", "Sports", "Others"];
-const CONDITIONS = ["Brand New", "Like New", "Slightly Used", "Good"];
-const CATEGORY_ICONS: Record<string, string> = {
-  "Textbooks": "📚", "Uniforms": "👕", "Gadgets": "🖥️", "School Supplies": "🎒",
-  "Dorm Essentials": "🏠", "Food": "🍱", "Entertainment": "🎮", "Sports": "⚽", "Others": "📦"
-};
+const AMENITIES = ["WiFi", "Water", "Electricity", "Private CR", "Shared CR", "Kitchen", "Laundry", "Aircon", "Furnished", "With meals"];
 
 type School = { id: string; name: string; abbreviation: string; };
 type User = { id: string; full_name: string; avatar_url: string | null; school_id: string; role: string; };
-type Listing = {
-  id: string; user_id: string; title: string; description: string; price: number;
-  is_negotiable: boolean; is_rental: boolean; rental_period: string | null;
-  category: string; condition: string; images: string[] | null;
-  is_sold: boolean; created_at: string; school_id: string;
+type BoardingHouse = {
+  id: string; user_id: string; post_type: string; name: string; description: string | null;
+  address: string | null; price_per_month: number | null; is_negotiable: boolean;
+  available_slots: number | null; is_fully_booked: boolean; contact_number: string | null;
+  amenities: string[] | null; images: string[] | null; school_id: string;
+  created_at: string; edited_at: string | null; comment_count: number;
   users: { full_name: string; avatar_url: string | null; } | null;
-  commentCount?: number;
 };
 type Notification = {
   id: string; message: string; is_read: boolean; created_at: string; post_id: string | null; type: string;
 };
 
-export default function BazaarPage() {
+export default function LivingPage() {
   const router = useRouter();
   const supabase = createClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [schools, setSchools] = useState<School[]>([]);
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [posts, setPosts] = useState<BoardingHouse[]>([]);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState<string>("own");
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [showComposer, setShowComposer] = useState(false);
+  const [filterType, setFilterType] = useState<string>("All");
+
+  // Composer fields
+  const [postType, setPostType] = useState<"listing" | "looking">("listing");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [isNegotiable, setIsNegotiable] = useState(false);
-  const [isRental, setIsRental] = useState(false);
-  const [rentalPeriod, setRentalPeriod] = useState("");
-  const [category, setCategory] = useState("");
-  const [condition, setCondition] = useState("");
+  const [availableSlots, setAvailableSlots] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [postError, setPostError] = useState("");
+
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [filterCategory, setFilterCategory] = useState<string>("All");
   const [showMenu, setShowMenu] = useState<string | null>(null);
   const [toast, setToast] = useState("");
 
   useEffect(() => { initPage(); }, []);
-  useEffect(() => { if (currentUser) fetchListings(); }, [currentUser, selectedSchool, filterCategory]);
+  useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool, filterType]);
 
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -83,36 +82,28 @@ export default function BazaarPage() {
     setUnreadCount(0);
   }
 
-  async function fetchListings() {
+  async function fetchPosts() {
     if (!currentUser) return;
     setLoading(true);
     let query = supabase
-      .from("listings")
-      .select("id, user_id, title, description, price, is_negotiable, is_rental, rental_period, category, condition, images, is_sold, created_at, school_id, users(full_name, avatar_url)")
+      .from("boarding_houses")
+      .select("id, user_id, post_type, name, description, address, price_per_month, is_negotiable, available_slots, is_fully_booked, contact_number, amenities, images, school_id, created_at, edited_at, comment_count, users(full_name, avatar_url)")
       .eq("is_hidden", false)
       .order("created_at", { ascending: false })
       .limit(30);
     if (selectedSchool === "own") query = query.eq("school_id", currentUser.school_id);
     else if (selectedSchool !== "all") query = query.eq("school_id", selectedSchool);
-    if (filterCategory !== "All") query = query.eq("category", filterCategory);
-    const { data } = await query;
-    if (data) {
-      const enriched = await Promise.all(data.map(async (listing) => {
-        const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("listing_id", listing.id);
-        return { ...listing, commentCount: count || 0, users: Array.isArray(listing.users) ? listing.users[0] ?? null : listing.users };
-      }));
-      setListings(enriched);
-    }
+    if (filterType === "Room for Rent") query = query.eq("post_type", "listing");
+    else if (filterType === "Looking") query = query.eq("post_type", "looking");
+    const { data, error } = await query;
+    if (data) setPosts(data.map((p: any) => ({...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users})));
+    if (error) console.error(error);
     setLoading(false);
   }
 
   async function handlePost() {
     if (!title.trim()) { setPostError("Please enter a title."); return; }
-    if (!description.trim()) { setPostError("Please enter a description."); return; }
-    if (!price) { setPostError("Please enter a price."); return; }
-    if (!category) { setPostError("Please select a category."); return; }
-    if (!condition) { setPostError("Please select a condition."); return; }
-    if (isRental && !rentalPeriod.trim()) { setPostError("Please enter a rental period (e.g. day, week, month)."); return; }
+    if (postType === "listing" && !address.trim()) { setPostError("Please enter the address/location."); return; }
     if (!currentUser) return;
     setPosting(true);
     setPostError("");
@@ -121,34 +112,37 @@ export default function BazaarPage() {
       if (selectedImages.length > 0) {
         for (const img of selectedImages) {
           const ext = img.name.split(".").pop();
-          const path = "bazaar/" + currentUser.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2) + "." + ext;
+          const path = "living/" + currentUser.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2) + "." + ext;
           const { error: uploadError } = await supabase.storage.from("konek-images").upload(path, img);
           if (uploadError) throw uploadError;
           const { data: urlData } = supabase.storage.from("konek-images").getPublicUrl(path);
           imageUrls.push(urlData.publicUrl);
         }
       }
-      const { error } = await supabase.from("listings").insert({
+      const slots = availableSlots ? parseInt(availableSlots) : null;
+      const { error } = await supabase.from("boarding_houses").insert({
         user_id: currentUser.id,
         school_id: currentUser.school_id,
-        title: title.trim(),
-        description: description.trim(),
-        price: parseFloat(price),
+        post_type: postType,
+        name: title.trim(),
+        description: description.trim() || null,
+        address: address.trim() || null,
+        price_per_month: price ? parseFloat(price) : null,
         is_negotiable: isNegotiable,
-        is_rental: isRental,
-        rental_period: isRental ? rentalPeriod.trim() : null,
-        category,
-        condition,
+        available_slots: slots,
+        is_fully_booked: slots !== null && slots === 0,
+        contact_number: contactNumber.trim() || null,
+        amenities: selectedAmenities.length > 0 ? selectedAmenities : null,
         images: imageUrls.length > 0 ? imageUrls : null,
-        is_sold: false,
         is_flagged: false,
         is_hidden: false,
+        comment_count: 0,
       });
       if (error) throw error;
-      setTitle(""); setDescription(""); setPrice(""); setIsNegotiable(false);
-      setIsRental(false); setRentalPeriod(""); setCategory(""); setCondition("");
-      setSelectedImages([]); setImagePreviews([]); setShowComposer(false);
-      showToast("Listing posted!"); fetchListings();
+      resetComposer();
+      setShowComposer(false);
+      showToast("Posted!");
+      fetchPosts();
     } catch (err: unknown) {
       setPostError(err instanceof Error ? err.message : "Failed to post. Try again.");
     } finally {
@@ -156,14 +150,21 @@ export default function BazaarPage() {
     }
   }
 
-  async function handleMarkSold(listingId: string) {
-    await supabase.from("listings").update({ is_sold: true }).eq("id", listingId);
-    setShowMenu(null); showToast("Marked as sold!"); fetchListings();
+  function resetComposer() {
+    setTitle(""); setDescription(""); setPrice(""); setIsNegotiable(false);
+    setAvailableSlots(""); setContactNumber(""); setAddress("");
+    setSelectedAmenities([]); setSelectedImages([]); setImagePreviews([]);
+    setPostError(""); setPostType("listing");
   }
 
-  async function handleDeleteListing(listingId: string) {
-    await supabase.from("listings").delete().eq("id", listingId);
-    setShowMenu(null); showToast("Listing deleted!"); fetchListings();
+  async function handleMarkFullyBooked(id: string) {
+    await supabase.from("boarding_houses").update({ is_fully_booked: true, available_slots: 0 }).eq("id", id);
+    setShowMenu(null); showToast("Marked as Fully Booked!"); fetchPosts();
+  }
+
+  async function handleDelete(id: string) {
+    await supabase.from("boarding_houses").delete().eq("id", id);
+    setShowMenu(null); showToast("Post deleted!"); fetchPosts();
   }
 
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
@@ -180,6 +181,12 @@ export default function BazaarPage() {
     setImagePreviews(imgs.map(f => URL.createObjectURL(f)));
   }
 
+  function toggleAmenity(amenity: string) {
+    setSelectedAmenities(prev =>
+      prev.includes(amenity) ? prev.filter(a => a !== amenity) : [...prev, amenity]
+    );
+  }
+
   function showToast(msg: string) {
     setToast(msg);
     setTimeout(() => setToast(""), 3000);
@@ -193,12 +200,6 @@ export default function BazaarPage() {
     const h = Math.floor(m / 60);
     if (h < 24) return h + "h ago";
     return Math.floor(h / 24) + "d ago";
-  }
-
-  function formatPrice(price: number, isRental: boolean, rentalPeriod: string | null) {
-    const formatted = "₱" + price.toLocaleString("en-PH", { minimumFractionDigits: 0 });
-    if (isRental && rentalPeriod) return formatted + "/" + rentalPeriod;
-    return formatted;
   }
 
   function getSchoolLabel() {
@@ -234,7 +235,7 @@ export default function BazaarPage() {
       <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
         <div style={{display: "flex", flexDirection: "column"}}>
           <Image src="/konek.svg" alt="Konek" width={80} height={28} priority />
-          <span style={{color: "rgba(255,255,255,0.85)", fontSize: "0.65rem", fontWeight: 600, letterSpacing: "0.05em", marginTop: "2px"}}>BAZAAR</span>
+          <span style={{color: "rgba(255,255,255,0.85)", fontSize: "0.65rem", fontWeight: 600, letterSpacing: "0.05em", marginTop: "2px"}}>LIVING</span>
         </div>
         <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
           <button onClick={() => setShowSchoolPicker(!showSchoolPicker)} style={{backgroundColor: "rgba(255,255,255,0.2)", border: "none", borderRadius: "20px", padding: "6px 12px", color: "#fff", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
@@ -270,7 +271,7 @@ export default function BazaarPage() {
               <div style={{fontSize: "0.85rem"}}>Walay notifications pa.</div>
             </div>
           ) : notifications.map(notif => (
-            <div key={notif.id} onClick={() => { setShowNotifications(false); if (notif.post_id) router.push("/bazaar/" + notif.post_id); }}
+            <div key={notif.id} onClick={() => { setShowNotifications(false); if (notif.post_id) router.push("/living/" + notif.post_id); }}
               style={{padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer", backgroundColor: notif.is_read ? "#fff" : "#E1F5EE"}}>
               <div style={{fontSize: "1.4rem", flexShrink: 0}}>{getNotifIcon(notif.type)}</div>
               <div style={{flex: 1}}>
@@ -302,19 +303,19 @@ export default function BazaarPage() {
       )}
       {showSchoolPicker && <div onClick={() => setShowSchoolPicker(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />}
 
-      {/* Category Filter */}
+      {/* Filter Tabs */}
       <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "10px 0"}}>
         <div style={{display: "flex", gap: "8px", paddingLeft: "12px", overflowX: "auto", scrollbarWidth: "none"}}>
-          {["All", ...CATEGORIES].map(cat => (
-            <button key={cat} onClick={() => setFilterCategory(cat)}
-              style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: filterCategory === cat ? "#1D9E75" : "#F7F7F7", color: filterCategory === cat ? "#fff" : "#888", fontWeight: filterCategory === cat ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0}}>
-              {cat === "All" ? "🛒 All" : CATEGORY_ICONS[cat] + " " + cat}
+          {["All", "Room for Rent", "Looking"].map(tab => (
+            <button key={tab} onClick={() => setFilterType(tab)}
+              style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: filterType === tab ? "#1D9E75" : "#F7F7F7", color: filterType === tab ? "#fff" : "#888", fontWeight: filterType === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0}}>
+              {tab === "All" ? "🏘️ All" : tab === "Room for Rent" ? "🏠 Room for Rent" : "🔍 Looking"}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Sell Button */}
+      {/* Post Button */}
       <div style={{padding: "12px 16px", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0"}}>
         <button onClick={() => setShowComposer(true)}
           style={{width: "100%", backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "12px", padding: "12px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
@@ -322,58 +323,102 @@ export default function BazaarPage() {
         </button>
       </div>
 
-      {/* Listings Feed */}
-      <div style={{flex: 1, paddingBottom: "80px"}}>
+      {/* Posts Feed */}
+      <div style={{flex: 1, paddingBottom: "80px", display: "flex", flexDirection: "column", gap: "0"}}>
         {loading ? (
           <div style={{textAlign: "center", padding: "48px 16px", color: "#888"}}>
             <div style={{fontSize: "2rem", marginBottom: "8px"}}>⏳</div>
             <div style={{fontSize: "0.85rem"}}>Loading listings...</div>
           </div>
-        ) : listings.length === 0 ? (
+        ) : posts.length === 0 ? (
           <div style={{textAlign: "center", padding: "48px 16px"}}>
-            <div style={{fontSize: "3rem", marginBottom: "12px"}}>🛒</div>
+            <div style={{fontSize: "3rem", marginBottom: "12px"}}>🏘️</div>
             <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>Walay listings pa!</div>
-            <div style={{color: "#888", fontSize: "0.8rem"}}>Be the first to sell something.</div>
+            <div style={{color: "#888", fontSize: "0.8rem"}}>Be the first to post a listing.</div>
           </div>
         ) : (
-          <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", padding: "12px"}}>
-            {listings.map(listing => (
-              <div key={listing.id} onClick={() => router.push("/bazaar/" + listing.id)}
-                style={{backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", cursor: "pointer", position: "relative"}}>
-                {listing.is_sold && (
-                  <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#EF4444", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", zIndex: 2}}>SOLD</div>
-                )}
-                {listing.is_rental && (
-                  <div style={{position: "absolute", top: "8px", right: "8px", backgroundColor: "#1D9E75", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", zIndex: 2}}>FOR RENT</div>
-                )}
-                {listing.images && listing.images.length > 0 ? (
-                  <img src={listing.images[0]} alt="" style={{width: "100%", height: "140px", objectFit: "cover", borderRadius: "12px 12px 0 0"}} />
-                ) : (
-                  <div style={{width: "100%", height: "140px", backgroundColor: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.5rem", borderRadius: "12px 12px 0 0"}}>
-                    {CATEGORY_ICONS[listing.category] || "📦"}
-                  </div>
-                )}
-                <div style={{padding: "8px 10px 10px"}}>
-                  <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A", marginBottom: "3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{listing.title}</div>
-                  <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1D9E75", marginBottom: "3px"}}>{formatPrice(listing.price, listing.is_rental, listing.rental_period)}</div>
-                  {listing.is_negotiable && <div style={{fontSize: "0.65rem", color: "#888", marginBottom: "3px"}}>Negotiable</div>}
-                  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "4px"}}>
-                    <span style={{fontSize: "0.65rem", color: "#888", backgroundColor: "#F7F7F7", padding: "2px 6px", borderRadius: "6px"}}>{listing.condition}</span>
-                    <span style={{fontSize: "0.65rem", color: "#888"}}>{formatTime(listing.created_at)}</span>
-                  </div>
-                  <div style={{display: "flex", alignItems: "center", gap: "4px", marginTop: "6px"}}>
-                    {listing.users?.avatar_url
-                      ? <img src={listing.users.avatar_url} alt="" style={{width: "16px", height: "16px", borderRadius: "50%", objectFit: "cover"}} />
-                      : <div style={{width: "16px", height: "16px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.5rem", color: "#1D9E75", fontWeight: 700}}>{listing.users?.full_name?.charAt(0).toUpperCase()}</div>
-                    }
-                    <span style={{fontSize: "0.65rem", color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{listing.users?.full_name}</span>
-                  </div>
-                  {currentUser?.id === listing.user_id && (
-                    <button onClick={e => { e.stopPropagation(); setShowMenu(showMenu === listing.id ? null : listing.id); }}
-                      style={{position: "absolute", top: "8px", right: listing.is_rental ? "60px" : "8px", background: "rgba(255,255,255,0.9)", border: "none", borderRadius: "50%", width: "28px", height: "28px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", zIndex: 3}}>
-                      •••
-                    </button>
+          <div style={{display: "flex", flexDirection: "column", gap: "8px", padding: "12px"}}>
+            {posts.map(post => (
+              <div key={post.id} onClick={() => router.push("/living/" + post.id)}
+                style={{backgroundColor: "#fff", borderRadius: "14px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", cursor: "pointer", overflow: "hidden", position: "relative"}}>
+
+                {/* Badges */}
+                <div style={{position: "absolute", top: "10px", left: "10px", display: "flex", gap: "6px", zIndex: 2, flexWrap: "wrap"}}>
+                  {post.is_fully_booked && (
+                    <span style={{backgroundColor: "#EF4444", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "3px 8px", borderRadius: "10px"}}>FULLY BOOKED</span>
                   )}
+                  {post.post_type === "looking" && (
+                    <span style={{backgroundColor: "#F59E0B", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "3px 8px", borderRadius: "10px"}}>LOOKING</span>
+                  )}
+                  {post.post_type === "listing" && !post.is_fully_booked && (
+                    <span style={{backgroundColor: "#1D9E75", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "3px 8px", borderRadius: "10px"}}>FOR RENT</span>
+                  )}
+                </div>
+
+                {/* Owner menu button */}
+                {currentUser?.id === post.user_id && (
+                  <button onClick={e => { e.stopPropagation(); setShowMenu(showMenu === post.id ? null : post.id); }}
+                    style={{position: "absolute", top: "8px", right: "8px", background: "rgba(255,255,255,0.92)", border: "none", borderRadius: "50%", width: "30px", height: "30px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", zIndex: 3, boxShadow: "0 1px 4px rgba(0,0,0,0.12)"}}>
+                    •••
+                  </button>
+                )}
+
+                {/* Image */}
+                {post.images && post.images.length > 0 ? (
+                  <img src={post.images[0]} alt="" style={{width: "100%", height: "180px", objectFit: "cover", display: "block"}} />
+                ) : (
+                  <div style={{width: "100%", height: "100px", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "3rem"}}>
+                    {post.post_type === "looking" ? "🔍" : "🏠"}
+                  </div>
+                )}
+
+                {/* Content */}
+                <div style={{padding: "12px 14px 14px"}}>
+                  <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A", marginBottom: "4px"}}>{post.name}</div>
+
+                  {post.price_per_month && (
+                    <div style={{fontWeight: 700, fontSize: "1rem", color: "#1D9E75", marginBottom: "4px"}}>
+                      ₱{post.price_per_month.toLocaleString("en-PH")}/mo
+                      {post.is_negotiable && <span style={{fontSize: "0.7rem", color: "#888", fontWeight: 400, marginLeft: "6px"}}>Negotiable</span>}
+                    </div>
+                  )}
+
+                  {post.address && (
+                    <div style={{fontSize: "0.78rem", color: "#888", marginBottom: "6px", display: "flex", alignItems: "center", gap: "4px"}}>
+                      📍 {post.address}
+                    </div>
+                  )}
+
+                  {post.available_slots !== null && !post.is_fully_booked && (
+                    <div style={{fontSize: "0.75rem", color: "#1D9E75", fontWeight: 600, marginBottom: "6px"}}>
+                      {post.available_slots} slot{post.available_slots !== 1 ? "s" : ""} available
+                    </div>
+                  )}
+
+                  {post.amenities && post.amenities.length > 0 && (
+                    <div style={{display: "flex", gap: "4px", flexWrap: "wrap", marginBottom: "8px"}}>
+                      {post.amenities.slice(0, 4).map(a => (
+                        <span key={a} style={{fontSize: "0.65rem", backgroundColor: "#E1F5EE", color: "#0F6E56", padding: "2px 7px", borderRadius: "8px", fontWeight: 600}}>{a}</span>
+                      ))}
+                      {post.amenities.length > 4 && (
+                        <span style={{fontSize: "0.65rem", backgroundColor: "#F7F7F7", color: "#888", padding: "2px 7px", borderRadius: "8px"}}>+{post.amenities.length - 4} more</span>
+                      )}
+                    </div>
+                  )}
+
+                  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px"}}>
+                    <div style={{display: "flex", alignItems: "center", gap: "5px"}}>
+                      {post.users?.avatar_url
+                        ? <img src={post.users.avatar_url} alt="" style={{width: "18px", height: "18px", borderRadius: "50%", objectFit: "cover"}} />
+                        : <div style={{width: "18px", height: "18px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.55rem", color: "#1D9E75", fontWeight: 700}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+                      }
+                      <span style={{fontSize: "0.72rem", color: "#888"}}>{post.users?.full_name}</span>
+                    </div>
+                    <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
+                      <span style={{fontSize: "0.68rem", color: "#888", display: "flex", alignItems: "center", gap: "3px"}}>💬 {post.comment_count}</span>
+                      <span style={{fontSize: "0.68rem", color: "#888"}}>{formatTime(post.created_at)}{post.edited_at ? " · Edited" : ""}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -387,8 +432,8 @@ export default function BazaarPage() {
           { href: "/feeds", icon: "/feed.png", label: "Feeds", active: false },
           { href: "/soapbox", icon: "/soapbox.png", label: "Soapbox", active: false },
           { href: "/quad", icon: "/help.png", label: "Quad", active: false },
-          { href: "/bazaar", icon: "/bazaar.png", label: "Bazaar", active: true },
-          { href: "/living", icon: "/living.png", label: "Living", active: false },
+          { href: "/bazaar", icon: "/bazaar.png", label: "Bazaar", active: false },
+          { href: "/living", icon: "/living.png", label: "Living", active: true },
         ].map(item => (
           <a key={item.href} href={item.href} style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px 4px 8px", textDecoration: "none", borderTop: item.active ? "2px solid #1D9E75" : "2px solid transparent"}}>
             <Image src={item.icon} alt={item.label} width={24} height={24} style={{opacity: item.active ? 1 : 0.4, marginBottom: "3px"}} />
@@ -397,60 +442,82 @@ export default function BazaarPage() {
         ))}
       </div>
 
-      {/* Post Listing Composer */}
+      {/* Composer Bottom Sheet */}
       {showComposer && (
         <>
-          <div onClick={() => setShowComposer(false)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 400}} />
-          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, maxHeight: "90vh", overflowY: "auto", paddingBottom: "32px"}}>
+          <div onClick={() => { setShowComposer(false); resetComposer(); }} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 400}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, maxHeight: "92vh", overflowY: "auto", paddingBottom: "32px"}}>
             <div style={{padding: "16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, backgroundColor: "#fff", zIndex: 10}}>
               <span style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A"}}>Post a Listing</span>
-              <button onClick={() => setShowComposer(false)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.2rem"}}>✕</button>
+              <button onClick={() => { setShowComposer(false); resetComposer(); }} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.2rem"}}>✕</button>
             </div>
-            <div style={{padding: "16px", display: "flex", flexDirection: "column", gap: "12px"}}>
-              <input placeholder="Title *" value={title} onChange={e => setTitle(e.target.value)}
+
+            <div style={{padding: "16px", display: "flex", flexDirection: "column", gap: "14px"}}>
+
+              {/* Post Type Picker */}
+              <div>
+                <div style={{fontSize: "0.75rem", color: "#888", fontWeight: 600, marginBottom: "8px"}}>Post Type</div>
+                <div style={{display: "flex", gap: "8px"}}>
+                  <button onClick={() => setPostType("listing")}
+                    style={{flex: 1, padding: "12px", borderRadius: "12px", border: "2px solid " + (postType === "listing" ? "#1D9E75" : "#F0F0F0"), backgroundColor: postType === "listing" ? "#E1F5EE" : "#fff", color: postType === "listing" ? "#1D9E75" : "#888", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", textAlign: "center"}}>
+                    🏠 Room for Rent
+                  </button>
+                  <button onClick={() => setPostType("looking")}
+                    style={{flex: 1, padding: "12px", borderRadius: "12px", border: "2px solid " + (postType === "looking" ? "#F59E0B" : "#F0F0F0"), backgroundColor: postType === "looking" ? "#FFFBEB" : "#fff", color: postType === "looking" ? "#D97706" : "#888", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", textAlign: "center"}}>
+                    🔍 Looking for Room
+                  </button>
+                </div>
+              </div>
+
+              {/* Title */}
+              <input placeholder={postType === "listing" ? "Boarding house name *" : "What are you looking for? *"} value={title} onChange={e => setTitle(e.target.value)}
                 style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box"}} />
-              <textarea placeholder="Description *" value={description} onChange={e => setDescription(e.target.value)} rows={3}
+
+              {/* Description */}
+              <textarea placeholder="Description (optional)" value={description} onChange={e => setDescription(e.target.value)} rows={3}
                 style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", resize: "none", boxSizing: "border-box"}} />
+
+              {/* Price */}
               <div style={{display: "flex", gap: "8px"}}>
-                <input placeholder="Price (₱) *" value={price} onChange={e => setPrice(e.target.value)} type="number"
+                <input placeholder={postType === "listing" ? "Price/month (₱) optional" : "Budget/month (₱) optional"} value={price} onChange={e => setPrice(e.target.value)} type="number"
                   style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}} />
                 <button onClick={() => setIsNegotiable(!isNegotiable)}
                   style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (isNegotiable ? "#1D9E75" : "#F0F0F0"), backgroundColor: isNegotiable ? "#E1F5EE" : "#F7F7F7", color: isNegotiable ? "#1D9E75" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
                   {isNegotiable ? "✓ Nego" : "Nego?"}
                 </button>
               </div>
-              <div style={{display: "flex", gap: "8px", alignItems: "center"}}>
-                <button onClick={() => setIsRental(!isRental)}
-                  style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (isRental ? "#1D9E75" : "#F0F0F0"), backgroundColor: isRental ? "#E1F5EE" : "#F7F7F7", color: isRental ? "#1D9E75" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
-                  {isRental ? "✓ For Rent" : "For Rent?"}
-                </button>
-                {isRental && (
-                  <input placeholder="Period (e.g. day, week)" value={rentalPeriod} onChange={e => setRentalPeriod(e.target.value)}
-                    style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}} />
-                )}
-              </div>
-              <div>
-                <div style={{fontSize: "0.75rem", color: "#888", fontWeight: 600, marginBottom: "6px"}}>Category *</div>
-                <div style={{display: "flex", gap: "6px", flexWrap: "wrap"}}>
-                  {CATEGORIES.map(cat => (
-                    <button key={cat} onClick={() => setCategory(category === cat ? "" : cat)}
-                      style={{padding: "5px 10px", borderRadius: "20px", border: "1px solid " + (category === cat ? "#1D9E75" : "#F0F0F0"), backgroundColor: category === cat ? "#E1F5EE" : "#fff", color: category === cat ? "#1D9E75" : "#888", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
-                      {CATEGORY_ICONS[cat]} {cat}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div style={{fontSize: "0.75rem", color: "#888", fontWeight: 600, marginBottom: "6px"}}>Condition *</div>
-                <div style={{display: "flex", gap: "6px", flexWrap: "wrap"}}>
-                  {CONDITIONS.map(cond => (
-                    <button key={cond} onClick={() => setCondition(condition === cond ? "" : cond)}
-                      style={{padding: "5px 10px", borderRadius: "20px", border: "1px solid " + (condition === cond ? "#1D9E75" : "#F0F0F0"), backgroundColor: condition === cond ? "#E1F5EE" : "#fff", color: condition === cond ? "#1D9E75" : "#888", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
-                      {cond}
-                    </button>
-                  ))}
-                </div>
-              </div>
+
+              {/* Location */}
+              <input placeholder={postType === "listing" ? "Address / Location *" : "Preferred location (optional)"} value={address} onChange={e => setAddress(e.target.value)}
+                style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box"}} />
+
+              {/* Listing-only fields */}
+              {postType === "listing" && (
+                <>
+                  {/* Available Slots */}
+                  <input placeholder="Available slots (optional, e.g. 2)" value={availableSlots} onChange={e => setAvailableSlots(e.target.value)} type="number"
+                    style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box"}} />
+
+                  {/* Contact Number */}
+                  <input placeholder="Contact number (optional)" value={contactNumber} onChange={e => setContactNumber(e.target.value)} type="tel"
+                    style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box"}} />
+
+                  {/* Amenities */}
+                  <div>
+                    <div style={{fontSize: "0.75rem", color: "#888", fontWeight: 600, marginBottom: "8px"}}>Amenities (optional)</div>
+                    <div style={{display: "flex", gap: "6px", flexWrap: "wrap"}}>
+                      {AMENITIES.map(a => (
+                        <button key={a} onClick={() => toggleAmenity(a)}
+                          style={{padding: "5px 10px", borderRadius: "20px", border: "1px solid " + (selectedAmenities.includes(a) ? "#1D9E75" : "#F0F0F0"), backgroundColor: selectedAmenities.includes(a) ? "#E1F5EE" : "#fff", color: selectedAmenities.includes(a) ? "#1D9E75" : "#888", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
+                          {a}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Photos */}
               <div>
                 <div style={{fontSize: "0.75rem", color: "#888", fontWeight: 600, marginBottom: "6px"}}>Photos (up to 4)</div>
                 <div style={{display: "flex", gap: "8px", flexWrap: "wrap"}}>
@@ -469,7 +536,9 @@ export default function BazaarPage() {
                   <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" multiple style={{display: "none"}} onChange={handleImageSelect} />
                 </div>
               </div>
+
               {postError && <div style={{color: "#EF4444", fontSize: "0.75rem"}}>{postError}</div>}
+
               <button onClick={handlePost} disabled={posting}
                 style={{backgroundColor: posting ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "12px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: posting ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                 {posting ? "Posting..." : "Post Listing"}
@@ -485,23 +554,24 @@ export default function BazaarPage() {
           <div onClick={() => setShowMenu(null)} style={{position: "fixed", inset: 0, zIndex: 400, backgroundColor: "rgba(0,0,0,0.3)"}} />
           <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "8px 0 32px"}}>
             <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "10px auto 16px"}}></div>
-            {!listings.find(l => l.id === showMenu)?.is_sold && (
-              <button onClick={() => handleMarkSold(showMenu)}
-                style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#1D9E75"}}>
-                ✅ Mark as Sold
+            {!posts.find(p => p.id === showMenu)?.is_fully_booked && posts.find(p => p.id === showMenu)?.post_type === "listing" && (
+              <button onClick={() => handleMarkFullyBooked(showMenu)}
+                style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#EF4444"}}>
+                🔴 Mark as Fully Booked
               </button>
             )}
-            <button onClick={() => router.push("/bazaar/" + showMenu)}
+            <button onClick={() => router.push("/living/" + showMenu)}
               style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#1A1A1A"}}>
               👁️ View Listing
             </button>
-            <button onClick={() => handleDeleteListing(showMenu)}
+            <button onClick={() => handleDelete(showMenu)}
               style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#EF4444"}}>
-              🗑️ Delete Listing
+              🗑️ Delete Post
             </button>
           </div>
         </>
       )}
+
     </div>
   );
 }

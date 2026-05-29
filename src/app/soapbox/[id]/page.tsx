@@ -116,7 +116,7 @@ export default function SoapboxDetailPage({ params }: { params: Promise<{ id: st
         ...c,
         replies: withPseudonyms.filter(r => r.parent_id === c.id),
       }));
-      setComments(withReplies);
+      setComments(withReplies.map((c: any) => ({...c, users: Array.isArray(c.users) ? c.users[0] ?? null : c.users, replies: (c.replies || []).map((r: any) => ({...r, users: Array.isArray(r.users) ? r.users[0] ?? null : r.users}))})));
     }
   }
 

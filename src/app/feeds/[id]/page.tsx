@@ -85,7 +85,7 @@ export default function PostDetailPage() {
         if (userData && r.user_id === userData.id) userReaction = emoji;
       });
       const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", postId);
-      setPost({ ...data, reactionCounts, userReaction, commentCount: count || 0 });
+      setPost({ ...data, reactionCounts, userReaction, commentCount: count || 0, users: Array.isArray(data.users) ? data.users[0] ?? null : data.users });
     }
   }
 
@@ -115,7 +115,7 @@ export default function PostDetailPage() {
         ...c,
         replies: replies.filter(r => r.parent_id === c.id)
       }));
-      setComments(nested);
+      setComments(nested.map((c: any) => ({...c, users: Array.isArray(c.users) ? c.users[0] ?? null : c.users, replies: (c.replies || []).map((r: any) => ({...r, users: Array.isArray(r.users) ? r.users[0] ?? null : r.users}))})));
     }
   }
 
@@ -226,7 +226,7 @@ export default function PostDetailPage() {
     setShowReactionList(true);
     setReactionTab("All");
     const { data } = await supabase.from("reactions").select("user_id, type, users(full_name, avatar_url)").eq("post_id", postId);
-    if (data) setReactionList(data);
+    if (data) setReactionList(data.map((r: any) => ({...r, users: Array.isArray(r.users) ? r.users[0] ?? null : r.users})));
     setLoadingReactions(false);
   }
 
@@ -364,7 +364,7 @@ export default function PostDetailPage() {
             {showReactionPicker && (
               <div style={{position: "absolute", bottom: "48px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", display: "flex", gap: "6px", zIndex: 300, border: "1px solid #F0F0F0", whiteSpace: "nowrap"}}>
                 {REACTIONS.map((img, i) => (
-                  <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
+                  <button key={img} onClick={() => handleReaction(img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
                 ))}
               </div>
             )}
@@ -430,7 +430,7 @@ export default function PostDetailPage() {
                     {showCommentReactionPicker === comment.id && (
                       <div style={{position: "fixed", bottom: "64px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "12px 8px", boxShadow: "0 -4px 20px rgba(0,0,0,0.12)", display: "flex", justifyContent: "space-around", alignItems: "center", zIndex: 600}}>
                         {REACTIONS.map((img, i) => (
-                          <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
+                          <button key={img} onClick={() => handleReaction(img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
                         ))}
                       </div>
                     )}
@@ -479,7 +479,7 @@ export default function PostDetailPage() {
                               {showCommentReactionPicker === reply.id && (
                                 <div style={{position: "fixed", bottom: "64px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "12px 8px", boxShadow: "0 -4px 20px rgba(0,0,0,0.12)", display: "flex", justifyContent: "space-around", alignItems: "center", zIndex: 600}}>
                                   {REACTIONS.map((img, i) => (
-                                    <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
+                                    <button key={img} onClick={() => handleReaction(img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
                                   ))}
                                 </div>
                               )}

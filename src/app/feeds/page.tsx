@@ -95,7 +95,7 @@ export default function FeedsPage() {
     setShowReactionList(true);
     setReactionTab("All");
     const { data } = await supabase.from("reactions").select("user_id, type, users(full_name, avatar_url)").eq("post_id", postId);
-    if (data) setReactionList(data);
+    if (data) setReactionList(data.map((r: any) => ({...r, users: Array.isArray(r.users) ? r.users[0] ?? null : r.users})));
     setLoadingReactions(false);
   }
 
@@ -126,9 +126,9 @@ export default function FeedsPage() {
           if (r.user_id === currentUser.id) userReaction = emoji;
         });
         const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", post.id);
-        return { ...post, reactionCounts, userReaction, commentCount: count || 0 };
+        return { ...post, reactionCounts, userReaction, commentCount: count || 0, users: Array.isArray(post.users) ? post.users[0] ?? null : post.users };
       }));
-      setPosts(enriched);
+      setPosts(enriched.map((p) => ({...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users})));
     }
     setLoading(false);
   }

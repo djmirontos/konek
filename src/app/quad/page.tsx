@@ -102,7 +102,7 @@ export default function QuadPage() {
         const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", post.id);
         return { ...post, commentCount: count || 0, isExpired };
       }));
-      setPosts(enriched);
+      setPosts(enriched.map((p) => ({...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users})));
     }
     setLoading(false);
   }

@@ -71,7 +71,7 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
 
   async function fetchListing(id: string) {
     const { data } = await supabase.from("listings").select("id, user_id, title, description, price, is_negotiable, is_rental, rental_period, category, condition, images, is_sold, created_at, school_id, users(full_name, avatar_url)").eq("id", id).single();
-    if (data) setListing(data);
+    if (data) setListing({...data, users: Array.isArray(data.users) ? data.users[0] ?? null : data.users});
   }
 
   async function fetchComments(id: string) {
@@ -79,7 +79,7 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
     if (data) {
       const topLevel = data.filter(c => !c.parent_id);
       const withReplies = topLevel.map(c => ({ ...c, replies: data.filter(r => r.parent_id === c.id) }));
-      setComments(withReplies);
+      setComments(withReplies.map(c => ({...c, users: Array.isArray(c.users) ? c.users[0] ?? null : c.users, replies: (c.replies || []).map((r: any) => ({...r, users: Array.isArray(r.users) ? r.users[0] ?? null : r.users}))})));
     }
   }
 

@@ -60,7 +60,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
     const { data } = await supabase.from("posts").select("id, user_id, content, tag, images, created_at, school_id, expires_at, location, users(full_name, avatar_url)").eq("id", id).single();
     if (data) {
       const isExpired = data.expires_at ? new Date(data.expires_at) < new Date() : false;
-      setPost({ ...data, isExpired });
+      setPost({ ...data, isExpired, users: Array.isArray(data.users) ? data.users[0] ?? null : data.users });
     }
   }
 
@@ -72,7 +72,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
         ...c,
         replies: data.filter(r => r.parent_id === c.id),
       }));
-      setComments(withReplies);
+      setComments(withReplies.map((c: any) => ({...c, users: Array.isArray(c.users) ? c.users[0] ?? null : c.users, replies: (c.replies || []).map((r: any) => ({...r, users: Array.isArray(r.users) ? r.users[0] ?? null : r.users}))})));
     }
   }
 
