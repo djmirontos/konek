@@ -46,6 +46,16 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
   const [editCommentContent, setEditCommentContent] = useState("");
   const [showDeleteCommentConfirm, setShowDeleteCommentConfirm] = useState<string | null>(null);
   const [showOwnerMenu, setShowOwnerMenu] = useState(false);
+  const [showEditListing, setShowEditListing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+  const [editIsNegotiable, setEditIsNegotiable] = useState(false);
+  const [editIsRental, setEditIsRental] = useState(false);
+  const [editRentalPeriod, setEditRentalPeriod] = useState("");
+  const [editCondition, setEditCondition] = useState("");
+  const [editError, setEditError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => { setTimeout(() => setMounted(true), 10); params.then(p => { setListingId(p.id); initPage(p.id); }); }, []);
 
@@ -136,6 +146,33 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
   async function handleDeleteComment(commentId: string) {
     const { error } = await supabase.from("comments").delete().eq("id", commentId);
     if (!error) { setShowDeleteCommentConfirm(null); showToast("Comment deleted!"); await fetchComments(listingId); }
+  }
+
+  async function handleEditListing() {
+    if (!editTitle.trim()) { setEditError("Please enter a title."); return; }
+    if (!editDescription.trim()) { setEditError("Please enter a description."); return; }
+    if (!editPrice) { setEditError("Please enter a price."); return; }
+    if (!editCondition) { setEditError("Please select a condition."); return; }
+    if (editIsRental && !editRentalPeriod.trim()) { setEditError("Please enter a rental period."); return; }
+    setSaving(true);
+    setEditError("");
+    const { error } = await supabase.from("listings").update({
+      title: editTitle.trim(),
+      description: editDescription.trim(),
+      price: parseFloat(editPrice),
+      is_negotiable: editIsNegotiable,
+      is_rental: editIsRental,
+      rental_period: editIsRental ? editRentalPeriod.trim() : null,
+      condition: editCondition,
+    }).eq("id", listingId);
+    if (!error) {
+      setShowEditListing(false);
+      showToast("Listing updated!");
+      await fetchListing(listingId);
+    } else {
+      setEditError("Failed to update. Try again.");
+    }
+    setSaving(false);
   }
 
   function showToast(msg: string) {
@@ -339,6 +376,10 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
                   ✅ Mark as Sold
                 </button>
               )}
+              <button onClick={() => { setEditTitle(listing?.title || ""); setEditDescription(listing?.description || ""); setEditPrice(listing?.price?.toString() || ""); setEditIsNegotiable(listing?.is_negotiable || false); setEditIsRental(listing?.is_rental || false); setEditRentalPeriod(listing?.rental_period || ""); setEditCondition(listing?.condition || ""); setEditError(""); setShowOwnerMenu(false); setShowEditListing(true); }}
+                style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#1A1A1A"}}>
+                ✏️ Edit Listing
+              </button>
               <button onClick={handleDeleteListing}
                 style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#EF4444"}}>
                 🗑️ Delete Listing
@@ -376,6 +417,58 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
               <div style={{display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end"}}>
                 <button onClick={() => setEditingComment(null)} style={{padding: "9px 20px", borderRadius: "20px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
                 <button onClick={() => handleEditComment(editingComment)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {showEditListing && (
+          <>
+            <div onClick={() => setShowEditListing(false)} style={{position: "fixed", inset: 0, zIndex: 400, backgroundColor: "rgba(0,0,0,0.5)"}} />
+            <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, maxHeight: "85vh", overflowY: "auto", paddingBottom: "32px"}}>
+              <div style={{padding: "16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, backgroundColor: "#fff", zIndex: 10}}>
+                <span style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A"}}>Edit Listing</span>
+                <button onClick={() => setShowEditListing(false)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.2rem"}}>✕</button>
+              </div>
+              <div style={{padding: "16px", display: "flex", flexDirection: "column", gap: "12px"}}>
+                <input placeholder="Title *" value={editTitle} onChange={e => setEditTitle(e.target.value)}
+                  style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box"}} />
+                <textarea placeholder="Description *" value={editDescription} onChange={e => setEditDescription(e.target.value)} rows={3}
+                  style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", resize: "none", boxSizing: "border-box"}} />
+                <div style={{display: "flex", gap: "8px"}}>
+                  <input placeholder="Price (₱) *" value={editPrice} onChange={e => setEditPrice(e.target.value)} type="number"
+                    style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}} />
+                  <button onClick={() => setEditIsNegotiable(!editIsNegotiable)}
+                    style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (editIsNegotiable ? "#1D9E75" : "#F0F0F0"), backgroundColor: editIsNegotiable ? "#E1F5EE" : "#F7F7F7", color: editIsNegotiable ? "#1D9E75" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                    {editIsNegotiable ? "✓ Nego" : "Nego?"}
+                  </button>
+                </div>
+                <div style={{display: "flex", gap: "8px", alignItems: "center"}}>
+                  <button onClick={() => setEditIsRental(!editIsRental)}
+                    style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (editIsRental ? "#1D9E75" : "#F0F0F0"), backgroundColor: editIsRental ? "#E1F5EE" : "#F7F7F7", color: editIsRental ? "#1D9E75" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                    {editIsRental ? "✓ For Rent" : "For Rent?"}
+                  </button>
+                  {editIsRental && (
+                    <input placeholder="Period (e.g. day, week)" value={editRentalPeriod} onChange={e => setEditRentalPeriod(e.target.value)}
+                      style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}} />
+                  )}
+                </div>
+                <div>
+                  <div style={{fontSize: "0.75rem", color: "#888", fontWeight: 600, marginBottom: "6px"}}>Condition *</div>
+                  <div style={{display: "flex", gap: "6px", flexWrap: "wrap"}}>
+                    {["Brand New", "Like New", "Slightly Used", "Good"].map(cond => (
+                      <button key={cond} onClick={() => setEditCondition(editCondition === cond ? "" : cond)}
+                        style={{padding: "5px 10px", borderRadius: "20px", border: "1px solid " + (editCondition === cond ? "#1D9E75" : "#F0F0F0"), backgroundColor: editCondition === cond ? "#E1F5EE" : "#fff", color: editCondition === cond ? "#1D9E75" : "#888", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
+                        {cond}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {editError && <div style={{color: "#EF4444", fontSize: "0.75rem"}}>{editError}</div>}
+                <button onClick={handleEditListing} disabled={saving}
+                  style={{backgroundColor: saving ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "12px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
               </div>
             </div>
           </>
