@@ -510,40 +510,46 @@ export default function FeedsPage() {
 
             <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
 
-            <div style={{display: "flex", padding: "4px 8px"}}>
-              <div style={{position: "relative", flex: 1}}>
-                <button
-                  onMouseDown={() => startLongPress(post.id)}
-                  onMouseUp={() => { cancelLongPress(); if (showReactionPicker !== post.id) handleQuickLike(post.id); }}
-                  onMouseLeave={cancelLongPress}
-                  onTouchStart={() => startLongPress(post.id)}
-                  onTouchEnd={() => { cancelLongPress(); if (showReactionPicker !== post.id) handleQuickLike(post.id); }}
-                  style={{width: "100%", background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
-                  {post.userReaction ? <img src={post.userReaction} alt="reaction" style={{width: "20px", height: "20px"}} /> : <Image src="/like.png" alt="like" width={20} height={20} />}
-                  <span style={{fontSize: "0.78rem", fontWeight: post.userReaction ? 700 : 400, color: post.userReaction ? "#1D9E75" : "#888"}}>
-                    {post.userReaction ? REACTION_NAMES[REACTIONS.indexOf(post.userReaction)] || "Like" : "Like"}
-                  </span>
+            <div style={{display: "flex", padding: "6px 12px", alignItems: "center", justifyContent: "space-between"}}>
+              <div style={{display: "flex", alignItems: "center", gap: "16px"}}>
+                <div style={{position: "relative"}}>
+                  <button
+                    onMouseDown={() => startLongPress(post.id)}
+                    onMouseUp={() => { cancelLongPress(); if (showReactionPicker !== post.id) handleQuickLike(post.id); }}
+                    onMouseLeave={cancelLongPress}
+                    onTouchStart={() => startLongPress(post.id)}
+                    onTouchEnd={() => { cancelLongPress(); if (showReactionPicker !== post.id) handleQuickLike(post.id); }}
+                    style={{background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
+                    {post.userReaction ? <img src={post.userReaction} alt="reaction" style={{width: "20px", height: "20px", objectFit: "contain"}} /> : <Image src="/like.png" alt="like" width={20} height={20} />}
+                    {getTotalReactions(post.reactionCounts || {}) > 0 && <span style={{fontSize: "0.78rem", fontWeight: 600, color: post.userReaction ? "#1D9E75" : "#888"}}>{getTotalReactions(post.reactionCounts || {})}</span>}
+                  </button>
+                  {showReactionPicker === post.id && (
+                    <div style={{position: "fixed", bottom: "64px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "12px 8px", boxShadow: "0 -4px 20px rgba(0,0,0,0.12)", display: "flex", justifyContent: "space-around", alignItems: "center", zIndex: 600}}>
+                      {REACTIONS.map((img, i) => (
+                        <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}>
+                          <img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} />
+                          <span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button onClick={() => router.push("/feeds/" + post.id)} style={{background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
+                  <Image src="/comment.png" alt="comment" width={20} height={20} />
+                  {(post.commentCount || 0) > 0 && <span style={{fontSize: "0.78rem", color: "#888", fontWeight: 600}}>{post.commentCount}</span>}
                 </button>
-                {showReactionPicker === post.id && (
-                  <div style={{position: "fixed", bottom: "64px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "12px 8px", boxShadow: "0 -4px 20px rgba(0,0,0,0.12)", display: "flex", justifyContent: "space-around", alignItems: "center", zIndex: 600}}>
-                    {REACTIONS.map((img, i) => (
-                      <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
-                    ))}
-                  </div>
-                )}
+                <button style={{background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex", alignItems: "center", fontFamily: "inherit"}}>
+                  <Image src="/share.png" alt="share" width={20} height={20} />
+                </button>
               </div>
-
-              <button onClick={() => router.push("/feeds/" + post.id)} style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
-                <Image src="/comment.png" alt="comment" width={20} height={20} />
-                <span style={{fontSize: "0.78rem", color: "#888"}}>Comment</span>
-              </button>
-
-              <button style={{flex: 1, background: "none", border: "none", cursor: "pointer", padding: "8px 4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontFamily: "inherit", borderRadius: "8px"}}>
-                <Image src="/share.png" alt="share" width={20} height={20} />
-                <span style={{fontSize: "0.78rem", color: "#888"}}>Share</span>
-              </button>
+              {getTotalReactions(post.reactionCounts || {}) > 0 && (
+                <div onClick={() => fetchReactionList(post.id)} style={{display: "flex", alignItems: "center", gap: "2px", cursor: "pointer"}}>
+                  {getTopReactions(post.reactionCounts || {}).map((img, i) => (
+                    <img key={i} src={img} alt="" style={{width: "20px", height: "20px", objectFit: "contain"}} />
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
         ))}
       </div>
 
