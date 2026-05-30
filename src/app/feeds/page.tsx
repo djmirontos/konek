@@ -70,6 +70,31 @@ export default function FeedsPage() {
   useEffect(() => { initPage(); }, []);
   useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
 
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const channel = supabase
+      .channel("feeds-realtime")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "posts", filter: `school_id=eq.${currentUser.school_id}` },
+        (payload) => {
+          // Only add post if it's not from current user (they already see it)
+          if (payload.new.user_id !== currentUser.id && payload.new.type === "feed" && !payload.new.is_hidden) {
+            fetchPosts();
+          }
+        }
+      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "reactions" },
+        () => { fetchPosts(); }
+      )
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications", filter: `recipient_id=eq.${currentUser.id}` },
+        () => { fetchUnreadCount(currentUser); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [currentUser]);
+
+
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
