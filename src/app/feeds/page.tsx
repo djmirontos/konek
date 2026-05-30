@@ -509,9 +509,22 @@ export default function FeedsPage() {
       {/* Feed */}
       <div style={{flex: 1, paddingBottom: "80px"}}>
         {loading ? (
-          <div style={{textAlign: "center", padding: "48px 16px", color: "#888"}}>
-            <div style={{fontSize: "2rem", marginBottom: "8px"}}>⏳</div>
-            <div style={{fontSize: "0.85rem"}}>Loading posts...</div>
+          <div>
+            <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
+            {[1,2,3].map(i => (
+              <div key={i} style={{backgroundColor: "#fff", marginBottom: "8px", padding: "12px 16px"}}>
+                <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "12px"}}>
+                  <div style={{width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
+                  <div style={{flex: 1}}>
+                    <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "6px", width: "40%"}} />
+                    <div style={{height: "10px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "25%"}} />
+                  </div>
+                </div>
+                <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "8px"}} />
+                <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "8px", width: "80%"}} />
+                <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "60%"}} />
+              </div>
+            ))}
           </div>
         ) : posts.length === 0 ? (
           <div style={{textAlign: "center", padding: "48px 16px"}}>
