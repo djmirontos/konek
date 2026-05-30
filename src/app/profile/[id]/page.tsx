@@ -413,13 +413,13 @@ export default function ProfilePage() {
                       <div style={{flex: 1, minWidth: 0}}>
                         <div style={{display: "flex", gap: "6px", alignItems: "center", marginBottom: "4px", flexWrap: "wrap"}}>
                           <span style={{fontSize: "0.65rem", backgroundColor: lp.post_type === "listing" ? "#E1F5EE" : "#FEF2F2", color: lp.post_type === "listing" ? "#1D9E75" : "#EF4444", fontWeight: 700, padding: "2px 8px", borderRadius: "10px"}}>
-                            {lp.post_type === "listing" ? "\U0001f3e0 FOR RENT" : "\U0001f50d LOOKING"}
+                            {lp.post_type === "listing" ? "🏠 FOR RENT" : "🔍 LOOKING"}
                           </span>
                           {lp.is_fully_booked && <span style={{fontSize: "0.65rem", backgroundColor: "#F0F0F0", color: "#888", fontWeight: 700, padding: "2px 8px", borderRadius: "10px"}}>FULLY BOOKED</span>}
                         </div>
                         <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", marginBottom: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{lp.title}</div>
                         {lp.price_per_month && <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600}}>\u20b1{lp.price_per_month.toLocaleString()}/mo</div>}
-                        {lp.address && <div style={{fontSize: "0.72rem", color: "#888", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>\U0001f4cd {lp.address}</div>}
+                        {lp.address && <div style={{fontSize: "0.72rem", color: "#888", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>📍 {lp.address}</div>}
                         <div style={{fontSize: "0.68rem", color: "#aaa", marginTop: "4px"}}>{formatTime(lp.created_at)}</div>
                       </div>
                     </div>
@@ -434,14 +434,14 @@ export default function ProfilePage() {
                   <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Info</div>
                   <div style={{display: "flex", flexDirection: "column", gap: "14px"}}>
                     <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                      <span style={{fontSize: "1.1rem"}}>\U0001f3eb</span>
+                      <span style={{fontSize: "1.1rem"}}>🏫</span>
                       <div>
                         <div style={{fontSize: "0.7rem", color: "#aaa", marginBottom: "1px"}}>School</div>
                         <div style={{fontSize: "0.875rem", fontWeight: 600, color: "#1A1A1A"}}>{school?.name || "Unknown"}</div>
                       </div>
                     </div>
                     <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                      <span style={{fontSize: "1.1rem"}}>\U0001f4c5</span>
+                      <span style={{fontSize: "1.1rem"}}>📅</span>
                       <div>
                         <div style={{fontSize: "0.7rem", color: "#aaa", marginBottom: "1px"}}>Member Since</div>
                         <div style={{fontSize: "0.875rem", fontWeight: 600, color: "#1A1A1A"}}>{formatMemberSince(profileUser.created_at)}</div>
@@ -449,7 +449,7 @@ export default function ProfilePage() {
                     </div>
                     {profileUser.bio && (
                       <div style={{display: "flex", alignItems: "flex-start", gap: "12px"}}>
-                        <span style={{fontSize: "1.1rem"}}>\U0001f4ac</span>
+                        <span style={{fontSize: "1.1rem"}}>💬</span>
                         <div>
                           <div style={{fontSize: "0.7rem", color: "#aaa", marginBottom: "1px"}}>Bio</div>
                           <div style={{fontSize: "0.875rem", color: "#1A1A1A", lineHeight: 1.5}}>{profileUser.bio}</div>
@@ -458,7 +458,7 @@ export default function ProfilePage() {
                     )}
                     {profileUser.phone_number && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                        <span style={{fontSize: "1.1rem"}}>\U0001f4f1</span>
+                        <span style={{fontSize: "1.1rem"}}>📱</span>
                         <div>
                           <div style={{fontSize: "0.7rem", color: "#aaa", marginBottom: "1px"}}>Phone</div>
                           <a href={`tel:${profileUser.phone_number}`} style={{fontSize: "0.875rem", fontWeight: 600, color: "#1D9E75", textDecoration: "none"}}>{profileUser.phone_number}</a>
@@ -470,7 +470,7 @@ export default function ProfilePage() {
 
                 <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", marginBottom: "12px", border: "1px solid #F0F0F0"}}>
                   <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Badges</div>
-                  <div style={{padding: "8px 14px", backgroundColor: "#F7F7F7", borderRadius: "20px", fontSize: "0.78rem", color: "#aaa", display: "inline-block"}}>\U0001f3c5 Founding Member — Coming Soon</div>
+                  <div style={{padding: "8px 14px", backgroundColor: "#F7F7F7", borderRadius: "20px", fontSize: "0.78rem", color: "#aaa", display: "inline-block"}}>🏅 Founding Member — Coming Soon</div>
                 </div>
 
                 <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", marginBottom: "12px", border: "1px solid #F0F0F0"}}>
@@ -483,7 +483,7 @@ export default function ProfilePage() {
                     <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "8px 0 16px"}} />
                     <button onClick={() => setShowLogoutConfirm(true)}
                       style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #EF4444", backgroundColor: "#FEF2F2", color: "#EF4444", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
-                      \U0001f6aa Log Out
+                      🚪 Log Out
                     </button>
                   </>
                 )}
@@ -513,7 +513,7 @@ export default function ProfilePage() {
                 style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             </div>
             <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "12px 14px", marginBottom: "20px", display: "flex", gap: "10px", alignItems: "flex-start"}}>
-              <span style={{fontSize: "1rem"}}>\U0001f512</span>
+              <span style={{fontSize: "1rem"}}>🔒</span>
               <div>
                 <div style={{fontSize: "0.78rem", fontWeight: 700, color: "#1A1A1A", marginBottom: "2px"}}>School: {school?.abbreviation}</div>
                 <div style={{fontSize: "0.72rem", color: "#888", lineHeight: 1.4}}>School changes require admin review. Contact support to request a change.</div>
