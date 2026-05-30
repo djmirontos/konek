@@ -4,6 +4,10 @@ import { createClient } from "@/lib/supabase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PhotoViewer from "@/components/PhotoViewer";
+import BottomNav from "@/components/BottomNav";
+import AppHeader from "@/components/AppHeader";
+import SchoolPicker from "@/components/SchoolPicker";
+import NotificationDropdown from "@/components/NotificationDropdown";
 
 const TAGS = ["#lihok", "#feelings", "#announcements", "#free-stuff", "#groupmates-needed", "#org-recruitment", "#review-session"];
 const REACTIONS = ["/like.png", "/love.png", "/haha.png", "/wow.png", "/sad.png", "/grabe.png", "/laban.png"];
@@ -373,74 +377,18 @@ export default function FeedsPage() {
   return (
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
-      {/* Top Header */}
-      <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
-        <Image src="/konek.svg" alt="Konek" width={80} height={28} priority />
-        <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-          <button onClick={() => setShowSchoolPicker(!showSchoolPicker)} style={{backgroundColor: "rgba(255,255,255,0.2)", border: "none", borderRadius: "20px", padding: "6px 12px", color: "#fff", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
-            📍 {getSchoolLabel()} ▾
-          </button>
-          <button onClick={() => { setShowNotifications(!showNotifications); if (!showNotifications) fetchNotifications(); }} style={{background: "none", border: "none", cursor: "pointer", position: "relative", padding: "4px"}}>
-            <Image src="/notification.png" alt="notifications" width={25} height={25} />
-            {unreadCount > 0 && (
-              <div style={{position: "absolute", top: "0px", right: "0px", backgroundColor: "#EF4444", color: "#fff", borderRadius: "50%", width: "16px", height: "16px", fontSize: "0.6rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #1D9E75"}}>
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </div>
-            )}
-          </button>
-          <button onClick={handleLogout} style={{background: "none", border: "none", cursor: "pointer", padding: 0}}>
-            {currentUser?.avatar_url
-              ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", border: "2px solid #fff"}} />
-              : <div style={{width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#0F6E56", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: "0.8rem"}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
-            }
-          </button>
-        </div>
-      </div>
+      <AppHeader
+        currentUser={currentUser}
+        schools={schools}
+        selectedSchool={selectedSchool}
+        unreadCount={unreadCount}
+        onSchoolPickerToggle={() => setShowSchoolPicker(!showSchoolPicker)}
+        onNotificationsToggle={() => { setShowNotifications(!showNotifications); if (!showNotifications) fetchNotifications(); }}
+        onLogout={handleLogout}
+      />
 
-      {/* Notification Dropdown */}
-      {showNotifications && (
-        <div style={{position: "fixed", top: "56px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.15)", maxHeight: "70vh", overflowY: "auto", borderRadius: "0 0 16px 16px"}}>
-          <div style={{padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-            <span style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A"}}>Notifications</span>
-            <button onClick={() => setShowNotifications(false)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem"}}>✕</button>
-          </div>
-          {notifications.length === 0 ? (
-            <div style={{textAlign: "center", padding: "32px 16px", color: "#888"}}>
-              <div style={{fontSize: "2rem", marginBottom: "8px"}}>🔔</div>
-              <div style={{fontSize: "0.85rem"}}>Walay notifications pa.</div>
-            </div>
-          ) : notifications.map(notif => (
-            <div key={notif.id} onClick={() => { setShowNotifications(false); if (notif.post_id) router.push("/feeds/" + notif.post_id); }}
-              style={{padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer", backgroundColor: notif.is_read ? "#fff" : "#E1F5EE"}}>
-              <div style={{fontSize: "1.4rem", flexShrink: 0}}>{getNotifIcon(notif.type)}</div>
-              <div style={{flex: 1}}>
-                <div style={{fontSize: "0.85rem", color: "#1A1A1A", lineHeight: 1.4}}>{notif.message}</div>
-                <div style={{fontSize: "0.72rem", color: "#888", marginTop: "3px"}}>{formatTime(notif.created_at)}</div>
-              </div>
-              {!notif.is_read && <div style={{width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#1D9E75", flexShrink: 0, marginTop: "4px"}}></div>}
-            </div>
-          ))}
-        </div>
-      )}
-      {showNotifications && <div onClick={() => setShowNotifications(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />}
-
-      {/* School Picker */}
-      {showSchoolPicker && (
-        <div style={{position: "fixed", top: "60px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.15)", borderRadius: "0 0 16px 16px", overflow: "hidden"}}>
-          {[
-            { id: "own", label: "🏫 My School", sub: schools.find(s => s.id === currentUser?.school_id)?.name || "" },
-            { id: "all", label: "🌐 All Schools", sub: "See posts from all Tangub schools" },
-            ...schools.map(s => ({ id: s.id, label: s.abbreviation, sub: s.name }))
-          ].map((option) => (
-            <button key={option.id} onClick={() => { setSelectedSchool(option.id); setShowSchoolPicker(false); }}
-              style={{width: "100%", padding: "12px 16px", background: selectedSchool === option.id ? "#E1F5EE" : "#fff", border: "none", borderBottom: "1px solid #F0F0F0", cursor: "pointer", textAlign: "left", fontFamily: "inherit"}}>
-              <div style={{fontWeight: 600, fontSize: "0.85rem", color: selectedSchool === option.id ? "#1D9E75" : "#1A1A1A"}}>{option.label}</div>
-              {option.sub && <div style={{fontSize: "0.72rem", color: "#888", marginTop: "2px"}}>{option.sub}</div>}
-            </button>
-          ))}
-        </div>
-      )}
-      {showSchoolPicker && <div onClick={() => setShowSchoolPicker(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />}
+      {showNotifications && <NotificationDropdown notifications={notifications} onClose={() => setShowNotifications(false)} navigateTo="/feeds" />}
+      {showSchoolPicker && <SchoolPicker schools={schools} currentUser={currentUser} selectedSchool={selectedSchool} onSelect={setSelectedSchool} onClose={() => setShowSchoolPicker(false)} />}
 
       {/* Reaction Slide Panel */}
       {showReactionList && (
@@ -629,21 +577,7 @@ export default function FeedsPage() {
         ))}
       </div>
 
-      {/* Bottom Navigation */}
-      <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", display: "flex", zIndex: 100, paddingBottom: "env(safe-area-inset-bottom)"}}>
-        {[
-          { href: "/feeds", icon: "/feed.png", label: "Feeds", active: true },
-          { href: "/soapbox", icon: "/soapbox.png", label: "Soapbox", active: false },
-          { href: "/quad", icon: "/help.png", label: "Quad", active: false },
-          { href: "/bazaar", icon: "/bazaar.png", label: "Bazaar", active: false },
-          { href: "/living", icon: "/living.png", label: "Living", active: false },
-        ].map(item => (
-          <a key={item.href} href={item.href} style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px 4px 8px", textDecoration: "none", borderTop: item.active ? "2px solid #1D9E75" : "2px solid transparent"}}>
-            <Image src={item.icon} alt={item.label} width={24} height={24} style={{opacity: item.active ? 1 : 0.4, marginBottom: "3px"}} />
-            <span style={{fontSize: "0.62rem", color: item.active ? "#1D9E75" : "#888", fontWeight: item.active ? 700 : 400}}>{item.label}</span>
-          </a>
-        ))}
-      </div>
+      <BottomNav active="/feeds" />
 
       {toast && (
         <div style={{position: "fixed", top: "70px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#1A1A1A", color: "#fff", padding: "10px 20px", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 600, zIndex: 1000, whiteSpace: "nowrap"}}>{toast}</div>
