@@ -53,6 +53,7 @@ export default function LivingPage() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showMenu, setShowMenu] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [toast, setToast] = useState("");
 
   useEffect(() => { initPage(); }, []);
@@ -564,10 +565,31 @@ export default function LivingPage() {
               style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#1A1A1A"}}>
               👁️ View Listing
             </button>
-            <button onClick={() => handleDelete(showMenu)}
+            <button onClick={() => { setShowDeleteConfirm(showMenu); setShowMenu(null); }}
               style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#EF4444"}}>
               🗑️ Delete Post
             </button>
+          </div>
+        </>
+      )}
+
+      {/* Delete Confirmation */}
+      {showDeleteConfirm && (
+        <>
+          <div onClick={() => setShowDeleteConfirm(null)} style={{position: "fixed", inset: 0, zIndex: 400, backgroundColor: "rgba(0,0,0,0.5)"}} />
+          <div style={{position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(320px, 90vw)", backgroundColor: "#fff", borderRadius: "16px", zIndex: 500, padding: "24px"}}>
+            <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "8px"}}>Delete Post?</div>
+            <div style={{fontSize: "0.85rem", color: "#888", marginBottom: "20px"}}>This cannot be undone.</div>
+            <div style={{display: "flex", gap: "10px"}}>
+              <button onClick={() => setShowDeleteConfirm(null)}
+                style={{flex: 1, padding: "11px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: "#F7F7F7", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>
+                Cancel
+              </button>
+              <button onClick={() => handleDelete(showDeleteConfirm)}
+                style={{flex: 1, padding: "11px", borderRadius: "10px", border: "none", backgroundColor: "#EF4444", color: "#fff", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>
+                Delete
+              </button>
+            </div>
           </div>
         </>
       )}
