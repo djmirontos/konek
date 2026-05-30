@@ -252,7 +252,6 @@ export default function QuadPage() {
         unreadCount={unreadCount}
         onSchoolPickerToggle={() => setShowSchoolPicker(!showSchoolPicker)}
         onNotificationsToggle={() => { setShowNotifications(!showNotifications); if (!showNotifications) fetchNotifications(); }}
-        onLogout={handleLogout}
       />
       {/* Notification Dropdown */}
       {showNotifications && <NotificationDropdown notifications={notifications} onClose={() => setShowNotifications(false)} navigateTo="/quad" />}

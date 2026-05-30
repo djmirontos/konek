@@ -1,5 +1,6 @@
 'use client'
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 type School = { id: string; name: string; abbreviation: string; };
 type User = { id: string; full_name: string; avatar_url: string | null; school_id: string; role: string; };
@@ -12,13 +13,18 @@ type Props = {
   unreadCount: number;
   onSchoolPickerToggle: () => void;
   onNotificationsToggle: () => void;
-  onLogout: () => void;
+  onAvatarClick?: () => void;
 };
 
 export default function AppHeader({
   currentUser, schools, pageName, selectedSchool, unreadCount,
-  onSchoolPickerToggle, onNotificationsToggle, onLogout
+  onSchoolPickerToggle, onNotificationsToggle, onAvatarClick
 }: Props) {
+  const router = useRouter();
+  function goToProfile() {
+    if (onAvatarClick) { onAvatarClick(); return; }
+    if (currentUser) router.push(`/profile/${currentUser.id}`);
+  }
 
   function getSchoolLabel() {
     if (selectedSchool === "own") {
@@ -48,7 +54,7 @@ export default function AppHeader({
             </div>
           )}
         </button>
-        <button onClick={onLogout} style={{background: "none", border: "none", cursor: "pointer", padding: 0}}>
+        <button onClick={goToProfile} style={{background: "none", border: "none", cursor: "pointer", padding: 0}}>
           {currentUser?.avatar_url
             ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", border: "2px solid #fff"}} />
             : <div style={{width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#0F6E56", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: "0.8rem"}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
