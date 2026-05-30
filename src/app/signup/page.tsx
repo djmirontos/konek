@@ -26,7 +26,7 @@ export default function SignupPage() {
     if (file) {
       if (file.size > 2 * 1024 * 1024) { setError("ID photo must be less than 2MB"); return; }
       setIdFile(file);
-      setIdPreview(URL.createObjectURL(file));
+      setIdPreview(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(file); });
     }
   };
 

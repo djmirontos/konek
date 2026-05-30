@@ -67,7 +67,7 @@ export default function FeedsPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [toast, setToast] = useState("");
 
-  useEffect(() => { initPage(); }, []);
+  useEffect(() => { initPage(); return () => { if (longPressTimer.current) clearTimeout(longPressTimer.current); }; }, []);
   useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
 
   useEffect(() => {
@@ -235,13 +235,13 @@ export default function FeedsPage() {
     const valid = files.filter(f => f.size <= 5 * 1024 * 1024 && (f.type === "image/jpeg" || f.type === "image/png"));
     const combined = [...selectedImages, ...valid].slice(0, 4);
     setSelectedImages(combined);
-    setImagePreviews(combined.map(f => URL.createObjectURL(f)));
+    setImagePreviews(prev => { prev.forEach(url => URL.revokeObjectURL(url)); return combined.map(f => URL.createObjectURL(f)); });
   }
 
   function removeImage(index: number) {
     const imgs = selectedImages.filter((_, i) => i !== index);
     setSelectedImages(imgs);
-    setImagePreviews(imgs.map(f => URL.createObjectURL(f)));
+    setImagePreviews(prev => { prev.forEach(url => URL.revokeObjectURL(url)); return imgs.map(f => URL.createObjectURL(f)); });
   }
 
   async function handleReaction(postId: string, emoji: string) {

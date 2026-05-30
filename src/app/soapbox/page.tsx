@@ -200,7 +200,7 @@ export default function SoapboxPage() {
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { showToast("Image must be under 5MB"); return; }
     setSelectedImage(file);
-    setImagePreview(URL.createObjectURL(file));
+    setImagePreview(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(file); });
     setShowPhotoWarning(false);
   }
 
