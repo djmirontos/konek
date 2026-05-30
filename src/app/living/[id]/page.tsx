@@ -319,8 +319,8 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
             <div style={{height: "1px", backgroundColor: "#F0F0F0", marginBottom: "12px"}}></div>
             <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
               {post?.users?.avatar_url
-                ? <img src={post.users.avatar_url} alt="" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover"}} />
-                : <div style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.95rem"}}>{post?.users?.full_name?.charAt(0).toUpperCase()}</div>
+                ? <img onClick={() => post && router.push(`/profile/${post.user_id}`)} src={post.users.avatar_url} alt="" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
+                : <div onClick={() => post && router.push(`/profile/${post.user_id}`)} style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.95rem", cursor: "pointer"}}>{post?.users?.full_name?.charAt(0).toUpperCase()}</div>
               }
               <div>
                 <div style={{fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A"}}>{post?.users?.full_name}</div>
@@ -341,8 +341,8 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
               <div key={comment.id} style={{marginBottom: "16px"}}>
                 <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
                   {comment.users?.avatar_url
-                    ? <img src={comment.users.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                    : <div style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
+                    ? <img onClick={() => router.push(`/profile/${comment.user_id}`)} src={comment.users.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
+                    : <div onClick={() => router.push(`/profile/${comment.user_id}`)} style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0, cursor: "pointer"}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div style={{flex: 1}}>
                     <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "8px 12px"}}>
@@ -386,8 +386,8 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                         {comment.replies.map(reply => (
                           <div key={reply.id} style={{display: "flex", gap: "8px", alignItems: "flex-start", marginBottom: "10px"}}>
                             {reply.users?.avatar_url
-                              ? <img src={reply.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                              : <div style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.75rem", flexShrink: 0}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
+                              ? <img onClick={() => router.push(`/profile/${reply.user_id}`)} src={reply.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
+                              : <div onClick={() => router.push(`/profile/${reply.user_id}`)} style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.75rem", flexShrink: 0, cursor: "pointer"}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
                             }
                             <div style={{flex: 1}}>
                               <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "7px 11px"}}>

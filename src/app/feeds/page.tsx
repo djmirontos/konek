@@ -476,7 +476,7 @@ export default function FeedsPage() {
                   <div key={i} style={{display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", cursor: "pointer"}}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F7F7F7")}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
-                    <div style={{position: "relative", flexShrink: 0}}>
+                    <div onClick={() => router.push(`/profile/${r.user_id}`)} style={{position: "relative", flexShrink: 0, cursor: "pointer"}}>
                       {r.users?.avatar_url
                         ? <img src={r.users.avatar_url} alt="" style={{width: "46px", height: "46px", borderRadius: "50%", objectFit: "cover"}} />
                         : <div style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem"}}>{r.users?.full_name?.charAt(0).toUpperCase()}</div>
@@ -574,10 +574,12 @@ export default function FeedsPage() {
         ) : posts.map(post => (
           <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0"}}>
             <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
+              <div onClick={() => router.push(`/profile/${post.user_id}`)} style={{cursor: "pointer"}}>
               {post.users?.avatar_url
                 ? <img src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
                 : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
               }
+              </div>
               <div style={{flex: 1}}>
                 <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{post.users?.full_name}</div>
                 <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px"}}>
