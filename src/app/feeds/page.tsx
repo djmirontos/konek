@@ -598,7 +598,7 @@ export default function FeedsPage() {
                     <div style={{position: "absolute", bottom: "44px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", display: "flex", alignItems: "center", gap: "4px", zIndex: 600, border: "1px solid #F0F0F0"}}>
                       {REACTIONS.map((img, i) => (
                         <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", padding: "2px 4px"}}>
-                          <img src={img} alt={REACTION_NAMES[i]} style={{width: "32px", height: "32px", objectFit: "contain"}} />
+                          <img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} />
                           <span style={{fontSize: "0.58rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span>
                         </button>
                       ))}
