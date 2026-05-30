@@ -66,9 +66,23 @@ export default function FeedsPage() {
   const [editContent, setEditContent] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [toast, setToast] = useState("");
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const feedBottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { initPage(); return () => { if (longPressTimer.current) clearTimeout(longPressTimer.current); }; }, []);
   useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) loadMore(); },
+      { threshold: 0.1 }
+    );
+    if (feedBottomRef.current) observer.observe(feedBottomRef.current);
+    return () => observer.disconnect();
+  }, [offset, hasMore, loadingMore, currentUser, selectedSchool]);
+
 
   useEffect(() => {
     if (!currentUser) return;
@@ -128,9 +142,10 @@ export default function FeedsPage() {
     setLoadingReactions(false);
   }
 
-  async function fetchPosts() {
+  async function fetchPosts(append = false, customOffset = 0) {
     if (!currentUser) return;
-    setLoading(true);
+    if (!append) setLoading(true);
+    else setLoadingMore(true);
     try {
       const schoolId = selectedSchool === "own" || selectedSchool === "all"
         ? currentUser.school_id
@@ -139,8 +154,8 @@ export default function FeedsPage() {
       const { data, error } = await supabase.rpc("get_feed_posts", {
         p_school_id: schoolId,
         p_user_id: currentUser.id,
-        p_limit: 30,
-        p_offset: 0,
+        p_limit: 20,
+        p_offset: customOffset,
       });
 
       if (error) throw error;
@@ -177,13 +192,27 @@ export default function FeedsPage() {
             },
           };
         });
-        setPosts(mapped);
+        if (append) {
+          setPosts(prev => [...prev, ...mapped]);
+        } else {
+          setPosts(mapped);
+          setOffset(0);
+        }
+        setHasMore(mapped.length === 20);
+        if (!append) setOffset(20);
+        else setOffset(prev => prev + 20);
       }
     } catch (err) {
       console.error("fetchPosts error:", err);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
+  }
+
+  async function loadMore() {
+    if (loadingMore || !hasMore || !currentUser) return;
+    await fetchPosts(true, offset);
   }
 
   async function handlePost() {
@@ -487,6 +516,17 @@ export default function FeedsPage() {
                     <button onClick={() => removeImage(i)} style={{position: "absolute", top: "-6px", right: "-6px", backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", fontSize: "0.65rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>✕</button>
                   </div>
                 ))}
+
+        {loadingMore && (
+          <div style={{textAlign: "center", padding: "16px", color: "#888", fontSize: "0.85rem"}}>
+            <div style={{display: "inline-block", width: "20px", height: "20px", border: "2px solid #E0E0E0", borderTopColor: "#1D9E75", borderRadius: "50%", animation: "spin 0.8s linear infinite"}} />
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+        {!hasMore && posts.length > 0 && (
+          <div style={{textAlign: "center", padding: "16px", color: "#aaa", fontSize: "0.78rem"}}>You've seen all posts</div>
+        )}
+        <div ref={feedBottomRef} style={{height: "1px"}} />
               </div>
             )}
 
@@ -610,8 +650,6 @@ export default function FeedsPage() {
               )}
             </div>
           </div>
-
-
         ))}
       </div>
 
