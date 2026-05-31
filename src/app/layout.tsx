@@ -51,6 +51,7 @@ export default function RootLayout({
       </head>
       <body style={{margin: 0, padding: 0, backgroundColor: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
         {children}
+        <script src="/sw-register.js" defer></script>
       </body>
     </html>
   );
