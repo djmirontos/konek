@@ -10,50 +10,45 @@ export default function LoginPage() {
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (!phone.trim()) { setError("Please enter your phone number"); return; }
+    if (!/^09\d{9}$/.test(phone.trim())) { setError("Phone number must be in format 09XXXXXXXXX (11 digits)"); return; }
     setLoading(true);
     try {
+      const placeholderEmail = phone.trim() + "@konek.app";
       const { error: authError } = await supabase.auth.signInWithPassword({
-        email: form.email,
-        password: form.password,
+        email: placeholderEmail,
+        password: password,
       });
       if (authError) throw authError;
       router.push("/feeds");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Invalid email or password");
+      setError(err instanceof Error ? err.message : "Invalid phone number or password");
     } finally {
       setLoading(false);
     }
   };
 
-  const inputStyle = {
-    width: "100%",
-    backgroundColor: "#F7F7F7",
-    border: "1px solid #F0F0F0",
-    borderRadius: "10px",
-    padding: "12px 14px",
-    fontSize: "0.875rem",
-    color: "#1A1A1A",
-    outline: "none",
-    fontFamily: "inherit",
-    marginTop: "4px",
-    display: "block",
+  const inputStyle: React.CSSProperties = {
+    width: "100%", backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0",
+    borderRadius: "10px", padding: "12px 14px", fontSize: "0.875rem", color: "#1A1A1A",
+    outline: "none", fontFamily: "inherit", marginTop: "4px", display: "block",
+    boxSizing: "border-box",
   };
 
-  const labelStyle = {
-    fontSize: "0.65rem",
-    fontWeight: 600 as const,
-    color: "#888",
-    textTransform: "uppercase" as const,
-    letterSpacing: "0.05em",
+  const labelStyle: React.CSSProperties = {
+    fontSize: "0.65rem", fontWeight: 600, color: "#888",
+    textTransform: "uppercase", letterSpacing: "0.05em",
   };
 
   return (
-    <div style={{minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto"}}>
+    <div style={{minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {/* Header */}
       <div style={{backgroundColor: "#1D9E75", padding: "48px 24px 32px", textAlign: "center"}}>
@@ -74,39 +69,40 @@ export default function LoginPage() {
         )}
 
         <div>
-          <label style={labelStyle}>Email</label>
+          <label style={labelStyle}>Phone Number</label>
           <input
-            type="email"
+            type="tel"
             required
-            placeholder="juan@email.com"
-            value={form.email}
-            onChange={(e) => setForm({...form, email: e.target.value})}
+            placeholder="09XXXXXXXXX"
+            value={phone}
+            maxLength={11}
+            onChange={(e) => { setPhone(e.target.value.replace(/\D/g, "")); setError(""); }}
             style={inputStyle}
           />
         </div>
 
         <div>
           <label style={labelStyle}>Password</label>
-          <input
-            type="password"
-            required
-            placeholder="Your password"
-            value={form.password}
-            onChange={(e) => setForm({...form, password: e.target.value})}
-            style={inputStyle}
-          />
-        </div>
-
-        <div style={{textAlign: "right", marginTop: "-8px"}}>
-          <Link href="/forgot-password" style={{fontSize: "0.75rem", color: "#1D9E75", fontWeight: 600, textDecoration: "none"}}>
-            Forgot password?
-          </Link>
+          <div style={{position: "relative"}}>
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              placeholder="Your password"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(""); }}
+              style={{...inputStyle, paddingRight: "54px"}}
+            />
+            <button type="button" onClick={() => setShowPassword(!showPassword)}
+              style={{position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem", color: "#888", fontFamily: "inherit"}}>
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          style={{width: "100%", backgroundColor: loading ? "#888" : "#1D9E75", color: "#fff", padding: "13px", borderRadius: "10px", fontWeight: 600, fontSize: "0.875rem", border: "none", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit"}}
+          style={{width: "100%", backgroundColor: loading ? "#888" : "#1D9E75", color: "#fff", padding: "13px", borderRadius: "10px", fontWeight: 700, fontSize: "0.875rem", border: "none", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit"}}
         >
           {loading ? "Logging in..." : "Log in"}
         </button>
