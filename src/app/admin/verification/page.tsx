@@ -165,13 +165,13 @@ export default function AdminVerificationPage() {
               {req.verification_front_url && (
                 <div onClick={() => setViewImage(req.verification_front_url)} style={{cursor: "pointer", flex: 1}}>
                   <div style={{fontSize: "0.68rem", color: "#888", fontWeight: 600, marginBottom: "4px"}}>FRONT ID</div>
-                  <img src={req.verification_front_url} alt="Front ID" style={{width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px", border: "1px solid #F0F0F0"}} />
+                  <img src={req.verification_front_url} alt="Front ID" style={{width: "100%", height: "100px", objectFit: "contain", borderRadius: "8px", border: "1px solid #F0F0F0", backgroundColor: "#F7F7F7"}} />
                 </div>
               )}
               {req.verification_back_url && (
                 <div onClick={() => setViewImage(req.verification_back_url)} style={{cursor: "pointer", flex: 1}}>
                   <div style={{fontSize: "0.68rem", color: "#888", fontWeight: 600, marginBottom: "4px"}}>BACK ID</div>
-                  <img src={req.verification_back_url} alt="Back ID" style={{width: "100%", height: "100px", objectFit: "cover", borderRadius: "8px", border: "1px solid #F0F0F0"}} />
+                  <img src={req.verification_back_url} alt="Back ID" style={{width: "100%", height: "100px", objectFit: "contain", borderRadius: "8px", border: "1px solid #F0F0F0", backgroundColor: "#F7F7F7"}} />
                 </div>
               )}
             </div>
