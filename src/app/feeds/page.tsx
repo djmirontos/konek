@@ -7,6 +7,7 @@ import PhotoViewer from "@/components/PhotoViewer";
 import BottomNav from "@/components/BottomNav";
 import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
+import { shareContent } from "@/lib/share";
 
 const TAGS = ["#lihok", "#feelings", "#announcements", "#free-stuff", "#groupmates-needed", "#org-recruitment", "#review-session"];
 const REACTIONS = ["/like.png", "/love.png", "/haha.png", "/wow.png", "/sad.png", "/grabe.png", "/laban.png"];
@@ -715,7 +716,7 @@ export default function FeedsPage() {
                       <Image src="/comment.png" alt="comment" width={20} height={20} style={{opacity: 0.5}} />
                       {(post.commentCount || 0) > 0 && <span style={{fontSize: "0.78rem", color: "#888", fontWeight: 600}}>{post.commentCount}</span>}
                     </button>
-                    <button style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
+                    <button onClick={async () => { const result = await shareContent("Konek", post.content?.slice(0, 80) || "Check this out on Konek!", "/feeds/" + post.id); if (result === "copied") showToast("Link copied!"); }} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
                       <Image src="/share.png" alt="share" width={20} height={20} style={{opacity: 0.5}} />
                     </button>
                   </div>
@@ -912,7 +913,7 @@ export default function FeedsPage() {
                         <Image src="/comment.png" alt="comment" width={16} height={16} />
                         <span style={{fontSize: "0.8rem", color: "#888", fontWeight: 600}}>{post.commentCount || 0}</span>
                       </button>
-                      <button style={{background: "none", border: "1px solid #F0F0F0", borderRadius: "20px", cursor: "pointer", padding: "5px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
+                      <button onClick={async () => { const result = await shareContent("Konek Quad", post.content?.slice(0, 80) || "Check this out on Konek!", "/quad/" + post.id); if (result === "copied") showToast("Link copied!"); }} style={{background: "none", border: "1px solid #F0F0F0", borderRadius: "20px", cursor: "pointer", padding: "5px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
                         <Image src="/share.png" alt="share" width={16} height={16} />
                       </button>
                     </div>

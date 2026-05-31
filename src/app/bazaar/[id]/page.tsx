@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
+import { shareContent } from "@/lib/share";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { startConversation } from "@/lib/startConversation";
