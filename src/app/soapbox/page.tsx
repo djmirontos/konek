@@ -759,20 +759,7 @@ export default function SoapboxPage() {
       )}
 
       {/* BOTTOM NAV */}
-      <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", display: "flex", zIndex: 100, paddingBottom: "env(safe-area-inset-bottom)"}}>
-        {[
-          { href: "/feeds", icon: "/feed.png", label: "Feeds", active: false },
-          { href: "/soapbox", icon: "/soapbox.png", label: "Soapbox", active: true },
-          { href: "/quad", icon: "/help.png", label: "Quad", active: false },
-          { href: "/bazaar", icon: "/bazaar.png", label: "Bazaar", active: false },
-          { href: "/living", icon: "/living.png", label: "Living", active: false },
-        ].map(item => (
-          <a key={item.href} href={item.href} style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px 4px 8px", textDecoration: "none", borderTop: item.active ? "2px solid #1D9E75" : "2px solid transparent"}}>
-            <Image src={item.icon} alt={item.label} width={24} height={24} style={{opacity: item.active ? 1 : 0.4, marginBottom: "3px"}} />
-            <span style={{fontSize: "0.62rem", color: item.active ? "#1D9E75" : "#888", fontWeight: item.active ? 700 : 400}}>{item.label}</span>
-          </a>
-        ))}
-      </div>
+      <BottomNav active="/soapbox" />
 
       {/* SOAPBOX MODALS */}
       {showMenu && (
