@@ -28,6 +28,14 @@ type Post = {
   commentCount?: number;
 };
 
+function VerifiedBadge() {
+  return (
+    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "14px", height: "14px", backgroundColor: "#1D9E75", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
+      <img src="/star.png" alt="Verified" style={{width: "8px", height: "8px", filter: "brightness(0) invert(1)"}} />
+    </span>
+  );
+}
+
 export default function PostDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -53,6 +61,7 @@ export default function PostDetailPage() {
   const [viewerImages, setViewerImages] = useState<string[]>([]);
   const [viewerIndex, setViewerIndex] = useState(0);
   const [showCommentMenu, setShowCommentMenu] = useState<string | null>(null);
+  const [verifiedUsers, setVerifiedUsers] = useState<Set<string>>(new Set());
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [editCommentContent, setEditCommentContent] = useState("");
   const [showDeleteCommentConfirm, setShowDeleteCommentConfirm] = useState<string | null>(null);
@@ -65,6 +74,8 @@ export default function PostDetailPage() {
     if (!user) { router.push("/login"); return; }
     const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (userData) setCurrentUser(userData);
+    const { data: badges } = await supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student");
+    if (badges) setVerifiedUsers(new Set(badges.map((b: {user_id: string}) => b.user_id)));
     await fetchPost(userData);
     await fetchComments(userData);
     setLoading(false);
@@ -317,7 +328,7 @@ export default function PostDetailPage() {
             : <div onClick={() => router.push(`/profile/${post.user_id}`)} style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
           }
           <div>
-            <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A"}}>{post.users?.full_name}</div>
+            <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{post.users?.full_name}{verifiedUsers.has(post.user_id) && <VerifiedBadge />}</div>
             <div style={{fontSize: "0.72rem", color: "#888"}}>
               {formatTime(post.created_at)}
               {post.tag && <span style={{marginLeft: "8px", color: "#1D9E75", fontWeight: 600}}>{post.tag}</span>}
@@ -406,7 +417,7 @@ export default function PostDetailPage() {
               <div style={{flex: 1}}>
                 <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "8px 12px", position: "relative"}}>
                   <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start"}}>
-                    <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A", marginBottom: "2px"}}>{comment.users?.full_name}</div>
+                    <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A", marginBottom: "2px", display: "flex", alignItems: "center"}}>{comment.users?.full_name}{verifiedUsers.has(comment.user_id) && <VerifiedBadge />}</div>
                     {currentUser?.id === comment.user_id && <button onClick={() => setShowCommentMenu(showCommentMenu === comment.id ? null : comment.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem", padding: "0 4px", lineHeight: 1}}>•••</button>}
                   </div>
                   <div style={{fontSize: "0.85rem", color: "#1A1A1A", lineHeight: 1.4}}>{comment.content}</div>
@@ -455,7 +466,7 @@ export default function PostDetailPage() {
                         <div style={{flex: 1}}>
                           <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "6px 10px"}}>
                             <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start"}}>
-                              <div style={{fontWeight: 700, fontSize: "0.78rem", color: "#1A1A1A", marginBottom: "2px"}}>{reply.users?.full_name}</div>
+                              <div style={{fontWeight: 700, fontSize: "0.78rem", color: "#1A1A1A", marginBottom: "2px", display: "flex", alignItems: "center"}}>{reply.users?.full_name}{verifiedUsers.has(reply.user_id) && <VerifiedBadge />}</div>
                               {currentUser?.id === reply.user_id && <button onClick={() => setShowCommentMenu(showCommentMenu === reply.id ? null : reply.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem", padding: "0 4px", lineHeight: 1}}>•••</button>}
                             </div>
                             <div style={{fontSize: "0.82rem", color: "#1A1A1A", lineHeight: 1.4}}>{reply.content}</div>

@@ -46,6 +46,14 @@ type ReactionUser = {
   users: { full_name: string; avatar_url: string | null; } | null;
 };
 
+function VerifiedBadge() {
+  return (
+    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "14px", height: "14px", backgroundColor: "#1D9E75", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
+      <img src="/star.png" alt="Verified" style={{width: "8px", height: "8px", filter: "brightness(0) invert(1)"}} />
+    </span>
+  );
+}
+
 export default function FeedsPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -66,6 +74,9 @@ export default function FeedsPage() {
   const [editingPost, setEditingPost] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+
+  // Verified users
+  const [verifiedUsers, setVerifiedUsers] = useState<Set<string>>(new Set());
 
   // Feeds state
   const [posts, setPosts] = useState<Post[]>([]);
@@ -160,6 +171,8 @@ export default function FeedsPage() {
     if (schoolData) setSchools(schoolData);
     fetchUnreadCount(userData);
     if (userData) fetchUnreadMessages(userData.id);
+    const { data: badges } = await supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student");
+    if (badges) setVerifiedUsers(new Set(badges.map((b: {user_id: string}) => b.user_id)));
   }
 
   async function fetchUnreadCount(user: User | null) {
@@ -677,7 +690,7 @@ export default function FeedsPage() {
                     }
                   </div>
                   <div style={{flex: 1}}>
-                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{post.users?.full_name}</div>
+                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{post.users?.full_name}{verifiedUsers.has(post.user_id) && <VerifiedBadge />}</div>
                     <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px"}}>
                       {formatTime(post.created_at)}
                       {post.edited_at && <span style={{marginLeft: "6px", color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
