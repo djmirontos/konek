@@ -10,6 +10,10 @@ type ProfileUser = {
   id: string; full_name: string; avatar_url: string | null;
   school_id: string; role: string; bio: string | null;
   phone_number: string | null; created_at: string;
+  verification_status: string | null;
+  verification_rejection_reason: string | null;
+  verification_front_url: string | null;
+  verification_back_url: string | null;
 };
 type Post = {
   id: string; content: string; tag: string | null; type: string;
@@ -60,6 +64,12 @@ export default function ProfilePage() {
   const [toast, setToast] = useState("");
   const [showAvatarUploader, setShowAvatarUploader] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showVerifySheet, setShowVerifySheet] = useState(false);
+  const [verifyFrontFile, setVerifyFrontFile] = useState<File | null>(null);
+  const [verifyFrontPreview, setVerifyFrontPreview] = useState("");
+  const [verifyBackFile, setVerifyBackFile] = useState<File | null>(null);
+  const [verifyBackPreview, setVerifyBackPreview] = useState("");
+  const [submittingVerify, setSubmittingVerify] = useState(false);
 
   useEffect(() => { initPage(); }, [profileId]);
   useEffect(() => { if (profileUser) fetchTabData(activeTab); }, [activeTab, profileUser]);
@@ -211,6 +221,65 @@ export default function ProfilePage() {
       showToast("Failed to save profile.");
     } finally {
       setSavingProfile(false);
+    }
+  }
+
+  function handleVerifyFrontSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { showToast("Image must be under 10MB"); return; }
+    setVerifyFrontFile(file);
+    setVerifyFrontPreview(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(file); });
+  }
+
+  function handleVerifyBackSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { showToast("Image must be under 10MB"); return; }
+    setVerifyBackFile(file);
+    setVerifyBackPreview(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(file); });
+  }
+
+  async function handleVerificationSubmit() {
+    if (!currentUser || !verifyFrontFile) return;
+    setSubmittingVerify(true);
+    try {
+      const frontExt = verifyFrontFile.name.split(".").pop();
+      const frontPath = currentUser.id + "/front_" + Date.now() + "." + frontExt;
+      const { error: frontError } = await supabase.storage.from("verification-ids").upload(frontPath, verifyFrontFile);
+      if (frontError) throw frontError;
+      const { data: frontUrl } = supabase.storage.from("verification-ids").getPublicUrl(frontPath);
+
+      let backUrlStr: string | null = null;
+      if (verifyBackFile) {
+        const backExt = verifyBackFile.name.split(".").pop();
+        const backPath = currentUser.id + "/back_" + Date.now() + "." + backExt;
+        const { error: backError } = await supabase.storage.from("verification-ids").upload(backPath, verifyBackFile);
+        if (!backError) {
+          const { data: backUrlData } = supabase.storage.from("verification-ids").getPublicUrl(backPath);
+          backUrlStr = backUrlData.publicUrl;
+        }
+      }
+
+      const { error: updateError } = await supabase.from("users").update({
+        verification_status: "pending",
+        verification_front_url: frontUrl.publicUrl,
+        verification_back_url: backUrlStr,
+        verification_submitted_at: new Date().toISOString(),
+        verification_rejection_reason: null,
+      }).eq("id", currentUser.id);
+      if (updateError) throw updateError;
+
+      setProfileUser(prev => prev ? { ...prev, verification_status: "pending" } : prev);
+      setCurrentUser(prev => prev ? { ...prev, verification_status: "pending" } : prev);
+      setShowVerifySheet(false);
+      setVerifyFrontFile(null); setVerifyFrontPreview("");
+      setVerifyBackFile(null); setVerifyBackPreview("");
+      showToast("Verification submitted! We will review it within 1-2 days.");
+    } catch {
+      showToast("Failed to submit. Please try again.");
+    } finally {
+      setSubmittingVerify(false);
     }
   }
 
@@ -496,6 +565,72 @@ export default function ProfilePage() {
                 </div>
 
                 <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", marginBottom: "12px", border: "1px solid #F0F0F0"}}>
+                  {/* VERIFY STUDENT SECTION */}
+                  {isOwnProfile && (
+                    <div style={{marginBottom: "20px"}}>
+                      <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Student Verification</div>
+
+                      {profileUser?.verification_status === "approved" && (
+                        <div style={{display: "flex", alignItems: "center", gap: "10px", backgroundColor: "#E1F5EE", borderRadius: "12px", padding: "14px"}}>
+                          <span style={{fontSize: "1.6rem"}}>✅</span>
+                          <div>
+                            <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#0F6E56"}}>Verified Student</div>
+                            <div style={{fontSize: "0.72rem", color: "#1D9E75", marginTop: "2px"}}>Your Student ID has been verified successfully.</div>
+                          </div>
+                        </div>
+                      )}
+
+                      {profileUser?.verification_status === "pending" && (
+                        <div style={{display: "flex", alignItems: "center", gap: "10px", backgroundColor: "#FFF8E1", borderRadius: "12px", padding: "14px"}}>
+                          <span style={{fontSize: "1.6rem"}}>⏳</span>
+                          <div>
+                            <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#B45309"}}>Under Review</div>
+                            <div style={{fontSize: "0.72rem", color: "#92400E", marginTop: "2px"}}>We are reviewing your Student ID. Usually takes 1-2 days.</div>
+                          </div>
+                        </div>
+                      )}
+
+                      {profileUser?.verification_status === "rejected" && (
+                        <div style={{backgroundColor: "#FEF2F2", borderRadius: "12px", padding: "14px", marginBottom: "10px"}}>
+                          <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px"}}>
+                            <span style={{fontSize: "1.3rem"}}>⚠️</span>
+                            <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#EF4444"}}>Action Required</div>
+                          </div>
+                          {profileUser.verification_rejection_reason && (
+                            <div style={{fontSize: "0.78rem", color: "#888", marginBottom: "10px", lineHeight: 1.5, backgroundColor: "#fff", borderRadius: "8px", padding: "8px 12px"}}>
+                              Reason: {profileUser.verification_rejection_reason}
+                            </div>
+                          )}
+                          <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "12px"}}>Please upload a clearer photo of your Student ID and resubmit.</div>
+                          <button onClick={() => setShowVerifySheet(true)}
+                            style={{backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", width: "100%"}}>
+                            Upload New ID
+                          </button>
+                        </div>
+                      )}
+
+                      {(profileUser?.verification_status === "unverified" || !profileUser?.verification_status) && (
+                        <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "16px"}}>
+                          <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px"}}>
+                            <span style={{fontSize: "1.3rem"}}>🪪</span>
+                            <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A"}}>Become a Verified Student</div>
+                          </div>
+                          <div style={{display: "flex", flexDirection: "column", gap: "5px", marginBottom: "14px"}}>
+                            {["Verified badge beside your name", "More trust in Bazaar listings", "More credibility across Konek"].map(benefit => (
+                              <div key={benefit} style={{display: "flex", alignItems: "center", gap: "8px", fontSize: "0.78rem", color: "#555"}}>
+                                <span style={{color: "#1D9E75", fontWeight: 700}}>✓</span> {benefit}
+                              </div>
+                            ))}
+                          </div>
+                          <button onClick={() => setShowVerifySheet(true)}
+                            style={{backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "8px", padding: "11px 20px", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", width: "100%"}}>
+                            Verify Student ID
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Badges</div>
                   <div style={{padding: "8px 14px", backgroundColor: "#F7F7F7", borderRadius: "20px", fontSize: "0.78rem", color: "#aaa", display: "inline-block"}}>🏅 Founding Member — Coming Soon</div>
                 </div>
@@ -549,6 +684,79 @@ export default function ProfilePage() {
             <div style={{display: "flex", gap: "10px"}}>
               <button onClick={() => setShowEditSheet(false)} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
               <button onClick={handleSaveProfile} disabled={savingProfile} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: savingProfile ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: savingProfile ? "not-allowed" : "pointer", fontFamily: "inherit"}}>{savingProfile ? "Saving..." : "Save"}</button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* VERIFY STUDENT SHEET */}
+      {showVerifySheet && (
+        <>
+          <div onClick={() => setShowVerifySheet(false)} style={{position: "fixed", inset: 0, zIndex: 400, backgroundColor: "rgba(0,0,0,0.4)"}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "20px 20px 40px", maxHeight: "90vh", overflowY: "auto"}}>
+            <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "0 auto 16px"}}></div>
+            <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "4px"}}>Verify Student ID</div>
+            <div style={{fontSize: "0.8rem", color: "#888", marginBottom: "16px", lineHeight: 1.5}}>Upload a clear photo of your Student ID. Your information is kept private and only used for verification.</div>
+
+            <div style={{backgroundColor: "#E1F5EE", borderRadius: "10px", padding: "10px 14px", marginBottom: "16px"}}>
+              {["Verified badge beside your name", "More trust in Bazaar listings", "More credibility across Konek"].map(b => (
+                <div key={b} style={{display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", color: "#0F6E56", marginBottom: "3px"}}>
+                  <span style={{fontWeight: 700}}>✓</span> {b}
+                </div>
+              ))}
+            </div>
+
+            <div style={{marginBottom: "16px"}}>
+              <div style={{fontSize: "0.72rem", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px"}}>Front of Student ID <span style={{color: "#EF4444"}}>*</span></div>
+              <label style={{display: "block", cursor: "pointer"}}>
+                {verifyFrontPreview ? (
+                  <div style={{position: "relative"}}>
+                    <img src={verifyFrontPreview} alt="front" style={{width: "100%", height: "160px", objectFit: "contain", borderRadius: "10px", border: "2px solid #1D9E75", backgroundColor: "#F7F7F7"}} />
+                    <div style={{position: "absolute", bottom: "8px", right: "8px", backgroundColor: "#1D9E75", color: "#fff", borderRadius: "6px", padding: "4px 10px", fontSize: "0.7rem", fontWeight: 700}}>Change</div>
+                  </div>
+                ) : (
+                  <div style={{width: "100%", height: "140px", border: "2px dashed #1D9E75", borderRadius: "10px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backgroundColor: "#E1F5EE", gap: "6px"}}>
+                    <span style={{fontSize: "2rem"}}>🪪</span>
+                    <span style={{fontSize: "0.8rem", fontWeight: 600, color: "#0F6E56"}}>Tap to upload front of ID</span>
+                    <span style={{fontSize: "0.68rem", color: "#888"}}>JPG or PNG, max 10MB</span>
+                  </div>
+                )}
+                <input type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleVerifyFrontSelect} />
+              </label>
+            </div>
+
+            <div style={{marginBottom: "16px"}}>
+              <div style={{fontSize: "0.72rem", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px"}}>Back of Student ID <span style={{color: "#888", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional)</span></div>
+              <label style={{display: "block", cursor: "pointer"}}>
+                {verifyBackPreview ? (
+                  <div style={{position: "relative"}}>
+                    <img src={verifyBackPreview} alt="back" style={{width: "100%", height: "140px", objectFit: "contain", borderRadius: "10px", border: "2px solid #F0F0F0", backgroundColor: "#F7F7F7"}} />
+                    <div style={{position: "absolute", bottom: "8px", right: "8px", backgroundColor: "#888", color: "#fff", borderRadius: "6px", padding: "4px 10px", fontSize: "0.7rem", fontWeight: 700}}>Change</div>
+                  </div>
+                ) : (
+                  <div style={{width: "100%", height: "110px", border: "2px dashed #F0F0F0", borderRadius: "10px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backgroundColor: "#F7F7F7", gap: "5px"}}>
+                    <span style={{fontSize: "1.6rem"}}>📄</span>
+                    <span style={{fontSize: "0.78rem", fontWeight: 600, color: "#888"}}>Tap to upload back of ID</span>
+                    <span style={{fontSize: "0.68rem", color: "#aaa"}}>(Optional)</span>
+                  </div>
+                )}
+                <input type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleVerifyBackSelect} />
+              </label>
+            </div>
+
+            <div style={{backgroundColor: "#FFF8E1", borderRadius: "10px", padding: "10px 14px", marginBottom: "16px", fontSize: "0.74rem", color: "#92400E", lineHeight: 1.5}}>
+              Your Student ID is private and only visible to Konek admins for verification purposes.
+            </div>
+
+            <div style={{display: "flex", gap: "10px"}}>
+              <button onClick={() => setShowVerifySheet(false)}
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>
+                Cancel
+              </button>
+              <button onClick={handleVerificationSubmit} disabled={!verifyFrontFile || submittingVerify}
+                style={{flex: 2, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: !verifyFrontFile || submittingVerify ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: !verifyFrontFile || submittingVerify ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                {submittingVerify ? "Submitting..." : "Submit for Verification"}
+              </button>
             </div>
           </div>
         </>
