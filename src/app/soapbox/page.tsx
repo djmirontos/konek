@@ -96,6 +96,7 @@ export default function SoapboxPage() {
   const [selectedSchool, setSelectedSchool] = useState<string>("own");
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [toast, setToast] = useState("");
@@ -150,7 +151,29 @@ export default function SoapboxPage() {
   }, [currentUser, selectedSchool, activeTab]);
 
   useEffect(() => {
-    return () => {
+  
+  async function fetchUnreadMessages(userId: string) {
+    const supabase = createClient();
+    const { data: convs } = await supabase
+      .from("conversations")
+      .select("id")
+      .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
+      .eq("status", "accepted");
+    if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
+    const convIds = convs.map((c: {id: string}) => c.id);
+    let total = 0;
+    for (const cid of convIds) {
+      const { count } = await supabase.from("messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", cid)
+        .eq("is_seen", false)
+        .neq("sender_id", userId);
+      total += count || 0;
+    }
+    setUnreadMessages(total);
+  }
+
+  return () => {
       if (longPressTimer.current) clearTimeout(longPressTimer.current);
     };
   }, []);

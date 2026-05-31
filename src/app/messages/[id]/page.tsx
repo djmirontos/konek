@@ -4,7 +4,9 @@ import { createClient } from "@/lib/supabase";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 
-type User = { id: string; full_name: string; avatar_url: string | null; };
+type User = { id: string; full_name: string; avatar_url: string | null; school_id: string | null; };
+type School = { id: string; name: string; abbreviation: string; };
+type ConvContext = { type: string; title: string; id: string; } | null;
 type Message = {
   id: string;
   conversation_id: string;
@@ -33,6 +35,8 @@ export default function ConversationPage() {
   const [imagePreview, setImagePreview] = useState("");
   const [isAccepted, setIsAccepted] = useState(false);
   const [isInitiator, setIsInitiator] = useState(false);
+  const [otherUserSchool, setOtherUserSchool] = useState<School | null>(null);
+  const [convContext, setConvContext] = useState<ConvContext>(null);
 
   useEffect(() => { initPage(); }, [convId]);
 
@@ -46,7 +50,11 @@ export default function ConversationPage() {
         table: "messages",
         filter: "conversation_id=eq." + convId,
       }, (payload) => {
-        setMessages(prev => [...prev, payload.new as Message]);
+        const newMsg = payload.new as Message;
+        setMessages(prev => {
+          if (prev.find(m => m.id === newMsg.id)) return prev;
+          return [...prev, newMsg];
+        });
         setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
       })
       .subscribe();
@@ -56,7 +64,7 @@ export default function ConversationPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("id, full_name, avatar_url").eq("id", user.id).single();
+    const { data: userData } = await supabase.from("users").select("id, full_name, avatar_url, school_id").eq("id", user.id).single();
     if (userData) setCurrentUser(userData);
 
     const { data: conv } = await supabase.from("conversations").select("*").eq("id", convId).single();
@@ -66,8 +74,17 @@ export default function ConversationPage() {
     setIsInitiator(conv.initiated_by === user.id);
 
     const otherId = conv.participant_1 === user.id ? conv.participant_2 : conv.participant_1;
-    const { data: other } = await supabase.from("users").select("id, full_name, avatar_url").eq("id", otherId).single();
-    if (other) setOtherUser(other);
+    const { data: other } = await supabase.from("users").select("id, full_name, avatar_url, school_id").eq("id", otherId).single();
+    if (other) {
+      setOtherUser(other);
+      if (other.school_id) {
+        const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").eq("id", other.school_id).single();
+        if (schoolData) setOtherUserSchool(schoolData);
+      }
+    }
+    if (conv.context_type && conv.context_title && conv.context_id) {
+      setConvContext({ type: conv.context_type, title: conv.context_title, id: conv.context_id });
+    }
 
     const { data: msgs } = await supabase
       .from("messages")
@@ -110,23 +127,20 @@ export default function ConversationPage() {
         }
       }
 
-      const { data: newMsg } = await supabase.from("messages").insert({
+      await supabase.from("messages").insert({
         conversation_id: convId,
         sender_id: currentUser.id,
         content: text.trim() || null,
         image_url: imageUrl,
         is_seen: false,
-      }).select().single();
+      });
 
-      if (newMsg) {
-        setMessages(prev => [...prev, newMsg]);
-        await supabase.from("conversations").update({
-          last_message: text.trim() || "📷 Photo",
-          last_message_at: new Date().toISOString(),
-          status: "accepted",
-        }).eq("id", convId);
-        setIsAccepted(true);
-      }
+      await supabase.from("conversations").update({
+        last_message: text.trim() || "📷 Photo",
+        last_message_at: new Date().toISOString(),
+        status: "accepted",
+      }).eq("id", convId);
+      setIsAccepted(true);
 
       setText("");
       setImageFile(null);
@@ -165,18 +179,34 @@ export default function ConversationPage() {
       {/* HEADER */}
       <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.push("/messages")}
-          style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.2rem", padding: "4px", display: "flex", alignItems: "center"}}>
+          style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "4px", display: "flex", alignItems: "center", lineHeight: 1}}>
           ←
         </button>
-        <div style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.2)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0}}>
+        <div style={{width: "42px", height: "42px", borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.2)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0, border: "2px solid rgba(255,255,255,0.4)"}}>
           {otherUser?.avatar_url
             ? <img src={otherUser.avatar_url} alt="" style={{width: "100%", height: "100%", objectFit: "cover"}} />
             : "👤"}
         </div>
         <div style={{flex: 1}}>
-          <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#fff"}}>{otherUser?.full_name || "..."}</div>
+          <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#fff", lineHeight: 1.2}}>{otherUser?.full_name || "..."}</div>
+          {otherUserSchool && <div style={{fontSize: "0.68rem", color: "rgba(255,255,255,0.8)", marginTop: "1px"}}>{otherUserSchool.abbreviation}</div>}
         </div>
       </div>
+
+      {/* CONTEXT BANNER */}
+      {convContext && (
+        <div style={{backgroundColor: "#E1F5EE", padding: "10px 16px", borderBottom: "1px solid #C8EBD9", display: "flex", alignItems: "center", gap: "10px"}}>
+          <span style={{fontSize: "1.1rem"}}>{convContext.type === "bazaar" ? "🛍️" : "🏠"}</span>
+          <div style={{flex: 1}}>
+            <div style={{fontSize: "0.65rem", color: "#0F6E56", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em"}}>Regarding</div>
+            <div style={{fontSize: "0.82rem", color: "#0F6E56", fontWeight: 600, lineHeight: 1.3}}>{convContext.title}</div>
+          </div>
+          <button onClick={() => router.push("/" + convContext.type + "/" + convContext.id)}
+            style={{backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "8px", padding: "5px 12px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", flexShrink: 0}}>
+            View
+          </button>
+        </div>
+      )}
 
       {/* REQUEST BANNER — shown to receiver of pending request */}
       {!isAccepted && !isInitiator && (

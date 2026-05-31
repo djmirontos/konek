@@ -215,7 +215,8 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
       const convId = await startConversation(
         currentUser.id,
         listing.user_id,
-        "Hi! I am interested in your listing: " + listing.title
+        "Hi! I am interested in your listing: " + listing.title,
+        { type: "bazaar", title: listing.title, id: listing.id }
       );
       if (convId) router.push("/messages/" + convId);
     } catch { } finally { setMessagingSeller(false); }

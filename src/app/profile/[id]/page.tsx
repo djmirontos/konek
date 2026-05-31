@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { useRouter, useParams } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import AvatarUploader from "@/components/AvatarUploader";
+import { startConversation } from "@/lib/startConversation";
 
 type School = { id: string; name: string; abbreviation: string; };
 type ProfileUser = {
@@ -43,6 +44,7 @@ export default function ProfilePage() {
   const [schools, setSchools] = useState<School[]>([]);
   const [activeTab, setActiveTab] = useState("Posts");
   const [loading, setLoading] = useState(true);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
 
   const [postCount, setPostCount] = useState(0);
@@ -63,6 +65,7 @@ export default function ProfilePage() {
 
   const [toast, setToast] = useState("");
   const [showAvatarUploader, setShowAvatarUploader] = useState(false);
+  const [messagingUser, setMessagingUser] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showVerifySheet, setShowVerifySheet] = useState(false);
   const [verifyFrontFile, setVerifyFrontFile] = useState<File | null>(null);
@@ -283,6 +286,15 @@ export default function ProfilePage() {
     }
   }
 
+  async function handleMessageUser() {
+    if (!currentUser || !profileUser) return;
+    setMessagingUser(true);
+    try {
+      const convId = await startConversation(currentUser.id, profileUser.id);
+      if (convId) router.push("/messages/" + convId);
+    } catch { } finally { setMessagingUser(false); }
+  }
+
   async function handleLogout() {
     await supabase.auth.signOut();
     router.push("/login");
@@ -318,7 +330,29 @@ export default function ProfilePage() {
   }
 
   if (loading) {
-    return (
+  
+  async function fetchUnreadMessages(userId: string) {
+    const supabase = createClient();
+    const { data: convs } = await supabase
+      .from("conversations")
+      .select("id")
+      .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
+      .eq("status", "accepted");
+    if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
+    const convIds = convs.map((c: {id: string}) => c.id);
+    let total = 0;
+    for (const cid of convIds) {
+      const { count } = await supabase.from("messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", cid)
+        .eq("is_seen", false)
+        .neq("sender_id", userId);
+      total += count || 0;
+    }
+    setUnreadMessages(total);
+  }
+
+  return (
       <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
         <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
         <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px"}}>
@@ -330,7 +364,7 @@ export default function ProfilePage() {
           <div style={{height: "16px", width: "140px", borderRadius: "8px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
           <div style={{height: "12px", width: "80px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
         </div>
-        <BottomNav active="/feeds" />
+        <BottomNav active="/feeds" unreadMessages={unreadMessages} />
       </div>
     );
   }
@@ -389,7 +423,10 @@ export default function ProfilePage() {
           </button>
         ) : (
           <div style={{display: "flex", gap: "10px"}}>
-            <button style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "not-allowed", fontFamily: "inherit", opacity: 0.6}}>💬 Message</button>
+            <button onClick={handleMessageUser} disabled={messagingUser}
+              style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: messagingUser ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: messagingUser ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+              {messagingUser ? "Opening..." : "💬 Message"}
+            </button>
             <button style={{padding: "9px 20px", borderRadius: "20px", border: "1.5px solid #EF4444", backgroundColor: "#fff", color: "#EF4444", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>🚩 Report</button>
           </div>
         )}
@@ -655,7 +692,7 @@ export default function ProfilePage() {
         )}
       </div>
 
-      <BottomNav active="/feeds" />
+      <BottomNav active="/feeds" unreadMessages={unreadMessages} />
 
       {showEditSheet && (
         <>

@@ -53,6 +53,7 @@ export default function FeedsPage() {
   const [showReactionPicker, setShowReactionPicker] = useState<string | null>(null);
   const [postError, setPostError] = useState("");
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showReactionList, setShowReactionList] = useState(false);
@@ -80,7 +81,29 @@ export default function FeedsPage() {
       { threshold: 0.1 }
     );
     if (feedBottomRef.current) observer.observe(feedBottomRef.current);
-    return () => observer.disconnect();
+  
+  async function fetchUnreadMessages(userId: string) {
+    const supabase = createClient();
+    const { data: convs } = await supabase
+      .from("conversations")
+      .select("id")
+      .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
+      .eq("status", "accepted");
+    if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
+    const convIds = convs.map((c: {id: string}) => c.id);
+    let total = 0;
+    for (const cid of convIds) {
+      const { count } = await supabase.from("messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", cid)
+        .eq("is_seen", false)
+        .neq("sender_id", userId);
+      total += count || 0;
+    }
+    setUnreadMessages(total);
+  }
+
+  return () => observer.disconnect();
   }, [offset, hasMore, loadingMore, currentUser, selectedSchool]);
 
 
@@ -654,7 +677,7 @@ export default function FeedsPage() {
         ))}
       </div>
 
-      <BottomNav active="/feeds" />
+      <BottomNav active="/feeds" unreadMessages={unreadMessages} />
 
       {toast && (
         <div style={{position: "fixed", top: "70px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#1A1A1A", color: "#fff", padding: "10px 20px", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 600, zIndex: 1000, whiteSpace: "nowrap"}}>{toast}</div>

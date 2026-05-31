@@ -26,6 +26,7 @@ export default function MessagesPage() {
   const [chats, setChats] = useState<Conversation[]>([]);
   const [requests, setRequests] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => { initPage(); }, []);
 
@@ -84,6 +85,28 @@ export default function MessagesPage() {
     const h = Math.floor(m / 60);
     if (h < 24) return h + "h";
     return Math.floor(h / 24) + "d";
+  }
+
+
+  async function fetchUnreadMessages(userId: string) {
+    const supabase = createClient();
+    const { data: convs } = await supabase
+      .from("conversations")
+      .select("id")
+      .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
+      .eq("status", "accepted");
+    if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
+    const convIds = convs.map((c: {id: string}) => c.id);
+    let total = 0;
+    for (const cid of convIds) {
+      const { count } = await supabase.from("messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", cid)
+        .eq("is_seen", false)
+        .neq("sender_id", userId);
+      total += count || 0;
+    }
+    setUnreadMessages(total);
   }
 
   return (
@@ -191,7 +214,7 @@ export default function MessagesPage() {
         )}
       </div>
 
-      <BottomNav active="/messages" />
+      <BottomNav active="/messages" unreadMessages={unreadMessages} />
     </div>
   );
 }

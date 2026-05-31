@@ -55,6 +55,7 @@ export default function LivingPage() {
   const [postError, setPostError] = useState("");
 
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showMenu, setShowMenu] = useState<string | null>(null);
@@ -230,6 +231,28 @@ export default function LivingPage() {
     router.push("/login");
   }
 
+
+  async function fetchUnreadMessages(userId: string) {
+    const supabase = createClient();
+    const { data: convs } = await supabase
+      .from("conversations")
+      .select("id")
+      .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
+      .eq("status", "accepted");
+    if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
+    const convIds = convs.map((c: {id: string}) => c.id);
+    let total = 0;
+    for (const cid of convIds) {
+      const { count } = await supabase.from("messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", cid)
+        .eq("is_seen", false)
+        .neq("sender_id", userId);
+      total += count || 0;
+    }
+    setUnreadMessages(total);
+  }
+
   return (
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
@@ -389,7 +412,7 @@ export default function LivingPage() {
         )}
       </div>
 
-      <BottomNav active="/living" />
+      <BottomNav active="/living" unreadMessages={unreadMessages} />
       {/* Composer Bottom Sheet */}
       {showComposer && (
         <>

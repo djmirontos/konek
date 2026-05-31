@@ -205,7 +205,8 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
       const convId = await startConversation(
         currentUser.id,
         post.user_id,
-        "Hi! I am interested in your post: " + post.name
+        "Hi! I am interested in your post: " + post.name,
+        { type: "living", title: post.name, id: post.id }
       );
       if (convId) router.push("/messages/" + convId);
     } catch { } finally { setMessagingOwner(false); }
