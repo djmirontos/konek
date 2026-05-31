@@ -241,11 +241,19 @@ export default function FeedsPage() {
     const { data } = await query;
     if (data) {
       const now = new Date();
-      const enriched = await Promise.all(data.map(async (post) => {
+      const postIds = data.map((p: any) => p.id);
+      const { data: commentCounts } = await supabase
+        .from("comments")
+        .select("post_id")
+        .in("post_id", postIds);
+      const countMap: Record<string, number> = {};
+      (commentCounts || []).forEach((c: any) => {
+        countMap[c.post_id] = (countMap[c.post_id] || 0) + 1;
+      });
+      const enriched = data.map((post: any) => {
         const isExpired = post.expires_at ? new Date(post.expires_at) < now : false;
-        const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", post.id);
-        return { ...post, commentCount: count || 0, isExpired };
-      }));
+        return { ...post, commentCount: countMap[post.id] || 0, isExpired };
+      });
       const active = enriched.filter(p => !p.isExpired);
       setQuadPosts(active.map((p) => ({...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users})));
     }
