@@ -223,7 +223,7 @@ export default function FeedsPage() {
             users: { full_name: row.full_name, avatar_url: row.avatar_url, school_id: row.user_school_id },
           };
         });
-        if (append) { setPosts(prev => [...prev, ...mapped]); }
+        if (append) { setPosts(prev => { const ids = new Set(prev.map(p => p.id)); return [...prev, ...mapped.filter(p => !ids.has(p.id))]; }); }
         else { setPosts(mapped); setOffset(0); }
         setHasMore(mapped.length === 20);
         if (!append) setOffset(20); else setOffset(prev => prev + 20);
