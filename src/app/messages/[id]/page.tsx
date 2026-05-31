@@ -1,0 +1,277 @@
+'use client'
+import { useState, useEffect, useRef } from "react";
+import { createClient } from "@/lib/supabase";
+import { useRouter, useParams } from "next/navigation";
+import Image from "next/image";
+
+type User = { id: string; full_name: string; avatar_url: string | null; };
+type Message = {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  content: string | null;
+  image_url: string | null;
+  is_seen: boolean;
+  created_at: string;
+};
+
+export default function ConversationPage() {
+  const router = useRouter();
+  const params = useParams();
+  const convId = params?.id as string;
+  const supabase = createClient();
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [otherUser, setOtherUser] = useState<User | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [isAccepted, setIsAccepted] = useState(false);
+  const [isInitiator, setIsInitiator] = useState(false);
+
+  useEffect(() => { initPage(); }, [convId]);
+
+  useEffect(() => {
+    if (!convId) return;
+    const channel = supabase
+      .channel("messages:" + convId)
+      .on("postgres_changes", {
+        event: "INSERT",
+        schema: "public",
+        table: "messages",
+        filter: "conversation_id=eq." + convId,
+      }, (payload) => {
+        setMessages(prev => [...prev, payload.new as Message]);
+        setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [convId]);
+
+  async function initPage() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { router.push("/login"); return; }
+    const { data: userData } = await supabase.from("users").select("id, full_name, avatar_url").eq("id", user.id).single();
+    if (userData) setCurrentUser(userData);
+
+    const { data: conv } = await supabase.from("conversations").select("*").eq("id", convId).single();
+    if (!conv) { router.push("/messages"); return; }
+
+    setIsAccepted(conv.status === "accepted");
+    setIsInitiator(conv.initiated_by === user.id);
+
+    const otherId = conv.participant_1 === user.id ? conv.participant_2 : conv.participant_1;
+    const { data: other } = await supabase.from("users").select("id, full_name, avatar_url").eq("id", otherId).single();
+    if (other) setOtherUser(other);
+
+    const { data: msgs } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("conversation_id", convId)
+      .order("created_at", { ascending: true });
+    if (msgs) setMessages(msgs);
+
+    // mark messages as seen
+    await supabase.from("messages")
+      .update({ is_seen: true })
+      .eq("conversation_id", convId)
+      .eq("is_seen", false)
+      .neq("sender_id", user.id);
+
+    setLoading(false);
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "auto" }), 100);
+  }
+
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { alert("Image must be under 10MB"); return; }
+    setImageFile(file);
+    setImagePreview(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(file); });
+  }
+
+  async function handleSend() {
+    if ((!text.trim() && !imageFile) || !currentUser || sending) return;
+    setSending(true);
+    try {
+      let imageUrl: string | null = null;
+      if (imageFile) {
+        const ext = imageFile.name.split(".").pop();
+        const path = "messages/" + convId + "/" + Date.now() + "." + ext;
+        const { error: uploadError } = await supabase.storage.from("konek-images").upload(path, imageFile);
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from("konek-images").getPublicUrl(path);
+          imageUrl = urlData.publicUrl;
+        }
+      }
+
+      const { data: newMsg } = await supabase.from("messages").insert({
+        conversation_id: convId,
+        sender_id: currentUser.id,
+        content: text.trim() || null,
+        image_url: imageUrl,
+        is_seen: false,
+      }).select().single();
+
+      if (newMsg) {
+        setMessages(prev => [...prev, newMsg]);
+        await supabase.from("conversations").update({
+          last_message: text.trim() || "📷 Photo",
+          last_message_at: new Date().toISOString(),
+          status: "accepted",
+        }).eq("id", convId);
+        setIsAccepted(true);
+      }
+
+      setText("");
+      setImageFile(null);
+      setImagePreview("");
+      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+    } catch { } finally { setSending(false); }
+  }
+
+  function formatTime(ts: string) {
+    const d = new Date(ts);
+    return d.toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit", hour12: true });
+  }
+
+  function formatDate(ts: string) {
+    const d = new Date(ts);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    if (d.toDateString() === today.toDateString()) return "Today";
+    if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
+    return d.toLocaleDateString("en-PH", { month: "short", day: "numeric" });
+  }
+
+  // group messages by date
+  const grouped: { date: string; messages: Message[] }[] = [];
+  messages.forEach(msg => {
+    const date = formatDate(msg.created_at);
+    const last = grouped[grouped.length - 1];
+    if (last && last.date === date) last.messages.push(msg);
+    else grouped.push({ date, messages: [msg] });
+  });
+
+  return (
+    <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+
+      {/* HEADER */}
+      <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
+        <button onClick={() => router.push("/messages")}
+          style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.2rem", padding: "4px", display: "flex", alignItems: "center"}}>
+          ←
+        </button>
+        <div style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.2)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0}}>
+          {otherUser?.avatar_url
+            ? <img src={otherUser.avatar_url} alt="" style={{width: "100%", height: "100%", objectFit: "cover"}} />
+            : "👤"}
+        </div>
+        <div style={{flex: 1}}>
+          <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#fff"}}>{otherUser?.full_name || "..."}</div>
+        </div>
+      </div>
+
+      {/* REQUEST BANNER — shown to receiver of pending request */}
+      {!isAccepted && !isInitiator && (
+        <div style={{backgroundColor: "#FFF8E1", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", textAlign: "center"}}>
+          <div style={{fontSize: "0.82rem", color: "#92400E", marginBottom: "8px", fontWeight: 600}}>
+            {otherUser?.full_name} wants to message you
+          </div>
+          <div style={{display: "flex", gap: "8px", justifyContent: "center"}}>
+            <button onClick={async () => { await supabase.from("conversations").delete().eq("id", convId); router.push("/messages"); }}
+              style={{padding: "8px 20px", borderRadius: "8px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
+              Decline
+            </button>
+            <button onClick={async () => { await supabase.from("conversations").update({ status: "accepted" }).eq("id", convId); setIsAccepted(true); }}
+              style={{padding: "8px 20px", borderRadius: "8px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
+              Accept
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* MESSAGES */}
+      <div style={{flex: 1, padding: "12px 16px", paddingBottom: "80px", overflowY: "auto"}}>
+        {loading ? (
+          <div style={{textAlign: "center", padding: "48px 0", color: "#888", fontSize: "0.85rem"}}>Loading...</div>
+        ) : messages.length === 0 ? (
+          <div style={{textAlign: "center", padding: "48px 0"}}>
+            <div style={{fontSize: "2.5rem", marginBottom: "8px"}}>👋</div>
+            <div style={{fontSize: "0.85rem", color: "#888"}}>Say hello to {otherUser?.full_name}!</div>
+          </div>
+        ) : (
+          grouped.map(group => (
+            <div key={group.date}>
+              <div style={{textAlign: "center", margin: "12px 0"}}>
+                <span style={{fontSize: "0.68rem", color: "#888", backgroundColor: "#F0F0F0", borderRadius: "10px", padding: "3px 10px"}}>{group.date}</span>
+              </div>
+              {group.messages.map((msg, idx) => {
+                const isMine = msg.sender_id === currentUser?.id;
+                const isLast = idx === group.messages.length - 1;
+                return (
+                  <div key={msg.id} style={{display: "flex", flexDirection: "column", alignItems: isMine ? "flex-end" : "flex-start", marginBottom: "4px"}}>
+                    <div style={{maxWidth: "75%", backgroundColor: isMine ? "#1D9E75" : "#fff", color: isMine ? "#fff" : "#1A1A1A", borderRadius: isMine ? "16px 16px 4px 16px" : "16px 16px 16px 4px", padding: msg.image_url && !msg.content ? "4px" : "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)"}}>
+                      {msg.image_url && (
+                        <img src={msg.image_url} alt="" style={{width: "100%", maxWidth: "220px", borderRadius: "12px", display: "block", marginBottom: msg.content ? "6px" : 0}} />
+                      )}
+                      {msg.content && <div style={{fontSize: "0.875rem", lineHeight: 1.45}}>{msg.content}</div>}
+                    </div>
+                    {isMine && isLast && (
+                      <div style={{fontSize: "0.62rem", color: "#888", marginTop: "2px", marginRight: "2px"}}>
+                        {msg.is_seen ? "Seen" : "Sent"} · {formatTime(msg.created_at)}
+                      </div>
+                    )}
+                    {!isMine && isLast && (
+                      <div style={{fontSize: "0.62rem", color: "#888", marginTop: "2px", marginLeft: "2px"}}>{formatTime(msg.created_at)}</div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* IMAGE PREVIEW */}
+      {imagePreview && (
+        <div style={{padding: "8px 16px", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "10px"}}>
+          <div style={{position: "relative", display: "inline-block"}}>
+            <img src={imagePreview} alt="" style={{width: "64px", height: "64px", objectFit: "cover", borderRadius: "8px"}} />
+            <button onClick={() => { setImageFile(null); setImagePreview(""); }}
+              style={{position: "absolute", top: "-6px", right: "-6px", backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "50%", width: "18px", height: "18px", fontSize: "0.6rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>✕</button>
+          </div>
+          <span style={{fontSize: "0.75rem", color: "#888"}}>Photo ready to send</span>
+        </div>
+      )}
+
+      {/* INPUT BAR */}
+      <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "10px 12px", paddingBottom: "calc(10px + env(safe-area-inset-bottom))", display: "flex", alignItems: "center", gap: "8px", zIndex: 100}}>
+        <button onClick={() => fileInputRef.current?.click()}
+          style={{background: "none", border: "none", cursor: "pointer", padding: "6px", flexShrink: 0, opacity: 0.6}}>
+          <Image src="/photos.png" alt="photo" width={22} height={22} />
+        </button>
+        <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleImageSelect} />
+        <input
+          type="text"
+          placeholder="Type a message..."
+          value={text}
+          onChange={e => setText(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+          style={{flex: 1, backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "10px 16px", fontSize: "0.875rem", color: "#1A1A1A", outline: "none", fontFamily: "inherit"}}
+        />
+        <button onClick={handleSend} disabled={sending || (!text.trim() && !imageFile)}
+          style={{backgroundColor: sending || (!text.trim() && !imageFile) ? "#ccc" : "#1D9E75", border: "none", borderRadius: "50%", width: "38px", height: "38px", display: "flex", alignItems: "center", justifyContent: "center", cursor: sending || (!text.trim() && !imageFile) ? "not-allowed" : "pointer", flexShrink: 0}}>
+          <span style={{color: "#fff", fontSize: "1rem"}}>➤</span>
+        </button>
+      </div>
+    </div>
+  );
+}

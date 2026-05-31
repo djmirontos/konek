@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { startConversation } from "@/lib/startConversation";
 
 const AMENITIES_ICONS: Record<string, string> = {
   "WiFi": "📶", "Water": "💧", "Electricity": "⚡", "Private CR": "🚿", "Shared CR": "🚻",
@@ -31,6 +32,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [messagingOwner, setMessagingOwner] = useState(false);
   const [post, setPost] = useState<BoardingHouse | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState("");
@@ -195,6 +197,20 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
     </div>
   );
 
+  async function handleMessageOwner() {
+    if (!currentUser || !post) return;
+    if (currentUser.id === post.user_id) return;
+    setMessagingOwner(true);
+    try {
+      const convId = await startConversation(
+        currentUser.id,
+        post.user_id,
+        "Hi! I am interested in your post: " + post.name
+      );
+      if (convId) router.push("/messages/" + convId);
+    } catch { } finally { setMessagingOwner(false); }
+  }
+
   return (
     <div style={{position: "fixed", inset: 0, zIndex: 300, display: "flex", alignItems: "flex-end", backgroundColor: "rgba(0,0,0,0.5)", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
       <style>{`@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
@@ -320,12 +336,17 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
             <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
               {post?.users?.avatar_url
                 ? <img onClick={() => post && router.push(`/profile/${post.user_id}`)} src={post.users.avatar_url} alt="" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
-                : <div onClick={() => post && router.push(`/profile/${post.user_id}`)} style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.95rem", cursor: "pointer"}}>{post?.users?.full_name?.charAt(0).toUpperCase()}</div>
-              }
+                : <div onClick={() => post && router.push(`/profile/${post.user_id}`)} style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.95rem", cursor: "pointer"}}>{post?.users?.full_name?.charAt(0).toUpperCase()}</div>}
               <div>
                 <div style={{fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A"}}>{post?.users?.full_name}</div>
                 <div style={{fontSize: "0.72rem", color: "#888"}}>{formatTime(post?.created_at || "")}{post?.edited_at ? " · Edited" : ""}</div>
               </div>
+              {currentUser && post && currentUser.id !== post.user_id && (
+                <button onClick={handleMessageOwner} disabled={messagingOwner}
+                  style={{marginLeft: "auto", backgroundColor: messagingOwner ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 16px", fontSize: "0.78rem", fontWeight: 700, cursor: messagingOwner ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "6px"}}>
+                  💬 {messagingOwner ? "Opening..." : "Message Owner"}
+                </button>
+              )}
             </div>
           </div>
 
