@@ -1,4 +1,5 @@
 'use client'
+import Link from "next/link";
 import Image from "next/image";
 
 const NAV_ITEMS = [
@@ -16,7 +17,7 @@ export default function BottomNav({ active, unreadMessages = 0 }: { active: stri
         const isActive = item.href === active;
         const showBadge = item.href === "/messages" && unreadMessages > 0;
         return (
-          <a key={item.href} href={item.href} style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px 4px 8px", textDecoration: "none", borderTop: isActive ? "2px solid #1D9E75" : "2px solid transparent", position: "relative"}}>
+          <Link key={item.href} href={item.href} prefetch={true} style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "10px 4px 8px", textDecoration: "none", borderTop: isActive ? "2px solid #1D9E75" : "2px solid transparent", position: "relative"}}>
             <div style={{position: "relative", marginBottom: "3px"}}>
               <Image src={item.icon} alt={item.label} width={24} height={24} style={{opacity: isActive ? 1 : 0.4}} />
               {showBadge && (
@@ -26,7 +27,7 @@ export default function BottomNav({ active, unreadMessages = 0 }: { active: stri
               )}
             </div>
             <span style={{fontSize: "0.62rem", color: isActive ? "#1D9E75" : "#888", fontWeight: isActive ? 700 : 400}}>{item.label}</span>
-          </a>
+          </Link>
         );
       })}
     </div>
