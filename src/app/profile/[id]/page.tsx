@@ -680,6 +680,12 @@ export default function ProfilePage() {
                 {isOwnProfile && (
                   <>
                     <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "8px 0 16px"}} />
+                    {(currentUser?.role === "admin" || currentUser?.role === "moderator") && (
+                      <button onClick={() => router.push("/admin")}
+                        style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #1D9E75", backgroundColor: "#E1F5EE", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", marginBottom: "10px"}}>
+                        🛡️ Admin Panel
+                      </button>
+                    )}
                     <button onClick={() => setShowLogoutConfirm(true)}
                       style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #EF4444", backgroundColor: "#FEF2F2", color: "#EF4444", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
                       🚪 Log Out
