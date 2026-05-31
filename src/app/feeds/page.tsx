@@ -245,7 +245,8 @@ export default function FeedsPage() {
         const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", post.id);
         return { ...post, commentCount: count || 0, isExpired };
       }));
-      setQuadPosts(enriched.map((p) => ({...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users})));
+      const active = enriched.filter(p => !p.isExpired);
+      setQuadPosts(active.map((p) => ({...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users})));
     }
     setQuadLoading(false);
   }
@@ -311,6 +312,7 @@ export default function FeedsPage() {
       if (error) throw error;
       setQuadContent(""); setQuadTag(""); setQuadLocation("");
       setQuadImage(null); setQuadImagePreview("");
+      setShowQuadComposer(false);
       showToast("Posted! Expires in 6 hours.");
       fetchQuadPosts();
     } catch (err: unknown) { setQuadPostError(err instanceof Error ? err.message : "Failed to post. Try again."); }
@@ -837,7 +839,7 @@ export default function FeedsPage() {
                     <button onClick={() => quadFileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "0"}} title="Add photo">
                       <Image src="/photos.png" alt="photos" width={22} height={22} />
                     </button>
-                    <button onClick={() => { handleQuadPost(); setShowQuadComposer(false); }} disabled={quadPosting || !quadContent.trim() || !quadTag}
+                    <button onClick={() => handleQuadPost()} disabled={quadPosting || !quadContent.trim() || !quadTag}
                       style={{backgroundColor: quadPosting || !quadContent.trim() || !quadTag ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: quadPosting || !quadContent.trim() || !quadTag ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                       {quadPosting ? "Posting..." : "Post"}
                     </button>
