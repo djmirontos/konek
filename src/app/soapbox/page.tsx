@@ -5,7 +5,6 @@ import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
-import NotificationDropdown from "@/components/NotificationDropdown";
 import { useRouter } from "next/navigation";
 
 const TAGS = ["#reklamo", "#hugot", "#totoo", "#charot", "#unsay-hunahuna", "#panuway", "#bagagface", "#hilason", "#inlove"];
@@ -97,8 +96,6 @@ export default function SoapboxPage() {
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [toast, setToast] = useState("");
 
   // --- soapbox state ---
@@ -194,13 +191,7 @@ export default function SoapboxPage() {
     setUnreadCount(count || 0);
   }
 
-  async function fetchNotifications() {
-    if (!currentUser) return;
-    const { data } = await supabase.from("notifications").select("*").eq("recipient_id", currentUser.id).order("created_at", { ascending: false }).limit(20);
-    if (data) setNotifications(data);
-    await supabase.from("notifications").update({ is_read: true }).eq("recipient_id", currentUser.id).eq("is_read", false);
-    setUnreadCount(0);
-  }
+
 
   // ===================== SOAPBOX =====================
 
@@ -465,10 +456,8 @@ export default function SoapboxPage() {
         currentUser={currentUser} schools={schools} pageName="SOAPBOX"
         selectedSchool={selectedSchool} unreadCount={unreadCount}
         onSchoolPickerToggle={() => setShowSchoolPicker(!showSchoolPicker)}
-        onNotificationsToggle={() => { setShowNotifications(!showNotifications); if (!showNotifications) fetchNotifications(); }}
       />
 
-      {showNotifications && <NotificationDropdown notifications={notifications} onClose={() => setShowNotifications(false)} navigateTo="/soapbox" />}
       {showSchoolPicker && <SchoolPicker schools={schools} currentUser={currentUser} selectedSchool={selectedSchool} onSelect={setSelectedSchool} onClose={() => setShowSchoolPicker(false)} />}
 
       {/* TAB BAR */}

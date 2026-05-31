@@ -7,7 +7,6 @@ import PhotoViewer from "@/components/PhotoViewer";
 import BottomNav from "@/components/BottomNav";
 import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
-import NotificationDropdown from "@/components/NotificationDropdown";
 
 const TAGS = ["#lihok", "#feelings", "#announcements", "#free-stuff", "#groupmates-needed", "#org-recruitment", "#review-session"];
 const REACTIONS = ["/like.png", "/love.png", "/haha.png", "/wow.png", "/sad.png", "/grabe.png", "/laban.png"];
@@ -61,8 +60,6 @@ export default function FeedsPage() {
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [toast, setToast] = useState("");
   const [showMenu, setShowMenu] = useState<string | null>(null);
   const [editingPost, setEditingPost] = useState<string | null>(null);
@@ -180,13 +177,7 @@ export default function FeedsPage() {
     setUnreadMessages(total);
   }
 
-  async function fetchNotifications() {
-    if (!currentUser) return;
-    const { data } = await supabase.from("notifications").select("*").eq("recipient_id", currentUser.id).order("created_at", { ascending: false }).limit(20);
-    if (data) setNotifications(data);
-    await supabase.from("notifications").update({ is_read: true }).eq("recipient_id", currentUser.id).eq("is_read", false);
-    setUnreadCount(0);
-  }
+
 
   async function fetchReactionList(postId: string) {
     setLoadingReactions(true);
@@ -223,7 +214,7 @@ export default function FeedsPage() {
             users: { full_name: row.full_name, avatar_url: row.avatar_url, school_id: row.user_school_id },
           };
         });
-        if (append) { setPosts(prev => { const ids = new Set(prev.map(p => p.id)); return [...prev, ...mapped.filter(p => !ids.has(p.id))]; }); }
+        if (append) { setPosts(prev => { const ids = new Set(prev.map(p => p.id)); return [...prev, ...mapped.filter((p: Post) => !ids.has(p.id))]; }); }
         else { setPosts(mapped); setOffset(0); }
         setHasMore(mapped.length === 20);
         if (!append) setOffset(20); else setOffset(prev => prev + 20);
@@ -491,10 +482,8 @@ export default function FeedsPage() {
         selectedSchool={selectedSchool}
         unreadCount={unreadCount}
         onSchoolPickerToggle={() => setShowSchoolPicker(!showSchoolPicker)}
-        onNotificationsToggle={() => { setShowNotifications(!showNotifications); if (!showNotifications) fetchNotifications(); }}
       />
 
-      {showNotifications && <NotificationDropdown notifications={notifications} onClose={() => setShowNotifications(false)} navigateTo="/feeds" />}
       {showSchoolPicker && <SchoolPicker schools={schools} currentUser={currentUser} selectedSchool={selectedSchool} onSelect={setSelectedSchool} onClose={() => setShowSchoolPicker(false)} />}
 
       {/* Tab Bar */}

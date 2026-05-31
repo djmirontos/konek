@@ -12,7 +12,7 @@ type Props = {
   selectedSchool: string;
   unreadCount: number;
   onSchoolPickerToggle: () => void;
-  onNotificationsToggle: () => void;
+  onNotificationsToggle?: () => void;
   onAvatarClick?: () => void;
 };
 
@@ -46,7 +46,7 @@ export default function AppHeader({
         <button onClick={onSchoolPickerToggle} style={{backgroundColor: "rgba(255,255,255,0.2)", border: "none", borderRadius: "20px", padding: "6px 12px", color: "#fff", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
           📍 {getSchoolLabel()} ▾
         </button>
-        <button onClick={onNotificationsToggle} style={{background: "none", border: "none", cursor: "pointer", position: "relative", padding: "4px"}}>
+        <button onClick={() => { if (onNotificationsToggle) onNotificationsToggle(); router.push("/notifications"); }} style={{background: "none", border: "none", cursor: "pointer", position: "relative", padding: "4px"}}>
           <Image src="/notification.png" alt="notifications" width={25} height={25} />
           {unreadCount > 0 && (
             <div style={{position: "absolute", top: "0px", right: "0px", backgroundColor: "#EF4444", color: "#fff", borderRadius: "50%", width: "16px", height: "16px", fontSize: "0.6rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #1D9E75"}}>

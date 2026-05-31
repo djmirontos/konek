@@ -5,7 +5,6 @@ import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
 import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
-import NotificationDropdown from "@/components/NotificationDropdown";
 
 import { useRouter } from "next/navigation";
 
@@ -49,8 +48,6 @@ export default function QuadPage() {
   const [postError, setPostError] = useState("");
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [toast, setToast] = useState("");
   const [showMenu, setShowMenu] = useState<string | null>(null);
   const [editingPost, setEditingPost] = useState<string | null>(null);
@@ -77,13 +74,7 @@ export default function QuadPage() {
     setUnreadCount(count || 0);
   }
 
-  async function fetchNotifications() {
-    if (!currentUser) return;
-    const { data } = await supabase.from("notifications").select("*").eq("recipient_id", currentUser.id).order("created_at", { ascending: false }).limit(20);
-    if (data) setNotifications(data);
-    await supabase.from("notifications").update({ is_read: true }).eq("recipient_id", currentUser.id).eq("is_read", false);
-    setUnreadCount(0);
-  }
+
 
   async function fetchPosts() {
     if (!currentUser) return;
@@ -274,10 +265,8 @@ export default function QuadPage() {
         selectedSchool={selectedSchool}
         unreadCount={unreadCount}
         onSchoolPickerToggle={() => setShowSchoolPicker(!showSchoolPicker)}
-        onNotificationsToggle={() => { setShowNotifications(!showNotifications); if (!showNotifications) fetchNotifications(); }}
       />
       {/* Notification Dropdown */}
-      {showNotifications && <NotificationDropdown notifications={notifications} onClose={() => setShowNotifications(false)} navigateTo="/quad" />}
 
       {/* School Picker */}
       {showSchoolPicker && <SchoolPicker schools={schools} currentUser={currentUser} selectedSchool={selectedSchool} onSelect={setSelectedSchool} onClose={() => setShowSchoolPicker(false)} />}
