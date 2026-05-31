@@ -284,11 +284,11 @@ export default function ConversationPage() {
 
       {/* INPUT BAR */}
       <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "10px 12px", paddingBottom: "calc(10px + env(safe-area-inset-bottom))", display: "flex", alignItems: "center", gap: "8px", zIndex: 100}}>
-        <button onClick={() => fileInputRef.current?.click()}
-          style={{background: "none", border: "none", cursor: "pointer", padding: "6px", flexShrink: 0, opacity: 0.6}}>
+        <label htmlFor="chat-photo-input" style={{cursor: "pointer", padding: "6px", flexShrink: 0, opacity: 0.7, display: "flex", alignItems: "center"}}>
           <Image src="/photos.png" alt="photo" width={22} height={22} />
-        </button>
-        <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleImageSelect} />
+        </label>
+        <input id="chat-photo-input" ref={fileInputRef} type="file" accept="image/*" style={{display: "none"}} onChange={handleImageSelect} />
+
         <input
           type="text"
           placeholder="Type a message..."
