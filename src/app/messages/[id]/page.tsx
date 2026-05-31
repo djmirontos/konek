@@ -138,9 +138,7 @@ export default function ConversationPage() {
       await supabase.from("conversations").update({
         last_message: text.trim() || "📷 Photo",
         last_message_at: new Date().toISOString(),
-        status: "accepted",
       }).eq("id", convId);
-      setIsAccepted(true);
 
       setText("");
       setImageFile(null);
@@ -182,12 +180,12 @@ export default function ConversationPage() {
           style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "4px", display: "flex", alignItems: "center", lineHeight: 1}}>
           ←
         </button>
-        <div style={{width: "42px", height: "42px", borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.2)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0, border: "2px solid rgba(255,255,255,0.4)"}}>
+        <div onClick={() => otherUser && router.push("/profile/" + otherUser.id)} style={{width: "42px", height: "42px", borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.2)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0, border: "2px solid rgba(255,255,255,0.4)", cursor: "pointer"}}>
           {otherUser?.avatar_url
             ? <img src={otherUser.avatar_url} alt="" style={{width: "100%", height: "100%", objectFit: "cover"}} />
             : "👤"}
         </div>
-        <div style={{flex: 1}}>
+        <div style={{flex: 1, cursor: "pointer"}} onClick={() => otherUser && router.push("/profile/" + otherUser.id)}>
           <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#fff", lineHeight: 1.2}}>{otherUser?.full_name || "..."}</div>
           {otherUserSchool && <div style={{fontSize: "0.68rem", color: "rgba(255,255,255,0.8)", marginTop: "1px"}}>{otherUserSchool.abbreviation}</div>}
         </div>
