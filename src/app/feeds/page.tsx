@@ -99,6 +99,8 @@ export default function FeedsPage() {
   const [quadPostError, setQuadPostError] = useState("");
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [quadLoaded, setQuadLoaded] = useState(false);
+  const [showFeedsComposer, setShowFeedsComposer] = useState(false);
+  const [showQuadComposer, setShowQuadComposer] = useState(false);
 
   useEffect(() => {
     initPage();
@@ -550,54 +552,83 @@ export default function FeedsPage() {
       {/* ===== FEEDS TAB ===== */}
       {activeTab === "feeds" && (
         <>
-          {/* Feeds Composer */}
-          <div style={{backgroundColor: "#fff", padding: "12px 16px", borderBottom: "1px solid #F0F0F0"}}>
-            <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
+          {/* Feeds Composer — Compact Row */}
+          <div style={{backgroundColor: "#fff", padding: "10px 16px", borderBottom: "1px solid #F0F0F0"}}>
+            <div style={{display: "flex", gap: "10px", alignItems: "center"}}>
               {currentUser?.avatar_url
-                ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, marginTop: "2px"}} />
-                : <div style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0, marginTop: "2px"}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
               }
-              <div style={{flex: 1}}>
-                <textarea
-                  placeholder={`What's happening, ${currentUser?.full_name?.split(" ")[0] || "ka-Konek"}?`}
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}
-                  rows={3}
-                  style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}}
-                />
-                {imagePreviews.length > 0 && (
-                  <div style={{display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap"}}>
-                    {imagePreviews.map((src, i) => (
-                      <div key={i} style={{position: "relative"}}>
-                        <img src={src} alt="" style={{width: "72px", height: "72px", objectFit: "cover", borderRadius: "8px"}} />
-                        <button onClick={() => removeImage(i)} style={{position: "absolute", top: "-6px", right: "-6px", backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", fontSize: "0.65rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>x</button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div style={{display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap"}}>
-                  {TAGS.map(tag => (
-                    <button key={tag} onClick={() => setSelectedTag(selectedTag === tag ? "" : tag)}
-                      style={{padding: "4px 10px", borderRadius: "12px", border: "1px solid " + (selectedTag === tag ? "#1D9E75" : "#F0F0F0"), backgroundColor: selectedTag === tag ? "#E1F5EE" : "#F7F7F7", color: selectedTag === tag ? "#1D9E75" : "#888", fontSize: "0.72rem", fontWeight: selectedTag === tag ? 700 : 400, cursor: "pointer", fontFamily: "inherit"}}>
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-                {postError && <div style={{color: "#EF4444", fontSize: "0.75rem", marginTop: "6px"}}>{postError}</div>}
-                <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px"}}>
-                  <div style={{display: "flex", gap: "12px"}}>
-                    <button onClick={() => fileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "0"}} title="Add photos"><Image src="/photos.png" alt="photos" width={22} height={22} /></button>
-                    <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" multiple style={{display: "none"}} onChange={handleImageSelect} />
-                    <span style={{fontSize: "0.7rem", color: "#aaa", alignSelf: "center"}}>{selectedImages.length}/4 photos</span>
-                  </div>
-                  <button onClick={handlePost} disabled={posting || !postContent.trim()}
-                    style={{backgroundColor: posting || !postContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 20px", fontWeight: 700, fontSize: "0.8rem", cursor: posting || !postContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
-                    {posting ? "Posting..." : "Post"}
-                  </button>
-                </div>
-              </div>
+              <button onClick={() => setShowFeedsComposer(true)}
+                style={{flex: 1, textAlign: "left", backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", fontFamily: "inherit"}}>
+                What's happening, {currentUser?.full_name?.split(" ")[0] || "ka-Konek"}?
+              </button>
+              <button onClick={() => fileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "4px", flexShrink: 0}} title="Add photos">
+                <Image src="/photos.png" alt="photos" width={22} height={22} />
+              </button>
+              <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" multiple style={{display: "none"}} onChange={(e) => { handleImageSelect(e); setShowFeedsComposer(true); }} />
             </div>
           </div>
+
+          {/* Feeds Composer Modal */}
+          {showFeedsComposer && (
+            <>
+              <div onClick={() => { setShowFeedsComposer(false); setPostContent(""); setSelectedTag(""); setSelectedImages([]); setImagePreviews([]); setPostError(""); }} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+              <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "0 0 32px"}}>
+                <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "12px auto 0"}}></div>
+                <div style={{padding: "12px 16px 10px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                  <span style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A"}}>Create Post</span>
+                  <button onClick={() => { setShowFeedsComposer(false); setPostContent(""); setSelectedTag(""); setSelectedImages([]); setImagePreviews([]); setPostError(""); }} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.1rem", padding: "4px"}}>✕</button>
+                </div>
+                <div style={{padding: "12px 16px"}}>
+                  <div style={{display: "flex", gap: "10px", alignItems: "flex-start", marginBottom: "10px"}}>
+                    {currentUser?.avatar_url
+                      ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                      : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                    }
+                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", alignSelf: "center"}}>{currentUser?.full_name}</div>
+                  </div>
+                  <textarea
+                    autoFocus
+                    placeholder={`What's happening, ${currentUser?.full_name?.split(" ")[0] || "ka-Konek"}?`}
+                    value={postContent}
+                    onChange={(e) => setPostContent(e.target.value)}
+                    rows={4}
+                    style={{width: "100%", border: "none", padding: "0", fontSize: "0.95rem", color: "#1A1A1A", backgroundColor: "#fff", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box", lineHeight: 1.5}}
+                  />
+                  {imagePreviews.length > 0 && (
+                    <div style={{display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap"}}>
+                      {imagePreviews.map((src, i) => (
+                        <div key={i} style={{position: "relative"}}>
+                          <img src={src} alt="" style={{width: "72px", height: "72px", objectFit: "cover", borderRadius: "8px"}} />
+                          <button onClick={() => removeImage(i)} style={{position: "absolute", top: "-6px", right: "-6px", backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", fontSize: "0.65rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>x</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div style={{display: "flex", gap: "6px", marginTop: "10px", flexWrap: "wrap"}}>
+                    {TAGS.map(tag => (
+                      <button key={tag} onClick={() => setSelectedTag(selectedTag === tag ? "" : tag)}
+                        style={{padding: "4px 10px", borderRadius: "12px", border: "1px solid " + (selectedTag === tag ? "#1D9E75" : "#F0F0F0"), backgroundColor: selectedTag === tag ? "#E1F5EE" : "#F7F7F7", color: selectedTag === tag ? "#1D9E75" : "#888", fontSize: "0.72rem", fontWeight: selectedTag === tag ? 700 : 400, cursor: "pointer", fontFamily: "inherit"}}>
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                  {postError && <div style={{color: "#EF4444", fontSize: "0.75rem", marginTop: "6px"}}>{postError}</div>}
+                  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", borderTop: "1px solid #F0F0F0", paddingTop: "12px"}}>
+                    <div style={{display: "flex", gap: "12px", alignItems: "center"}}>
+                      <button onClick={() => fileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "0"}} title="Add photos"><Image src="/photos.png" alt="photos" width={22} height={22} /></button>
+                      <span style={{fontSize: "0.7rem", color: "#aaa"}}>{selectedImages.length}/4 photos</span>
+                    </div>
+                    <button onClick={() => { handlePost(); setShowFeedsComposer(false); }} disabled={posting || !postContent.trim()}
+                      style={{backgroundColor: posting || !postContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: posting || !postContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                      {posting ? "Posting..." : "Post"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Feeds List */}
           <div style={{flex: 1, paddingBottom: "80px"}}>
@@ -713,79 +744,108 @@ export default function FeedsPage() {
       {/* ===== QUAD TAB ===== */}
       {activeTab === "quad" && (
         <>
-          {/* Quad Composer */}
-          <div style={{backgroundColor: "#fff", padding: "12px 16px", borderBottom: "1px solid #F0F0F0"}}>
-            <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
+          {/* Quad Composer — Compact Row */}
+          <div style={{backgroundColor: "#fff", padding: "10px 16px", borderBottom: "1px solid #F0F0F0"}}>
+            <div style={{display: "flex", gap: "10px", alignItems: "center"}}>
               {currentUser?.avatar_url
-                ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, marginTop: "2px"}} />
-                : <div style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0, marginTop: "2px"}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
               }
-              <div style={{flex: 1}}>
-                <textarea
-                  placeholder="Hangout or need help? Post it here..."
-                  value={quadContent}
-                  onChange={(e) => setQuadContent(e.target.value)}
-                  rows={3}
-                  style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}}
-                />
-                {HANGOUT_TAG_SET.has(quadTag) && (
-                  <div style={{marginTop: "8px"}}>
-                    <input
-                      placeholder="📍 Nasaan ka? (e.g. Library, Canteen, Gym)"
-                      value={quadLocation}
-                      onChange={e => setQuadLocation(e.target.value)}
-                      style={{width: "100%", border: "1px solid #1D9E75", borderRadius: "10px", padding: "8px 12px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box", color: "#1A1A1A"}}
-                    />
-                  </div>
-                )}
-                {quadImagePreview && (
-                  <div style={{position: "relative", display: "inline-block", marginTop: "8px"}}>
-                    <img src={quadImagePreview} alt="" style={{width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px"}} />
-                    <button onClick={() => { setQuadImage(null); setQuadImagePreview(""); }} style={{position: "absolute", top: "-6px", right: "-6px", backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", fontSize: "0.65rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>x</button>
-                  </div>
-                )}
-                <div style={{marginTop: "8px", position: "relative"}}>
-                  <button onClick={() => setShowTagPicker(!showTagPicker)}
-                    style={{width: "100%", padding: "9px 14px", borderRadius: "10px", border: "1px solid " + (quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#1D9E75" : "#F59E0B") : "#F0F0F0"), backgroundColor: quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#E1F5EE" : "#FEF3C7") : "#F7F7F7", color: quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#1D9E75" : "#F59E0B") : "#888", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                    <span>{quadTag || "Select a tag (required)"}</span>
-                    <span style={{fontSize: "0.7rem"}}>{showTagPicker ? "▲" : "▾"}</span>
-                  </button>
-                  {showTagPicker && (
-                    <>
-                      <div onClick={() => setShowTagPicker(false)} style={{position: "fixed", inset: 0, zIndex: 150}} />
-                      <div style={{position: "absolute", top: "42px", left: 0, right: 0, backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", zIndex: 200, overflow: "hidden", border: "1px solid #F0F0F0"}}>
-                        <div style={{padding: "8px 12px 4px", fontSize: "0.68rem", color: "#888", fontWeight: 700, letterSpacing: "0.05em"}}>🟢 HANGOUT</div>
-                        {HANGOUT_TAGS.map(tag => (
-                          <button key={tag} onClick={() => { setQuadTag(tag); setShowTagPicker(false); }}
-                            style={{width: "100%", padding: "9px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: quadTag === tag ? "#E1F5EE" : "#fff", color: quadTag === tag ? "#1D9E75" : "#1A1A1A", fontWeight: quadTag === tag ? 700 : 400, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left"}}>
-                            {tag}
-                          </button>
-                        ))}
-                        <div style={{padding: "8px 12px 4px", fontSize: "0.68rem", color: "#888", fontWeight: 700, letterSpacing: "0.05em"}}>🟡 HELP</div>
-                        {HELP_TAGS.map(tag => (
-                          <button key={tag} onClick={() => { setQuadTag(tag); setShowTagPicker(false); }}
-                            style={{width: "100%", padding: "9px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: quadTag === tag ? "#FEF3C7" : "#fff", color: quadTag === tag ? "#F59E0B" : "#1A1A1A", fontWeight: quadTag === tag ? 700 : 400, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left"}}>
-                            {tag}
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-                {quadPostError && <div style={{color: "#EF4444", fontSize: "0.75rem", marginTop: "6px"}}>{quadPostError}</div>}
-                <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px"}}>
-                  <button onClick={() => quadFileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "0"}} title="Add photo">
-                    <Image src="/photos.png" alt="photos" width={22} height={22} />
-                  </button>
-                  <input ref={quadFileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleQuadImageSelect} />
-                  <button onClick={handleQuadPost} disabled={quadPosting || !quadContent.trim() || !quadTag}
-                    style={{backgroundColor: quadPosting || !quadContent.trim() || !quadTag ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 20px", fontWeight: 700, fontSize: "0.8rem", cursor: quadPosting || !quadContent.trim() || !quadTag ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
-                    {quadPosting ? "Posting..." : "Post"}
-                  </button>
-                </div>
-              </div>
+              <button onClick={() => setShowQuadComposer(true)}
+                style={{flex: 1, textAlign: "left", backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", fontFamily: "inherit"}}>
+                Hangout or need help?
+              </button>
+              <button onClick={() => quadFileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "4px", flexShrink: 0}} title="Add photo">
+                <Image src="/photos.png" alt="photos" width={22} height={22} />
+              </button>
+              <input ref={quadFileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={(e) => { handleQuadImageSelect(e); setShowQuadComposer(true); }} />
             </div>
           </div>
+
+          {/* Quad Composer Modal */}
+          {showQuadComposer && (
+            <>
+              <div onClick={() => { setShowQuadComposer(false); setQuadContent(""); setQuadTag(""); setQuadLocation(""); setQuadImage(null); setQuadImagePreview(""); setQuadPostError(""); }} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+              <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "0 0 32px"}}>
+                <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "12px auto 0"}}></div>
+                <div style={{padding: "12px 16px 10px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                  <span style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A"}}>Post to Quad</span>
+                  <button onClick={() => { setShowQuadComposer(false); setQuadContent(""); setQuadTag(""); setQuadLocation(""); setQuadImage(null); setQuadImagePreview(""); setQuadPostError(""); }} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.1rem", padding: "4px"}}>✕</button>
+                </div>
+                <div style={{padding: "12px 16px"}}>
+                  <div style={{display: "flex", gap: "10px", alignItems: "flex-start", marginBottom: "10px"}}>
+                    {currentUser?.avatar_url
+                      ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                      : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                    }
+                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", alignSelf: "center"}}>{currentUser?.full_name}</div>
+                  </div>
+                  <textarea
+                    autoFocus
+                    placeholder="Hangout or need help? Post it here..."
+                    value={quadContent}
+                    onChange={(e) => setQuadContent(e.target.value)}
+                    rows={4}
+                    style={{width: "100%", border: "none", padding: "0", fontSize: "0.95rem", color: "#1A1A1A", backgroundColor: "#fff", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box", lineHeight: 1.5}}
+                  />
+                  {HANGOUT_TAG_SET.has(quadTag) && (
+                    <div style={{marginTop: "8px"}}>
+                      <input
+                        placeholder="📍 Nasaan ka? (e.g. Library, Canteen, Gym)"
+                        value={quadLocation}
+                        onChange={e => setQuadLocation(e.target.value)}
+                        style={{width: "100%", border: "1px solid #1D9E75", borderRadius: "10px", padding: "8px 12px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box", color: "#1A1A1A"}}
+                      />
+                    </div>
+                  )}
+                  {quadImagePreview && (
+                    <div style={{position: "relative", display: "inline-block", marginTop: "8px"}}>
+                      <img src={quadImagePreview} alt="" style={{width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px"}} />
+                      <button onClick={() => { setQuadImage(null); setQuadImagePreview(""); }} style={{position: "absolute", top: "-6px", right: "-6px", backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", fontSize: "0.65rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>x</button>
+                    </div>
+                  )}
+                  <div style={{marginTop: "10px", position: "relative"}}>
+                    <button onClick={() => setShowTagPicker(!showTagPicker)}
+                      style={{width: "100%", padding: "9px 14px", borderRadius: "10px", border: "1px solid " + (quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#1D9E75" : "#F59E0B") : "#F0F0F0"), backgroundColor: quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#E1F5EE" : "#FEF3C7") : "#F7F7F7", color: quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#1D9E75" : "#F59E0B") : "#888", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                      <span>{quadTag || "Select a tag (required)"}</span>
+                      <span style={{fontSize: "0.7rem"}}>{showTagPicker ? "▲" : "▾"}</span>
+                    </button>
+                    {showTagPicker && (
+                      <>
+                        <div onClick={() => setShowTagPicker(false)} style={{position: "fixed", inset: 0, zIndex: 550}} />
+                        <div style={{position: "absolute", top: "42px", left: 0, right: 0, backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", zIndex: 600, overflow: "hidden", border: "1px solid #F0F0F0"}}>
+                          <div style={{padding: "8px 12px 4px", fontSize: "0.68rem", color: "#888", fontWeight: 700, letterSpacing: "0.05em"}}>🟢 HANGOUT</div>
+                          {HANGOUT_TAGS.map(tag => (
+                            <button key={tag} onClick={() => { setQuadTag(tag); setShowTagPicker(false); }}
+                              style={{width: "100%", padding: "9px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: quadTag === tag ? "#E1F5EE" : "#fff", color: quadTag === tag ? "#1D9E75" : "#1A1A1A", fontWeight: quadTag === tag ? 700 : 400, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left"}}>
+                              {tag}
+                            </button>
+                          ))}
+                          <div style={{padding: "8px 12px 4px", fontSize: "0.68rem", color: "#888", fontWeight: 700, letterSpacing: "0.05em"}}>🟡 HELP</div>
+                          {HELP_TAGS.map(tag => (
+                            <button key={tag} onClick={() => { setQuadTag(tag); setShowTagPicker(false); }}
+                              style={{width: "100%", padding: "9px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: quadTag === tag ? "#FEF3C7" : "#fff", color: quadTag === tag ? "#F59E0B" : "#1A1A1A", fontWeight: quadTag === tag ? 700 : 400, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left"}}>
+                              {tag}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {quadPostError && <div style={{color: "#EF4444", fontSize: "0.75rem", marginTop: "6px"}}>{quadPostError}</div>}
+                  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", borderTop: "1px solid #F0F0F0", paddingTop: "12px"}}>
+                    <button onClick={() => quadFileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "0"}} title="Add photo">
+                      <Image src="/photos.png" alt="photos" width={22} height={22} />
+                    </button>
+                    <button onClick={() => { handleQuadPost(); setShowQuadComposer(false); }} disabled={quadPosting || !quadContent.trim() || !quadTag}
+                      style={{backgroundColor: quadPosting || !quadContent.trim() || !quadTag ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: quadPosting || !quadContent.trim() || !quadTag ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                      {quadPosting ? "Posting..." : "Post"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Quad Feed */}
           <div style={{flex: 1, paddingBottom: "80px"}}>
