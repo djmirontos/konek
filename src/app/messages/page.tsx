@@ -114,7 +114,7 @@ export default function MessagesPage() {
 
       {/* HEADER */}
       <div style={{backgroundColor: "#1D9E75", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between"}}>
-        <button onClick={() => router.back()} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", width: "36px"}}>‹</button>
+        <button onClick={() => router.push('/feeds')} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", width: "36px"}}>‹</button>
         <div style={{fontWeight: 800, fontSize: "1.1rem", color: "#fff", letterSpacing: "0.05em"}}>MESSAGES</div>
         <div style={{width: "36px"}}></div>
       </div>
