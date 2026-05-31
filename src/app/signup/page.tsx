@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import AvatarUploader from "@/components/AvatarUploader";
 
 const OTHER_SCHOOL_ID = "00000000-0000-0000-0000-000000009998";
 const GUEST_COMMUNITY_ID = "00000000-0000-0000-0000-000000009999";
@@ -13,8 +14,6 @@ type School = { id: string; name: string; abbreviation: string; };
 export default function SignupPage() {
   const router = useRouter();
   const supabase = createClient();
-  const avatarInputRef = useRef<HTMLInputElement>(null);
-
   // step
   const [step, setStep] = useState<1 | 2>(1);
 
@@ -33,6 +32,7 @@ export default function SignupPage() {
   const [showSchoolList, setShowSchoolList] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState("");
+  const [showAvatarUploader, setShowAvatarUploader] = useState(false);
 
   // school request modal
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -69,12 +69,10 @@ export default function SignupPage() {
     if (validateStep1()) setStep(2);
   }
 
-  function handleAvatarSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { setError("Avatar must be under 5MB"); return; }
+  function handleAvatarComplete(file: File) {
     setAvatarFile(file);
     setAvatarPreview(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(file); });
+    setShowAvatarUploader(false);
   }
 
   function selectSchool(school: School) {
@@ -340,13 +338,14 @@ export default function SignupPage() {
             <div>
               <label style={labelStyle}>Profile Photo <span style={{color: "#1D9E75", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional)</span></label>
               <div style={{display: "flex", alignItems: "center", gap: "16px", marginTop: "4px"}}>
-                <div style={{width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#F0F0F0", overflow: "hidden", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.6rem"}}>
+                <div onClick={() => setShowAvatarUploader(true)}
+                  style={{width: "72px", height: "72px", borderRadius: "50%", backgroundColor: "#F0F0F0", overflow: "hidden", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem", cursor: "pointer", border: "2px dashed #1D9E75", position: "relative"}}>
                   {avatarPreview ? (
                     <img src={avatarPreview} alt="avatar" style={{width: "100%", height: "100%", objectFit: "cover"}} />
                   ) : "👤"}
                 </div>
                 <div style={{flex: 1}}>
-                  <button type="button" onClick={() => avatarInputRef.current?.click()}
+                  <button type="button" onClick={() => setShowAvatarUploader(true)}
                     style={{backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "9px 16px", fontSize: "0.8rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: "#1A1A1A"}}>
                     {avatarFile ? "Change Photo" : "Upload Photo"}
                   </button>
@@ -358,7 +357,6 @@ export default function SignupPage() {
                   )}
                   <div style={{fontSize: "0.68rem", color: "#888", marginTop: "4px"}}>You can add this later in your profile</div>
                 </div>
-                <input ref={avatarInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleAvatarSelect} />
               </div>
             </div>
 
@@ -464,6 +462,14 @@ export default function SignupPage() {
             )}
           </div>
         </>
+      )}
+
+      {/* AVATAR UPLOADER */}
+      {showAvatarUploader && (
+        <AvatarUploader
+          onComplete={handleAvatarComplete}
+          onCancel={() => setShowAvatarUploader(false)}
+        />
       )}
 
       {/* CLOSE SCHOOL LIST ON OUTSIDE CLICK */}

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import { useRouter, useParams } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
+import AvatarUploader from "@/components/AvatarUploader";
 
 type School = { id: string; name: string; abbreviation: string; };
 type ProfileUser = {
@@ -57,6 +58,7 @@ export default function ProfilePage() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const [toast, setToast] = useState("");
+  const [showAvatarUploader, setShowAvatarUploader] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => { initPage(); }, [profileId]);
@@ -147,6 +149,25 @@ export default function ProfilePage() {
       console.error("fetchTabData error:", err);
     } finally {
       setLoadingTab(false);
+    }
+  }
+
+  async function handleAvatarComplete(file: File) {
+    if (!currentUser) return;
+    try {
+      const path = "avatars/" + currentUser.id + "/" + Date.now() + ".jpg";
+      const { error: uploadError } = await supabase.storage.from("konek-images").upload(path, file);
+      if (uploadError) throw uploadError;
+      const { data: urlData } = supabase.storage.from("konek-images").getPublicUrl(path);
+      const { error: updateError } = await supabase.from("users").update({ avatar_url: urlData.publicUrl }).eq("id", currentUser.id);
+      if (updateError) throw updateError;
+      setProfileUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
+      setCurrentUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
+      showToast("Profile photo updated!");
+    } catch {
+      showToast("Failed to update avatar.");
+    } finally {
+      setShowAvatarUploader(false);
     }
   }
 
@@ -273,12 +294,18 @@ export default function ProfilePage() {
             : <div style={{width: "88px", height: "88px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "3px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "2rem"}}>{profileUser.full_name?.charAt(0).toUpperCase()}</div>
           }
           {isOwnProfile && (
-            <button onClick={() => fileInputRef.current?.click()} disabled={uploadingAvatar}
+            <button onClick={() => setShowAvatarUploader(true)} disabled={uploadingAvatar}
               style={{position: "absolute", bottom: "0", right: "0", backgroundColor: "#1D9E75", border: "2px solid #fff", borderRadius: "50%", width: "28px", height: "28px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "0.7rem"}}>
               {uploadingAvatar ? "⏳" : "📷"}
             </button>
           )}
           <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleAvatarChange} />
+          {showAvatarUploader && (
+            <AvatarUploader
+              onComplete={handleAvatarComplete}
+              onCancel={() => setShowAvatarUploader(false)}
+            />
+          )}
         </div>
 
         <div style={{fontWeight: 700, fontSize: "1.2rem", color: "#1A1A1A", marginBottom: "4px"}}>{profileUser.full_name}</div>
