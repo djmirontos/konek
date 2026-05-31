@@ -813,7 +813,7 @@ export default function FeedsPage() {
                     {showTagPicker && (
                       <>
                         <div onClick={() => setShowTagPicker(false)} style={{position: "fixed", inset: 0, zIndex: 550}} />
-                        <div style={{position: "absolute", top: "42px", left: 0, right: 0, backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", zIndex: 600, overflow: "hidden", border: "1px solid #F0F0F0"}}>
+                        <div style={{position: "absolute", bottom: "46px", left: 0, right: 0, backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", zIndex: 600, overflowY: "auto", maxHeight: "260px", border: "1px solid #F0F0F0"}}>
                           <div style={{padding: "8px 12px 4px", fontSize: "0.68rem", color: "#888", fontWeight: 700, letterSpacing: "0.05em"}}>🟢 HANGOUT</div>
                           {HANGOUT_TAGS.map(tag => (
                             <button key={tag} onClick={() => { setQuadTag(tag); setShowTagPicker(false); }}
