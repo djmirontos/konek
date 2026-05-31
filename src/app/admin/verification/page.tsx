@@ -50,7 +50,26 @@ export default function AdminVerificationPage() {
       .order("verification_submitted_at", { ascending: true })
       .limit(50);
     if (data) {
-      setRequests(data.map((r: any) => ({ ...r, school: Array.isArray(r.schools) ? r.schools[0] ?? null : r.schools })));
+      const enriched = await Promise.all(data.map(async (r: any) => {
+        let front_url = r.verification_front_url;
+        let back_url = r.verification_back_url;
+        if (front_url) {
+          const path = front_url.split("/verification-ids/")[1];
+          if (path) {
+            const { data: signed } = await supabase.storage.from("verification-ids").createSignedUrl(path, 3600);
+            if (signed) front_url = signed.signedUrl;
+          }
+        }
+        if (back_url) {
+          const path = back_url.split("/verification-ids/")[1];
+          if (path) {
+            const { data: signed } = await supabase.storage.from("verification-ids").createSignedUrl(path, 3600);
+            if (signed) back_url = signed.signedUrl;
+          }
+        }
+        return { ...r, verification_front_url: front_url, verification_back_url: back_url, school: Array.isArray(r.schools) ? r.schools[0] ?? null : r.schools };
+      }));
+      setRequests(enriched);
     }
     setLoading(false);
   }
