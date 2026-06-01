@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PhotoViewer from "@/components/PhotoViewer";
+import PhotoGrid from "@/components/PhotoGrid";
 import BottomNav from "@/components/BottomNav";
 import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
@@ -704,10 +705,8 @@ export default function FeedsPage() {
                 </div>
                 <div style={{padding: "0 16px 10px", fontSize: "0.9rem", color: "#1A1A1A", lineHeight: 1.5}}>{post.content}</div>
                 {post.images && post.images.length > 0 && (
-                  <div style={{display: "grid", gridTemplateColumns: post.images.length === 1 ? "1fr" : "1fr 1fr", gap: "2px", marginBottom: "8px"}}>
-                    {post.images.map((url, i) => (
-                      <img key={i} src={url} alt="" onClick={() => { setViewerImages(post.images!); setViewerIndex(i); }} style={{width: "100%", maxHeight: "480px", objectFit: "contain", backgroundColor: "#000", cursor: "pointer", display: "block"}} />
-                    ))}
+                  <div style={{padding: "0 12px"}}>
+                    <PhotoGrid images={post.images} onImageClick={(i) => { setViewerImages(post.images!); setViewerIndex(i); }} />
                   </div>
                 )}
                 <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
@@ -1009,6 +1008,11 @@ export default function FeedsPage() {
           currentIndex={viewerIndex}
           onIndexChange={setViewerIndex}
           onClose={() => setViewerImages([])}
+          posterName={posts.find(p => p.images?.includes(viewerImages[0]))?.users?.full_name}
+          posterAvatar={posts.find(p => p.images?.includes(viewerImages[0]))?.users?.avatar_url}
+          timestamp={posts.find(p => p.images?.includes(viewerImages[0]))?.created_at}
+          likeCount={Object.values(posts.find(p => p.images?.includes(viewerImages[0]))?.reactionCounts || {}).reduce((a,b) => a+b, 0)}
+          commentCount={posts.find(p => p.images?.includes(viewerImages[0]))?.commentCount}
         />
       )}
     </div>
