@@ -5,6 +5,7 @@ import { shareContent } from "@/lib/share";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
 import PhotoViewer from "@/components/PhotoViewer";
+import { FEED_REACTIONS } from "@/components/ReactionButton";
 
 const REACTIONS = ["/like.png", "/love.png", "/haha.png", "/wow.png", "/sad.png", "/grabe.png", "/laban.png"];
 const REACTION_VALUES = ["like", "love", "haha", "wow", "sad", "grabe", "laban"];
@@ -361,7 +362,7 @@ export default function PostDetailPage() {
                 onTouchStart={startLongPress}
                 onTouchEnd={() => { cancelLongPress(); if (!showReactionPicker) handleQuickLike(); }}
                 style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
-                {post.userReaction ? <img src={post.userReaction} alt="reaction" style={{width: "20px", height: "20px"}} /> : <Image src="/like.png" alt="like" width={20} height={20} style={{opacity: 0.5}} />}
+                {post.userReaction ? (() => { const r = FEED_REACTIONS.find(r => r.value === post.userReaction); return <span style={{fontSize: "1.2rem", lineHeight: 1}}>{r ? r.emoji : "👌"}</span>; })() : <span style={{fontSize: "1.2rem", lineHeight: 1, opacity: 0.5}}>👌</span>}
                 <span style={{fontSize: "0.78rem", fontWeight: post.userReaction ? 700 : 400, color: post.userReaction ? "#1D9E75" : "#888"}}>
                   {post.userReaction ? REACTION_NAMES[REACTIONS.indexOf(post.userReaction)] || "Like" : "Like"}
                 </span>
@@ -407,7 +408,7 @@ export default function PostDetailPage() {
           <div style={{textAlign: "center", padding: "40px 16px", color: "#888", display: "flex", flexDirection: "column", alignItems: "center"}}>
             <img src="/nocomment.png" alt="No comments" style={{width: "120px", height: "120px", objectFit: "contain", marginBottom: "12px", opacity: 0.7}} />
             <div style={{fontSize: "0.95rem", fontWeight: 700, color: "#1A1A1A", marginBottom: "4px"}}>Walay comment pa!</div>
-            <div style={{fontSize: "0.82rem", color: "#888"}}>Be the first to comment. Go!</div>
+            <div style={{fontSize: "0.82rem", color: "#888"}}>Be the first to comment.</div>
           </div>
         ) : comments.map(comment => (
           <div key={comment.id} style={{backgroundColor: "#fff", marginBottom: "4px", padding: "12px 16px"}}>

@@ -488,7 +488,7 @@ export default function SoapboxPage() {
                 <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 700}}>{myPseudonym}</div>
               </div>
             </div>
-            <textarea placeholder="Unsay imong gibati karon? Isulti diri, anonymous ka..."
+            <textarea placeholder="What's on your mind today? Share anonymously in any language."
               value={postContent} onChange={(e) => setPostContent(e.target.value)} rows={3}
               style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             {imagePreview && (
@@ -604,7 +604,7 @@ export default function SoapboxPage() {
                 <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 700}}>{myConfessionPseudonym}</div>
               </div>
             </div>
-            <textarea placeholder="Unsa imong tinago? Libre ka mag-confess diri. Walay mahibaw-an kung kinsa ka..."
+            <textarea placeholder="Want to confess your feelings? Your identity stays anonymous."
               value={confessionContent} onChange={(e) => setConfessionContent(e.target.value)} rows={3}
               style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             {confessionImagePreview && (
