@@ -27,12 +27,9 @@ type Props = {
   userReaction: string | null;
   reactionCounts: Record<string, number>;
   reactions?: Reaction[];
-  defaultReaction?: Reaction;
   onReact: (postId: string, value: string) => void;
   onOpenReactionList?: () => void;
   commentCount?: number;
-  onComment?: () => void;
-  onShare?: () => void;
 };
 
 function getTotal(counts: Record<string, number>) {
@@ -44,22 +41,21 @@ function getTopEmojis(counts: Record<string, number>, reactions: Reaction[]) {
     .filter(([, v]) => v > 0)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3)
-    .map(([key]) => reactions.find(r => r.value === key)?.emoji || "❤️");
+    .map(([key]) => reactions.find(r => r.value === key)?.emoji || "")
+    .filter(Boolean);
 }
 
 export default function ReactionButton({
   postId, userReaction, reactionCounts,
   reactions = FEED_REACTIONS,
-  defaultReaction = FEED_REACTIONS[0],
-  onReact, onOpenReactionList, commentCount, onComment, onShare
+  onReact,
+  onOpenReactionList,
 }: Props) {
   const [showPicker, setShowPicker] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
-  const touchStartX = useRef(0);
 
-  const activeReaction = reactions.find(r => r.value === userReaction);
   const total = getTotal(reactionCounts);
   const topEmojis = getTopEmojis(reactionCounts, reactions);
 
@@ -76,7 +72,7 @@ export default function ReactionButton({
 
   function handleTap() {
     if (showPicker) return;
-    onReact(postId, userReaction ? userReaction : defaultReaction.value);
+    onReact(postId, userReaction ? userReaction : reactions[0].value);
   }
 
   function handlePickerTouchMove(e: React.TouchEvent) {
@@ -90,17 +86,15 @@ export default function ReactionButton({
   }
 
   function handlePickerTouchEnd() {
-    if (hoveredIndex !== null) {
-      onReact(postId, reactions[hoveredIndex].value);
-    }
+    if (hoveredIndex !== null) onReact(postId, reactions[hoveredIndex].value);
     setShowPicker(false);
     setHoveredIndex(null);
   }
 
   return (
-    <div style={{display: "flex", alignItems: "center", gap: "0px", position: "relative"}}>
+    <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", flex: 1, position: "relative"}}>
 
-      {/* REACTION BUTTON */}
+      {/* LEFT — Like button + total count */}
       <div style={{position: "relative"}}>
         <AnimatePresence>
           {showPicker && (
@@ -110,7 +104,7 @@ export default function ReactionButton({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.6, y: 10 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              style={{position: "absolute", bottom: "48px", left: "-8px", backgroundColor: "rgba(255,255,255,0.97)", borderRadius: "40px", padding: "8px 10px", boxShadow: "0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)", display: "flex", alignItems: "flex-end", gap: "2px", zIndex: 600, border: "1px solid rgba(0,0,0,0.06)", backdropFilter: "blur(8px)"}}
+              style={{position: "absolute", bottom: "48px", left: "-8px", backgroundColor: "rgba(255,255,255,0.97)", borderRadius: "40px", padding: "8px 10px", boxShadow: "0 8px 32px rgba(0,0,0,0.18)", display: "flex", alignItems: "flex-end", gap: "2px", zIndex: 600, border: "1px solid rgba(0,0,0,0.06)", backdropFilter: "blur(8px)"}}
               onTouchMove={handlePickerTouchMove}
               onTouchEnd={handlePickerTouchEnd}
             >
@@ -155,50 +149,41 @@ export default function ReactionButton({
           onMouseDown={startLongPress}
           onMouseUp={() => { cancelLongPress(); if (!showPicker) handleTap(); }}
           onMouseLeave={cancelLongPress}
-          onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; startLongPress(); }}
+          onTouchStart={startLongPress}
           onTouchEnd={() => { cancelLongPress(); if (!showPicker) handleTap(); }}
           whileTap={{ scale: 0.85 }}
-          style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit", WebkitTapHighlightColor: "transparent"}}
-          aria-label={activeReaction ? activeReaction.label : "Like"}
+          style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit", WebkitTapHighlightColor: "transparent"}}
+          aria-label="React"
         >
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={userReaction || "none"}
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 500, damping: 20 }}
-              style={{fontSize: "1.2rem", lineHeight: 1, display: "flex", alignItems: "center"}}
-            >
-              {activeReaction
-                ? <span style={{fontSize: "1.2rem"}}>{activeReaction.emoji}</span>
-                : <img src="/like.png" alt="like" style={{width: "20px", height: "20px", objectFit: "contain", opacity: 0.5}} />
-              }
-            </motion.span>
-          </AnimatePresence>
-          {activeReaction && (
-            <span style={{fontSize: "0.78rem", fontWeight: 600, color: "#1D9E75", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-              {activeReaction.label}
+          <img
+            src="/like.png"
+            alt="like"
+            style={{width: "20px", height: "20px", objectFit: "contain", opacity: userReaction ? 1 : 0.5,
+              filter: userReaction ? "hue-rotate(0deg) saturate(1.5)" : "none",
+              transition: "opacity 0.2s"}}
+          />
+          {total > 0 && (
+            <span style={{fontSize: "0.78rem", fontWeight: 600, color: userReaction ? "#1D9E75" : "#888", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+              {total}
             </span>
           )}
         </motion.button>
       </div>
 
-      {/* REACTION COUNT BAR */}
-      {total > 0 && (
+      {/* RIGHT — Top 3 reaction emojis (tappable) */}
+      {topEmojis.length > 0 && (
         <motion.div
           onClick={onOpenReactionList}
           whileTap={{ scale: 0.95 }}
-          style={{display: "flex", alignItems: "center", gap: "2px", cursor: "pointer", padding: "6px 4px", marginLeft: "2px"}}
+          style={{display: "flex", alignItems: "center", gap: "2px", cursor: "pointer", padding: "4px 6px", backgroundColor: "#F7F7F7", borderRadius: "20px"}}
         >
-          {topEmojis.filter((e, i, arr) => arr.indexOf(e) === i).slice(0, 2).map((emoji, i) => (
-            <span key={i} style={{fontSize: "0.85rem", lineHeight: 1}}>{emoji}</span>
+          {topEmojis.map((emoji, i) => (
+            <span key={i} style={{fontSize: "0.9rem", lineHeight: 1}}>{emoji}</span>
           ))}
-          <span style={{fontSize: "0.75rem", color: "#888", fontWeight: 600, fontFamily: "'Plus Jakarta Sans', sans-serif", marginLeft: "1px"}}>{total}</span>
         </motion.div>
       )}
 
-      {/* OVERLAY to close picker */}
+      {/* OVERLAY */}
       {showPicker && (
         <div style={{position: "fixed", inset: 0, zIndex: 599}} onClick={() => { setShowPicker(false); setHoveredIndex(null); }} />
       )}
