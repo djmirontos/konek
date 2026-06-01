@@ -89,6 +89,7 @@ export default function FeedsPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
+  const [postCooldown, setPostCooldown] = useState(false);
   const [postContent, setPostContent] = useState("");
   const [selectedTag, setSelectedTag] = useState<string>("");
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -345,7 +346,7 @@ export default function FeedsPage() {
       setPostContent(""); setSelectedTag(""); setSelectedImages([]); setImagePreviews([]);
       fetchPosts();
     } catch (err: unknown) { setPostError(err instanceof Error ? err.message : "Failed to post. Try again."); }
-    finally { setPosting(false); }
+    finally { setPosting(false); setPostCooldown(true); setTimeout(() => setPostCooldown(false), 3000); }
   }
 
   async function handleQuadPost() {
@@ -688,9 +689,9 @@ export default function FeedsPage() {
                       <button onClick={() => fileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "0"}} title="Add photos"><Image src="/photos.png" alt="photos" width={22} height={22} /></button>
                       <span style={{fontSize: "0.7rem", color: "#aaa"}}>{selectedImages.length}/8 photos</span>
                     </div>
-                    <button onClick={() => { handlePost(); setShowFeedsComposer(false); }} disabled={posting || !postContent.trim()}
+                    <button onClick={() => { handlePost(); setShowFeedsComposer(false); }} disabled={posting || postCooldown || !postContent.trim()}
                       style={{backgroundColor: posting || !postContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: posting || !postContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
-                      {posting ? "Posting..." : "Post"}
+                      {posting ? "Posting..." : postCooldown ? "Please wait..." : "Post"}
                     </button>
                   </div>
                 </div>
