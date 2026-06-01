@@ -159,7 +159,7 @@ export default function ReactionButton({
           onTouchEnd={() => { cancelLongPress(); if (!showPicker) handleTap(); }}
           whileTap={{ scale: 0.85 }}
           style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit", WebkitTapHighlightColor: "transparent"}}
-          aria-label={activeReaction ? activeReaction.label : "React"}
+          aria-label={activeReaction ? activeReaction.label : "Like"}
         >
           <AnimatePresence mode="wait">
             <motion.span
@@ -170,11 +170,11 @@ export default function ReactionButton({
               transition={{ type: "spring", stiffness: 500, damping: 20 }}
               style={{fontSize: "1.2rem", lineHeight: 1}}
             >
-              {activeReaction ? activeReaction.emoji : "🤍"}
+              {activeReaction ? activeReaction.emoji : "👍"}
             </motion.span>
           </AnimatePresence>
           <span style={{fontSize: "0.78rem", fontWeight: 600, color: activeReaction ? "#1D9E75" : "#888", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-            {activeReaction ? activeReaction.label : "React"}
+            {activeReaction ? activeReaction.label : "Like"}
           </span>
         </motion.button>
       </div>
