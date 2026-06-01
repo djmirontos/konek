@@ -8,7 +8,6 @@ import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
 import { useRouter } from "next/navigation";
 
-const TAGS = ["#reklamo", "#hugot", "#totoo", "#charot", "#unsay-hunahuna", "#panuway", "#bagagface", "#hilason", "#inlove"];
 
 const ADJECTIVES = [
   "Tamad", "Sungit", "Buang", "Maldito", "Gigante", "Liit", "Paborito", "Bantog", "Tapang", "Matabil",
@@ -104,7 +103,6 @@ export default function SoapboxPage() {
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
   const [postContent, setPostContent] = useState("");
-  const [selectedTag, setSelectedTag] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [postError, setPostError] = useState("");
@@ -236,7 +234,7 @@ export default function SoapboxPage() {
       const pseudonym = generatePseudonym(currentUser.id, postSeed);
       const { error } = await supabase.from("posts").insert({
         user_id: currentUser.id, school_id: currentUser.school_id, type: "soapbox",
-        content: postContent.trim(), tag: selectedTag || null,
+        content: postContent.trim(), tag: null,
         images: imageUrl ? [imageUrl] : null, is_anonymous: true, pseudonym,
         is_flagged: false, is_hidden: false, is_under_review: false,
         upvotes: 0, downvotes: 0, warning_count: 0,
@@ -510,12 +508,7 @@ export default function SoapboxPage() {
               </div>
             )}
             <div style={{display: "flex", gap: "6px", marginTop: "8px", flexWrap: "wrap"}}>
-              {TAGS.map(tag => (
-                <button key={tag} onClick={() => setSelectedTag(selectedTag === tag ? "" : tag)}
-                  style={{padding: "4px 10px", borderRadius: "20px", border: "1px solid " + (selectedTag === tag ? "#1D9E75" : "#F0F0F0"), backgroundColor: selectedTag === tag ? "#E1F5EE" : "#fff", color: selectedTag === tag ? "#1D9E75" : "#888", fontSize: "0.7rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
-                  {tag}
-                </button>
-              ))}
+
             </div>
             {postError && <div style={{color: "#EF4444", fontSize: "0.75rem", marginTop: "6px"}}>{postError}</div>}
             <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px"}}>
@@ -552,7 +545,7 @@ export default function SoapboxPage() {
                     <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px"}}>
                       {formatTime(post.created_at)}
                       {post.edited_at && <span style={{marginLeft: "6px", color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
-                      {post.tag && <span style={{marginLeft: "8px", color: "#1D9E75", fontWeight: 600}}>{post.tag}</span>}
+
                     </div>
                   </div>
                   {currentUser?.id === post.user_id && (
