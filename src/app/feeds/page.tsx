@@ -748,15 +748,14 @@ export default function FeedsPage() {
                 )}
                 <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
                 <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 12px"}}>
-                  <div style={{display: "flex", alignItems: "center", gap: "8px"}}>
+                  {/* LEFT: Like + Comment + Share */}
+                  <div style={{display: "flex", alignItems: "center", gap: "4px"}}>
                     <ReactionButton
                       postId={post.id}
                       userReaction={post.userReaction || null}
                       reactionCounts={post.reactionCounts || {}}
                       reactions={FEED_REACTIONS}
-
                       onReact={handleReactNew}
-                      onOpenReactionList={() => fetchReactionList(post.id)}
                     />
                     <button onClick={() => router.push("/feeds/" + post.id)} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
                       <Image src="/comment.png" alt="comment" width={20} height={20} style={{opacity: 0.5}} />
@@ -766,6 +765,15 @@ export default function FeedsPage() {
                       <Image src="/share.png" alt="share" width={20} height={20} style={{opacity: 0.5}} />
                     </button>
                   </div>
+                  {/* RIGHT: Top reaction emojis */}
+                  {Object.keys(post.reactionCounts || {}).length > 0 && (
+                    <div onClick={() => fetchReactionList(post.id)} style={{display: "flex", alignItems: "center", gap: "3px", cursor: "pointer", padding: "4px 8px", backgroundColor: "#F7F7F7", borderRadius: "20px"}}>
+                      {Object.entries(post.reactionCounts || {}).filter(([,v]) => v > 0).sort((a,b) => b[1]-a[1]).slice(0,3).map(([key]) => {
+                        const r = FEED_REACTIONS.find(r => r.value === key);
+                        return r ? <span key={key} style={{fontSize: "0.9rem", lineHeight: 1}}>{r.emoji}</span> : null;
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

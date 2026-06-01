@@ -170,18 +170,7 @@ export default function ReactionButton({
         </motion.button>
       </div>
 
-      {/* RIGHT — Top 3 reaction emojis (tappable) */}
-      {topEmojis.length > 0 && (
-        <motion.div
-          onClick={onOpenReactionList}
-          whileTap={{ scale: 0.95 }}
-          style={{display: "flex", alignItems: "center", gap: "2px", cursor: "pointer", padding: "4px 6px", backgroundColor: "#F7F7F7", borderRadius: "20px"}}
-        >
-          {topEmojis.map((emoji, i) => (
-            <span key={i} style={{fontSize: "0.9rem", lineHeight: 1}}>{emoji}</span>
-          ))}
-        </motion.div>
-      )}
+
 
       {/* OVERLAY */}
       {showPicker && (
