@@ -189,12 +189,12 @@ export default function ReactionButton({
         <motion.div
           onClick={onOpenReactionList}
           whileTap={{ scale: 0.95 }}
-          style={{display: "flex", alignItems: "center", gap: "3px", cursor: "pointer", padding: "6px 6px", marginLeft: "2px"}}
+          style={{display: "flex", alignItems: "center", gap: "2px", cursor: "pointer", padding: "6px 4px", marginLeft: "2px"}}
         >
-          {topEmojis.map((emoji, i) => (
-            <span key={i} style={{fontSize: "0.95rem", lineHeight: 1}}>{emoji}</span>
+          {topEmojis.filter((e, i, arr) => arr.indexOf(e) === i).slice(0, 2).map((emoji, i) => (
+            <span key={i} style={{fontSize: "0.85rem", lineHeight: 1}}>{emoji}</span>
           ))}
-          <span style={{fontSize: "0.78rem", color: "#888", fontWeight: 600, fontFamily: "'Plus Jakarta Sans', sans-serif", marginLeft: "2px"}}>{total}</span>
+          <span style={{fontSize: "0.75rem", color: "#888", fontWeight: 600, fontFamily: "'Plus Jakarta Sans', sans-serif", marginLeft: "1px"}}>{total}</span>
         </motion.div>
       )}
 
