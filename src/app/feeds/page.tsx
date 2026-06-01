@@ -8,6 +8,7 @@ import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
 import PhotoGrid from "@/components/PhotoGrid";
 import BottomNav from "@/components/BottomNav";
 import AppHeader from "@/components/AppHeader";
+import imageCompression from "browser-image-compression";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import SchoolPicker from "@/components/SchoolPicker";
 import { shareContent } from "@/lib/share";
@@ -381,20 +382,23 @@ export default function FeedsPage() {
     finally { setQuadPosting(false); }
   }
 
-  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
-    const valid = files.filter(f => f.size <= 5 * 1024 * 1024 && (f.type === "image/jpeg" || f.type === "image/png"));
-    const combined = [...selectedImages, ...valid].slice(0, 4);
+    const valid = files.filter(f => f.type === "image/jpeg" || f.type === "image/png");
+    const options = { maxSizeMB: 0.8, maxWidthOrHeight: 1200, useWebWorker: true };
+    const compressed = await Promise.all(valid.map(f => imageCompression(f, options)));
+    const combined = [...selectedImages, ...compressed].slice(0, 8);
     setSelectedImages(combined);
     setImagePreviews(prev => { prev.forEach(url => URL.revokeObjectURL(url)); return combined.map(f => URL.createObjectURL(f)); });
   }
 
-  function handleQuadImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleQuadImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { showToast("Image must be under 5MB"); return; }
-    setQuadImage(file);
-    setQuadImagePreview(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(file); });
+    const options = { maxSizeMB: 0.8, maxWidthOrHeight: 1200, useWebWorker: true };
+    const compressed = await imageCompression(file, options);
+    setQuadImage(compressed);
+    setQuadImagePreview(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(compressed); });
   }
 
   function removeImage(index: number) {
@@ -682,7 +686,7 @@ export default function FeedsPage() {
                   <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", borderTop: "1px solid #F0F0F0", paddingTop: "12px"}}>
                     <div style={{display: "flex", gap: "12px", alignItems: "center"}}>
                       <button onClick={() => fileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "0"}} title="Add photos"><Image src="/photos.png" alt="photos" width={22} height={22} /></button>
-                      <span style={{fontSize: "0.7rem", color: "#aaa"}}>{selectedImages.length}/4 photos</span>
+                      <span style={{fontSize: "0.7rem", color: "#aaa"}}>{selectedImages.length}/8 photos</span>
                     </div>
                     <button onClick={() => { handlePost(); setShowFeedsComposer(false); }} disabled={posting || !postContent.trim()}
                       style={{backgroundColor: posting || !postContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: posting || !postContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
