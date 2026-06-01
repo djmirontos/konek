@@ -99,7 +99,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
         <div style={{marginTop: "auto", padding: "16px", borderTop: "1px solid #F0F0F0"}}>
           <div style={{fontSize: "0.72rem", color: "#aaa", lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
             <span style={{fontWeight: 700, color: "#1D9E75"}}>Konek</span> — Your Campus. Your Community.
-            <br />Made with ❤️ for Tangub City students.
+            
           </div>
         </div>
       </div>
@@ -176,8 +176,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
         {/* Footer */}
         <div style={{marginTop: "auto", padding: "8px 0", borderTop: "1px solid #F0F0F0"}}>
           <div style={{fontSize: "0.68rem", color: "#aaa", lineHeight: 1.8, fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-            © 2026 Konek · Tangub City, Philippines<br />
-            Built for students, by a student 🇵🇭
+            © 2026 Konek
           </div>
         </div>
       </div>
