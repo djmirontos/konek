@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import DesktopLayout from "@/components/DesktopLayout";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -50,7 +51,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
       </head>
       <body style={{margin: 0, padding: 0, backgroundColor: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-        {children}
+        <DesktopLayout>{children}</DesktopLayout>
         <script src="/sw-register.js" defer></script>
       </body>
     </html>
