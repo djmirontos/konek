@@ -122,10 +122,10 @@ export default function SearchPage() {
       const filterBySchool = (items: any[]) => allSchools ? items : items.filter((i: any) => i.school_id === schoolId);
 
       setPeople((peopleRes.data || []).map((u: any) => ({ ...u, isVerified: verifiedIds.has(u.id), school: schools.find(s => s.id === u.school_id) })));
-      setPosts(postsRes.data || []);
+      setPosts((postsRes.data || []).map((p: any) => ({ ...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users })));
       setListings(filterBySchool(listingsRes.data || []).map((l: any) => ({ ...l, isVerified: verifiedIds.has(l.user_id) })));
-      setBoardingHouses(filterBySchool(bhRes.data || []));
-      setQuadPosts(quadRes.data || []);
+      setBoardingHouses(filterBySchool(bhRes.data || []).map((b: any) => ({ ...b, users: Array.isArray(b.users) ? b.users[0] ?? null : b.users })));
+      setQuadPosts((quadRes.data || []).map((q: any) => ({ ...q, users: Array.isArray(q.users) ? q.users[0] ?? null : q.users })));
       setSchoolResults(schoolsRes.data || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
