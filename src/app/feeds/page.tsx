@@ -8,6 +8,7 @@ import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
 import PhotoGrid from "@/components/PhotoGrid";
 import BottomNav from "@/components/BottomNav";
 import AppHeader from "@/components/AppHeader";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 import SchoolPicker from "@/components/SchoolPicker";
 import { shareContent } from "@/lib/share";
 
@@ -61,6 +62,7 @@ function VerifiedBadge() {
 export default function FeedsPage() {
   const router = useRouter();
   const supabase = createClient();
+  const showNav = useScrollDirection(50);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const quadFileInputRef = useRef<HTMLInputElement>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -540,7 +542,7 @@ export default function FeedsPage() {
   return (
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
-      <AppHeader
+      <AppHeader show={showNav}
         currentUser={currentUser}
         schools={schools}
         selectedSchool={selectedSchool}
@@ -962,7 +964,7 @@ export default function FeedsPage() {
         </>
       )}
 
-      <BottomNav active="/feeds" unreadMessages={unreadMessages} />
+      <BottomNav active="/feeds" unreadMessages={unreadMessages} show={showNav} />
 
       {toast && (
         <div style={{position: "fixed", top: "70px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#1A1A1A", color: "#fff", padding: "10px 20px", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 600, zIndex: 1000, whiteSpace: "nowrap"}}>{toast}</div>

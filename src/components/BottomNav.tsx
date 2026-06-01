@@ -10,9 +10,14 @@ const NAV_ITEMS = [
   { href: "/living", icon: "/living.png", label: "Living" },
 ];
 
-export default function BottomNav({ active, unreadMessages = 0 }: { active: string; unreadMessages?: number }) {
+export default function BottomNav({ active, unreadMessages = 0, show = true }: { active: string; unreadMessages?: number; show?: boolean }) {
   return (
-    <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", display: "flex", zIndex: 100, paddingBottom: "env(safe-area-inset-bottom)", padding: "6px 4px"}}>
+    <div style={{
+      position: "fixed", bottom: 0, left: "50%", transform: show ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(100%)",
+      width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0",
+      display: "flex", zIndex: 100, paddingBottom: "env(safe-area-inset-bottom)",
+      padding: "6px 4px", transition: "transform 0.25s ease",
+    }}>
       {NAV_ITEMS.map(item => {
         const isActive = item.href === active;
         const showBadge = item.href === "/messages" && unreadMessages > 0;

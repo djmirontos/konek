@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const FEED_REACTIONS = [
+  { emoji: "👌", label: "OK",    value: "like"  },
   { emoji: "❤️", label: "Love",  value: "love"  },
   { emoji: "😂", label: "Haha",  value: "haha"  },
   { emoji: "😮", label: "Wow",   value: "wow"   },
@@ -12,6 +13,7 @@ export const FEED_REACTIONS = [
 ];
 
 export const CONFESSION_REACTIONS = [
+  { emoji: "👌", label: "OK",    value: "like"  },
   { emoji: "❤️", label: "Love",  value: "love"  },
   { emoji: "😢", label: "Sad",   value: "sad"   },
   { emoji: "😂", label: "Haha",  value: "haha"  },

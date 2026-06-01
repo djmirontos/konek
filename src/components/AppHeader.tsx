@@ -14,11 +14,12 @@ type Props = {
   onSchoolPickerToggle: () => void;
   onNotificationsToggle?: () => void;
   onAvatarClick?: () => void;
+  show?: boolean;
 };
 
 export default function AppHeader({
   currentUser, schools, pageName, selectedSchool, unreadCount,
-  onSchoolPickerToggle, onNotificationsToggle, onAvatarClick
+  onSchoolPickerToggle, onNotificationsToggle, onAvatarClick, show = true
 }: Props) {
   const router = useRouter();
   function goToProfile() {
@@ -37,7 +38,7 @@ export default function AppHeader({
   }
 
   return (
-    <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
+    <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100, transform: show ? "translateY(0)" : "translateY(-100%)", transition: "transform 0.25s ease"}}>
       <div style={{display: "flex", flexDirection: "column"}}>
         <Image src="/konek.svg" alt="Konek" width={80} height={28} priority />
         {pageName && <span style={{color: "rgba(255,255,255,0.85)", fontSize: "0.65rem", fontWeight: 600, letterSpacing: "0.05em", marginTop: "2px"}}>{pageName}</span>}
