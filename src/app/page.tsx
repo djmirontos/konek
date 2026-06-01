@@ -17,7 +17,7 @@ export default function Home() {
       <div style={{flex: 1, padding: "16px 24px", display: "flex", flexDirection: "column", gap: "8px"}}>
         {[
           { icon: "/feed.png", name: "Feeds", desc: "Viral campus life & moments" },
-          { icon: "/soapbox.png", name: "Soapbox", desc: "Voice out. Be heard." },
+          { icon: "/soapbox.png", name: "Shout Out", desc: "Voice out. Be heard." },
           { icon: "/help.png", name: "Quad", desc: "Find your barkada" },
           { icon: "/bazaar.png", name: "Bazaar", desc: "Buy & sell on campus" },
           { icon: "/living.png", name: "Living", desc: "Find your boarding house" },

@@ -553,7 +553,7 @@ export default function FeedsPage() {
       {showSchoolPicker && <SchoolPicker schools={schools} currentUser={currentUser} selectedSchool={selectedSchool} onSelect={setSelectedSchool} onClose={() => setShowSchoolPicker(false)} />}
 
       {/* Tab Bar */}
-      <div style={{display: "flex", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", position: "sticky", top: "56px", zIndex: 100}}>
+      <div style={{display: "flex", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", position: "sticky", top: showNav ? "56px" : "0px", zIndex: 99, transition: "top 0.25s ease"}}>
         <button onClick={() => setActiveTab("feeds")}
           style={{flex: 1, padding: "12px 0", border: "none", background: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: activeTab === "feeds" ? 700 : 500, fontSize: "0.875rem", color: activeTab === "feeds" ? "#1D9E75" : "#888", borderBottom: activeTab === "feeds" ? "2px solid #1D9E75" : "2px solid transparent", transition: "all 0.15s"}}>
           📢 Feeds

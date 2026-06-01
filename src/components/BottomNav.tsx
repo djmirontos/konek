@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const NAV_ITEMS = [
   { href: "/feeds", icon: "/feed.png", label: "Feeds" },
-  { href: "/soapbox", icon: "/soapbox.png", label: "Soapbox" },
+  { href: "/soapbox", icon: "/soapbox.png", label: "Shout Out" },
   { href: "/messages", icon: "/chat.png", label: "Messages" },
   { href: "/bazaar", icon: "/bazaar.png", label: "Bazaar" },
   { href: "/living", icon: "/living.png", label: "Living" },

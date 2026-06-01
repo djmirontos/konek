@@ -454,7 +454,7 @@ export default function SoapboxPage() {
       )}
 
       <AppHeader
-        currentUser={currentUser} schools={schools} pageName="SOAPBOX"
+        currentUser={currentUser} schools={schools} pageName="SHOUT OUT"
         selectedSchool={selectedSchool} unreadCount={unreadCount}
         onSchoolPickerToggle={() => setShowSchoolPicker(!showSchoolPicker)}
       />
@@ -467,7 +467,7 @@ export default function SoapboxPage() {
           style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer",
             color: activeTab === "soapbox" ? "#1D9E75" : "#888",
             borderBottom: activeTab === "soapbox" ? "2px solid #1D9E75" : "2px solid transparent"}}>
-          🎭 Soapbox
+          📣 Shout Out
         </button>
         <button onClick={() => setActiveTab("confession")}
           style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer",
