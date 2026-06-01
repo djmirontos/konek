@@ -33,7 +33,7 @@ export default function ConversationPage() {
   const [sending, setSending] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
-  const [isAccepted, setIsAccepted] = useState(false);
+  const [isAccepted, setIsAccepted] = useState<boolean | null>(null);
   const [isInitiator, setIsInitiator] = useState(false);
   const [otherUserSchool, setOtherUserSchool] = useState<School | null>(null);
   const [convContext, setConvContext] = useState<ConvContext>(null);
@@ -207,7 +207,7 @@ export default function ConversationPage() {
       )}
 
       {/* REQUEST BANNER — shown to receiver of pending request */}
-      {!isAccepted && !isInitiator && (
+      {isAccepted === false && !isInitiator && (
         <div style={{backgroundColor: "#FFF8E1", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", textAlign: "center"}}>
           <div style={{fontSize: "0.82rem", color: "#92400E", marginBottom: "8px", fontWeight: 600}}>
             {otherUser?.full_name} wants to message you
