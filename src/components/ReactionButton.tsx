@@ -168,14 +168,19 @@ export default function ReactionButton({
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.5, opacity: 0 }}
               transition={{ type: "spring", stiffness: 500, damping: 20 }}
-              style={{fontSize: "1.2rem", lineHeight: 1}}
+              style={{fontSize: "1.2rem", lineHeight: 1, display: "flex", alignItems: "center"}}
             >
-              {activeReaction ? activeReaction.emoji : "👍"}
+              {activeReaction
+                ? <span style={{fontSize: "1.2rem"}}>{activeReaction.emoji}</span>
+                : <img src="/like.png" alt="like" style={{width: "20px", height: "20px", objectFit: "contain", opacity: 0.5}} />
+              }
             </motion.span>
           </AnimatePresence>
-          <span style={{fontSize: "0.78rem", fontWeight: 600, color: activeReaction ? "#1D9E75" : "#888", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-            {activeReaction ? activeReaction.label : "Like"}
-          </span>
+          {activeReaction && (
+            <span style={{fontSize: "0.78rem", fontWeight: 600, color: "#1D9E75", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+              {activeReaction.label}
+            </span>
+          )}
         </motion.button>
       </div>
 
