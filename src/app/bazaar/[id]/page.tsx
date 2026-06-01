@@ -26,12 +26,23 @@ type Comment = {
   replies?: Comment[];
 };
 
+function VerifiedBadge() {
+  return (
+    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "15px", height: "15px", backgroundColor: "#1D9E75", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    </span>
+  );
+}
+
 export default function BazaarDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const supabase = createClient();
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [verifiedUsers, setVerifiedUsers] = useState<Set<string>>(new Set());
   const [messagingSeller, setMessagingSeller] = useState(false);
   const [listing, setListing] = useState<Listing | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -67,6 +78,8 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
     if (!user) { router.push("/login"); return; }
     const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (userData) setCurrentUser(userData);
+    const { data: badges } = await supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student");
+    if (badges) setVerifiedUsers(new Set(badges.map((b: {user_id: string}) => b.user_id)));
     await fetchListing(id);
     await fetchComments(id);
     setLoading(false);
@@ -289,7 +302,7 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
                 ? <img onClick={() => listing && router.push(`/profile/${listing.user_id}`)} src={listing.users.avatar_url} alt="" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
                 : <div onClick={() => listing && router.push(`/profile/${listing.user_id}`)} style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.95rem", cursor: "pointer"}}>{listing?.users?.full_name?.charAt(0).toUpperCase()}</div>}
               <div>
-                <div style={{fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A"}}>{listing?.users?.full_name}</div>
+                <div style={{fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{listing?.users?.full_name}{listing && verifiedUsers.has(listing.user_id) && <VerifiedBadge />}</div>
                 <div style={{fontSize: "0.72rem", color: "#888"}}>{formatTime(listing?.created_at || "")}</div>
               </div>
               {currentUser && listing && currentUser.id !== listing.user_id && (
@@ -319,7 +332,7 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
                   <div style={{flex: 1}}>
                     <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "8px 12px"}}>
                       <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start"}}>
-                        <div style={{fontWeight: 700, fontSize: "0.78rem", color: "#1D9E75", marginBottom: "3px"}}>{comment.users?.full_name}</div>
+                        <div style={{fontWeight: 700, fontSize: "0.78rem", color: "#1D9E75", marginBottom: "3px", display: "flex", alignItems: "center"}}>{comment.users?.full_name}{verifiedUsers.has(comment.user_id) && <VerifiedBadge />}</div>
                         {currentUser?.id === comment.user_id && <button onClick={() => setShowCommentMenu(showCommentMenu === comment.id ? null : comment.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem", padding: "0 4px"}}>•••</button>}
                       </div>
                       <div style={{fontSize: "0.85rem", color: "#1A1A1A", lineHeight: 1.4}}>{comment.content}</div>
@@ -353,7 +366,7 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
                             <div style={{flex: 1}}>
                               <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "7px 11px"}}>
                                 <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start"}}>
-                                  <div style={{fontWeight: 700, fontSize: "0.75rem", color: "#1D9E75", marginBottom: "2px"}}>{reply.users?.full_name}</div>
+                                  <div style={{fontWeight: 700, fontSize: "0.75rem", color: "#1D9E75", marginBottom: "2px", display: "flex", alignItems: "center"}}>{reply.users?.full_name}{verifiedUsers.has(reply.user_id) && <VerifiedBadge />}</div>
                                   {currentUser?.id === reply.user_id && <button onClick={() => setShowCommentMenu(showCommentMenu === reply.id ? null : reply.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem", padding: "0 4px"}}>•••</button>}
                                 </div>
                                 <div style={{fontSize: "0.82rem", color: "#1A1A1A", lineHeight: 1.4}}>{reply.content}</div>

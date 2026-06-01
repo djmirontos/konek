@@ -32,6 +32,16 @@ type LivingPost = {
 
 const TABS = ["Posts", "Bazaar", "Living", "About"];
 
+function VerifiedBadge({ size = 15 }: { size?: number }) {
+  return (
+    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: size + "px", height: size + "px", backgroundColor: "#1D9E75", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
+      <svg width={size * 0.6} height={size * 0.6} viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    </span>
+  );
+}
+
 export default function ProfilePage() {
   const router = useRouter();
   const params = useParams();
@@ -41,6 +51,7 @@ export default function ProfilePage() {
 
   const [currentUser, setCurrentUser] = useState<ProfileUser | null>(null);
   const [profileUser, setProfileUser] = useState<ProfileUser | null>(null);
+  const [isVerified, setIsVerified] = useState(false);
   const [schools, setSchools] = useState<School[]>([]);
   const [activeTab, setActiveTab] = useState("Posts");
   const [loading, setLoading] = useState(true);
@@ -84,6 +95,9 @@ export default function ProfilePage() {
 
     const { data: meData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (meData) setCurrentUser(meData);
+    const { data: badges } = await supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student");
+    const verifiedIds = new Set((badges || []).map((b: {user_id: string}) => b.user_id));
+    setIsVerified(verifiedIds.has(profileId));
 
     const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
     if (schoolData) setSchools(schoolData);
@@ -411,7 +425,7 @@ export default function ProfilePage() {
           )}
         </div>
 
-        <div style={{fontWeight: 700, fontSize: "1.2rem", color: "#1A1A1A", marginBottom: "4px"}}>{profileUser.full_name}</div>
+        <div style={{fontWeight: 700, fontSize: "1.2rem", color: "#1A1A1A", marginBottom: "4px", display: "flex", alignItems: "center", justifyContent: "center"}}>{profileUser.full_name}{isVerified && <VerifiedBadge size={18} />}</div>
         {school && <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600, marginBottom: "4px"}}>{school.abbreviation}</div>}
         <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "12px"}}>Member since {formatMemberSince(profileUser.created_at)}</div>
         {profileUser.bio && <div style={{fontSize: "0.85rem", color: "#555", textAlign: "center", marginBottom: "12px", lineHeight: 1.5, maxWidth: "320px"}}>{profileUser.bio}</div>}
