@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { startConversation } from "@/lib/startConversation";
 import ReactionButton from "@/components/ReactionButton";
+import CommentReactionButton from "@/components/CommentReactionButton";
 
 const LIVING_REACTIONS = [
   { emoji: "👍", label: "Interested", value: "like"  },
@@ -33,6 +34,8 @@ type Comment = {
   parent_id: string | null; edited_at?: string | null;
   users: { full_name: string; avatar_url: string | null; } | null;
   replies?: Comment[];
+  reactionCounts?: Record<string, number>;
+  userReaction?: string | null;
 };
 
 function VerifiedBadge() {
@@ -97,6 +100,28 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
     await fetchComments(id);
     await fetchReactions(id);
     setLoading(false);
+  }
+
+  async function handleCommentReact(commentId: string, value: string) {
+    if (!currentUser) return;
+    setComments(prev => prev.map(c => {
+      const update = (item: Comment) => {
+        if (item.id !== commentId) return item;
+        const isUnreacting = item.userReaction === value;
+        const newCounts = { ...item.reactionCounts };
+        if (isUnreacting) { newCounts[value] = Math.max(0, (newCounts[value] || 1) - 1); if (!newCounts[value]) delete newCounts[value]; }
+        else { if (item.userReaction) { newCounts[item.userReaction] = Math.max(0, (newCounts[item.userReaction] || 1) - 1); if (!newCounts[item.userReaction]) delete newCounts[item.userReaction]; } newCounts[value] = (newCounts[value] || 0) + 1; }
+        return { ...item, reactionCounts: newCounts, userReaction: isUnreacting ? null : value };
+      };
+      return { ...update(c), replies: (c.replies || []).map(update) };
+    }));
+    const isUnreacting = comments.find(c => c.id === commentId)?.userReaction === value ||
+      comments.flatMap(c => c.replies || []).find(r => r.id === commentId)?.userReaction === value;
+    if (isUnreacting) {
+      await supabase.from("comment_reactions").delete().eq("comment_id", commentId).eq("user_id", currentUser.id);
+    } else {
+      await supabase.from("comment_reactions").upsert({ comment_id: commentId, user_id: currentUser.id, type: value }, { onConflict: "comment_id,user_id" });
+    }
   }
 
   async function fetchReactions(id: string) {
@@ -442,7 +467,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
             {comments.length === 0 ? (
               <div style={{textAlign: "center", padding: "32px 0"}}>
                 <Image src="/nocomment.png" alt="no comments" width={80} height={80} style={{opacity: 0.5, marginBottom: "12px"}} />
-                <div style={{color: "#888", fontSize: "0.82rem"}}>Walay comment pa. Ask the poster!</div>
+                <div style={{color: "#888", fontSize: "0.82rem"}}>Be the first to comment.</div>
               </div>
             ) : comments.map(comment => (
               <div key={comment.id} style={{marginBottom: "16px"}}>
@@ -472,6 +497,13 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                     </div>
                     <div style={{display: "flex", gap: "12px", marginTop: "4px", paddingLeft: "4px"}}>
                       <span style={{fontSize: "0.7rem", color: "#888"}}>{formatTime(comment.created_at)}{comment.edited_at && <span style={{marginLeft: "4px", fontStyle: "italic", color: "#aaa"}}>· Edited</span>}</span>
+                      <CommentReactionButton
+                        commentId={comment.id}
+                        userReaction={comment.userReaction || null}
+                        reactionCounts={comment.reactionCounts || {}}
+                        reactions={LIVING_REACTIONS}
+                        onReact={handleCommentReact}
+                      />
                       <button onClick={() => { setReplyingTo(replyingTo === comment.id ? null : comment.id); setReplyText(""); }}
                         style={{background: "none", border: "none", cursor: "pointer", fontSize: "0.7rem", color: "#1D9E75", fontWeight: 600, padding: 0, fontFamily: "inherit"}}>Reply</button>
                     </div>
