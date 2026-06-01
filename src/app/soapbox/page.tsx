@@ -240,7 +240,7 @@ export default function SoapboxPage() {
         upvotes: 0, downvotes: 0, warning_count: 0,
       });
       if (error) throw error;
-      setPostContent(""); setSelectedTag(""); setSelectedImage(null); setImagePreview("");
+      setPostContent(""); setSelectedImage(null); setImagePreview("");
       showToast("Posted anonymously!"); fetchPosts();
     } catch (err: unknown) {
       setPostError(err instanceof Error ? err.message : "Failed to post. Try again.");
