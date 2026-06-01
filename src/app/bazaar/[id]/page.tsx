@@ -5,6 +5,14 @@ import { shareContent } from "@/lib/share";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { startConversation } from "@/lib/startConversation";
+import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
+
+const BAZAAR_REACTIONS = [
+  { emoji: "👍", label: "Interested", value: "like"  },
+  { emoji: "❤️", label: "Love it",   value: "love"  },
+  { emoji: "😮", label: "Wow",       value: "wow"   },
+  { emoji: "🔥", label: "Grabe",     value: "grabe" },
+];
 
 const CATEGORY_ICONS: Record<string, string> = {
   "Textbooks": "📚", "Uniforms": "👕", "Gadgets": "🖥️", "School Supplies": "🎒",
@@ -59,6 +67,8 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [editCommentContent, setEditCommentContent] = useState("");
   const [showDeleteCommentConfirm, setShowDeleteCommentConfirm] = useState<string | null>(null);
+  const [reactionCounts, setReactionCounts] = useState<Record<string, number>>({});
+  const [userReaction, setUserReaction] = useState<string | null>(null);
   const [showOwnerMenu, setShowOwnerMenu] = useState(false);
   const [showEditListing, setShowEditListing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
@@ -82,7 +92,45 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
     if (badges) setVerifiedUsers(new Set(badges.map((b: {user_id: string}) => b.user_id)));
     await fetchListing(id);
     await fetchComments(id);
+    await fetchReactions(id);
     setLoading(false);
+  }
+
+  async function fetchReactions(id: string) {
+    if (!currentUser) return;
+    const { data } = await supabase.from("reactions").select("type, user_id").eq("post_id", id);
+    const counts: Record<string, number> = {};
+    let userR: string | null = null;
+    (data || []).forEach((r: any) => {
+      counts[r.type] = (counts[r.type] || 0) + 1;
+      if (r.user_id === currentUser.id) userR = r.type;
+    });
+    setReactionCounts(counts);
+    setUserReaction(userR);
+  }
+
+  async function handleReact(id: string, value: string) {
+    if (!currentUser) return;
+    const isUnreacting = userReaction === value;
+    const newCounts = { ...reactionCounts };
+    if (isUnreacting) {
+      newCounts[value] = Math.max(0, (newCounts[value] || 1) - 1);
+      if (!newCounts[value]) delete newCounts[value];
+      setUserReaction(null);
+    } else {
+      if (userReaction) {
+        newCounts[userReaction] = Math.max(0, (newCounts[userReaction] || 1) - 1);
+        if (!newCounts[userReaction]) delete newCounts[userReaction];
+      }
+      newCounts[value] = (newCounts[value] || 0) + 1;
+      setUserReaction(value);
+    }
+    setReactionCounts(newCounts);
+    if (isUnreacting) {
+      await supabase.from("reactions").delete().eq("post_id", id).eq("user_id", currentUser.id);
+    } else {
+      await supabase.from("reactions").upsert({ post_id: id, user_id: currentUser.id, type: value }, { onConflict: "post_id,user_id" });
+    }
   }
 
   async function fetchListing(id: string) {
@@ -297,6 +345,29 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
             </div>
             <div style={{fontSize: "0.88rem", color: "#1A1A1A", lineHeight: 1.6, marginBottom: "12px"}}>{listing?.description}</div>
             <div style={{height: "1px", backgroundColor: "#F0F0F0", marginBottom: "12px"}}></div>
+            {/* REACTION ACTION BAR */}
+            <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderTop: "1px solid #F0F0F0", borderBottom: "1px solid #F0F0F0", marginBottom: "12px"}}>
+              <div style={{display: "flex", alignItems: "center", gap: "4px"}}>
+                <ReactionButton
+                  postId={listingId}
+                  userReaction={userReaction}
+                  reactionCounts={reactionCounts}
+                  reactions={BAZAAR_REACTIONS}
+                  onReact={handleReact}
+                />
+                <button onClick={async () => { const result = await shareContent("Bazaar", listing?.title || "", "/bazaar/" + listingId); if (result === "copied") showToast("Link copied!"); }} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
+                  <Image src="/share.png" alt="share" width={20} height={20} style={{opacity: 0.5}} />
+                </button>
+              </div>
+              {Object.keys(reactionCounts).length > 0 && (
+                <div style={{display: "flex", alignItems: "center", gap: "3px", padding: "4px 8px", backgroundColor: "#F7F7F7", borderRadius: "20px"}}>
+                  {Object.entries(reactionCounts).filter(([,v]) => v > 0).sort((a,b) => b[1]-a[1]).slice(0,3).map(([key]) => {
+                    const r = BAZAAR_REACTIONS.find(r => r.value === key);
+                    return r ? <span key={key} style={{fontSize: "0.9rem", lineHeight: 1}}>{r.emoji}</span> : null;
+                  })}
+                </div>
+              )}
+            </div>
             <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
               {listing?.users?.avatar_url
                 ? <img onClick={() => listing && router.push(`/profile/${listing.user_id}`)} src={listing.users.avatar_url} alt="" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />

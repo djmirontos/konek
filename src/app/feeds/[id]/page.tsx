@@ -96,9 +96,8 @@ export default function PostDetailPage() {
       const reactionCounts: Record<string, number> = {};
       let userReaction: string | null = null;
       (reactions || []).forEach((r) => {
-        const emoji = REACTIONS[REACTION_VALUES.indexOf(r.type)] || r.type;
-        reactionCounts[emoji] = (reactionCounts[emoji] || 0) + 1;
-        if (userData && r.user_id === userData.id) userReaction = emoji;
+        reactionCounts[r.type] = (reactionCounts[r.type] || 0) + 1;
+        if (userData && r.user_id === userData.id) userReaction = r.type;
       });
       const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", postId);
       setPost({ ...data, reactionCounts, userReaction, commentCount: count || 0, users: Array.isArray(data.users) ? data.users[0] ?? null : data.users });
