@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PhotoViewer from "@/components/PhotoViewer";
+import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
 import PhotoGrid from "@/components/PhotoGrid";
 import BottomNav from "@/components/BottomNav";
 import AppHeader from "@/components/AppHeader";
@@ -198,6 +199,41 @@ export default function FeedsPage() {
 
 
 
+  async function handleReactNew(postId: string, value: string) {
+    if (!currentUser) return;
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+    const isUnreacting = post.userReaction === value;
+    setPosts(prev => prev.map(p => {
+      if (p.id !== postId) return p;
+      const newCounts = { ...p.reactionCounts };
+      if (isUnreacting) {
+        newCounts[value] = Math.max(0, (newCounts[value] || 1) - 1);
+        if (newCounts[value] === 0) delete newCounts[value];
+      } else {
+        if (p.userReaction) {
+          newCounts[p.userReaction] = Math.max(0, (newCounts[p.userReaction] || 1) - 1);
+          if (newCounts[p.userReaction] === 0) delete newCounts[p.userReaction];
+        }
+        newCounts[value] = (newCounts[value] || 0) + 1;
+      }
+      return { ...p, reactionCounts: newCounts, userReaction: isUnreacting ? null : value };
+    }));
+    setShowReactionPicker(null);
+    if (isUnreacting) {
+      await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", currentUser.id);
+    } else {
+      await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: value }, { onConflict: "post_id,user_id" });
+      if (post.user_id !== currentUser.id) {
+        const reaction = FEED_REACTIONS.find(r => r.value === value);
+        await supabase.from("notifications").insert({
+          recipient_id: post.user_id, sender_id: currentUser.id, type: "reaction",
+          post_id: postId, message: currentUser.full_name + " reacted " + (reaction?.emoji || "") + " to your post", is_read: false,
+        });
+      }
+    }
+  }
+
   async function fetchReactionList(postId: string) {
     setLoadingReactions(true);
     setShowReactionList(true);
@@ -221,11 +257,10 @@ export default function FeedsPage() {
           let userReaction: string | null = null;
           if (row.reaction_counts) {
             Object.entries(row.reaction_counts).forEach(([type, count]) => {
-              const emoji = REACTIONS[REACTION_VALUES.indexOf(type)];
-              if (emoji) reactionCounts[emoji] = count as number;
+              reactionCounts[type] = count as number;
             });
           }
-          if (row.user_reaction) { userReaction = REACTIONS[REACTION_VALUES.indexOf(row.user_reaction)] || null; }
+          if (row.user_reaction) { userReaction = row.user_reaction; }
           return {
             id: row.id, user_id: row.user_id, content: row.content, tag: row.tag,
             images: row.images, created_at: row.created_at, edited_at: row.edited_at, school_id: row.school_id,
@@ -711,29 +746,16 @@ export default function FeedsPage() {
                 )}
                 <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
                 <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 12px"}}>
-                  <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                    <div style={{position: "relative"}}>
-                      <button
-                        onMouseDown={() => startLongPress(post.id)}
-                        onMouseUp={() => { cancelLongPress(); if (showReactionPicker !== post.id) handleQuickLike(post.id); }}
-                        onMouseLeave={cancelLongPress}
-                        onTouchStart={() => startLongPress(post.id)}
-                        onTouchEnd={() => { cancelLongPress(); if (showReactionPicker !== post.id) handleQuickLike(post.id); }}
-                        style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
-                        {post.userReaction ? <img src={post.userReaction} alt="reaction" style={{width: "20px", height: "20px", objectFit: "contain"}} /> : <Image src="/like.png" alt="like" width={20} height={20} style={{opacity: 0.5}} />}
-                        {getTotalReactions(post.reactionCounts || {}) > 0 && <span style={{fontSize: "0.78rem", fontWeight: 600, color: post.userReaction ? "#1D9E75" : "#888"}}>{getTotalReactions(post.reactionCounts || {})}</span>}
-                      </button>
-                      {showReactionPicker === post.id && (
-                        <div style={{position: "absolute", bottom: "44px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", display: "flex", alignItems: "center", gap: "4px", zIndex: 600, border: "1px solid #F0F0F0"}}>
-                          {REACTIONS.map((img, i) => (
-                            <button key={img} onClick={() => handleReaction(post.id, img)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "2px", padding: "2px 4px"}}>
-                              <img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} />
-                              <span style={{fontSize: "0.58rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                  <div style={{display: "flex", alignItems: "center", gap: "8px"}}>
+                    <ReactionButton
+                      postId={post.id}
+                      userReaction={post.userReaction || null}
+                      reactionCounts={post.reactionCounts || {}}
+                      reactions={FEED_REACTIONS}
+                      defaultReaction={FEED_REACTIONS[0]}
+                      onReact={handleReactNew}
+                      onOpenReactionList={() => fetchReactionList(post.id)}
+                    />
                     <button onClick={() => router.push("/feeds/" + post.id)} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
                       <Image src="/comment.png" alt="comment" width={20} height={20} style={{opacity: 0.5}} />
                       {(post.commentCount || 0) > 0 && <span style={{fontSize: "0.78rem", color: "#888", fontWeight: 600}}>{post.commentCount}</span>}
@@ -742,13 +764,6 @@ export default function FeedsPage() {
                       <Image src="/share.png" alt="share" width={20} height={20} style={{opacity: 0.5}} />
                     </button>
                   </div>
-                  {getTotalReactions(post.reactionCounts || {}) > 0 && (
-                    <div onClick={() => fetchReactionList(post.id)} style={{display: "flex", alignItems: "center", gap: "2px", cursor: "pointer", padding: "6px 4px"}}>
-                      {getTopReactions(post.reactionCounts || {}).map((img, i) => (
-                        <img key={i} src={img} alt="" style={{width: "20px", height: "20px", objectFit: "contain"}} />
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
             ))}
