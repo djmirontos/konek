@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
 import PhotoViewer from "@/components/PhotoViewer";
 import { FEED_REACTIONS } from "@/components/ReactionButton";
+import CommentReactionButton from "@/components/CommentReactionButton";
 
 const REACTIONS = ["/like.png", "/love.png", "/haha.png", "/wow.png", "/sad.png", "/grabe.png", "/laban.png"];
 const REACTION_VALUES = ["like", "love", "haha", "wow", "sad", "grabe", "laban"];
@@ -118,9 +119,8 @@ export default function PostDetailPage() {
         const reactionCounts: Record<string, number> = {};
         let userReaction: string | null = null;
         (reactions || []).forEach((r) => {
-          const emoji = REACTIONS[REACTION_VALUES.indexOf(r.type)] || r.type;
-          reactionCounts[emoji] = (reactionCounts[emoji] || 0) + 1;
-          if (r.user_id === user.id) userReaction = emoji;
+          reactionCounts[r.type] = (reactionCounts[r.type] || 0) + 1;
+          if (r.user_id === user.id) userReaction = r.type;
         });
         return { ...c, reactionCounts, userReaction };
       }));
@@ -134,26 +134,30 @@ export default function PostDetailPage() {
     }
   }
 
-  async function handleCommentReaction(commentId: string, emoji: string, currentReaction: string | null) {
+  async function handleCommentReactNew(commentId: string, value: string) {
     if (!currentUser) return;
-    const reactionValue = REACTION_VALUES[REACTIONS.indexOf(emoji)] || "like";
-    if (currentReaction === emoji) {
+    const isUnreacting = comments.find(c => c.id === commentId)?.userReaction === value ||
+      comments.flatMap(c => c.replies || []).find(r => r.id === commentId)?.userReaction === value;
+    setComments(prev => prev.map(c => {
+      if (c.id === commentId) {
+        const newCounts = { ...c.reactionCounts };
+        if (isUnreacting) { newCounts[value] = Math.max(0, (newCounts[value] || 1) - 1); if (!newCounts[value]) delete newCounts[value]; }
+        else { if (c.userReaction) { newCounts[c.userReaction] = Math.max(0, (newCounts[c.userReaction] || 1) - 1); if (!newCounts[c.userReaction]) delete newCounts[c.userReaction]; } newCounts[value] = (newCounts[value] || 0) + 1; }
+        return { ...c, reactionCounts: newCounts, userReaction: isUnreacting ? null : value };
+      }
+      return { ...c, replies: (c.replies || []).map(r => {
+        if (r.id !== commentId) return r;
+        const newCounts = { ...r.reactionCounts };
+        if (isUnreacting) { newCounts[value] = Math.max(0, (newCounts[value] || 1) - 1); if (!newCounts[value]) delete newCounts[value]; }
+        else { if (r.userReaction) { newCounts[r.userReaction] = Math.max(0, (newCounts[r.userReaction] || 1) - 1); if (!newCounts[r.userReaction]) delete newCounts[r.userReaction]; } newCounts[value] = (newCounts[value] || 0) + 1; }
+        return { ...r, reactionCounts: newCounts, userReaction: isUnreacting ? null : value };
+      })};
+    }));
+    if (isUnreacting) {
       await supabase.from("comment_reactions").delete().eq("comment_id", commentId).eq("user_id", currentUser.id);
     } else {
-      await supabase.from("comment_reactions").upsert({ comment_id: commentId, user_id: currentUser.id, type: reactionValue }, { onConflict: "comment_id,user_id" });
+      await supabase.from("comment_reactions").upsert({ comment_id: commentId, user_id: currentUser.id, type: value }, { onConflict: "comment_id,user_id" });
     }
-    setShowCommentReactionPicker(null);
-    await fetchComments();
-  }
-
-  async function handleQuickCommentLike(commentId: string, currentReaction: string | null) {
-    if (!currentUser) return;
-    if (currentReaction) {
-      await supabase.from("comment_reactions").delete().eq("comment_id", commentId).eq("user_id", currentUser.id);
-    } else {
-      await supabase.from("comment_reactions").upsert({ comment_id: commentId, user_id: currentUser.id, type: "like" }, { onConflict: "comment_id,user_id" });
-    }
-    await fetchComments();
   }
 
   function startCommentLongPress(commentId: string) {
@@ -362,7 +366,7 @@ export default function PostDetailPage() {
                 onTouchStart={startLongPress}
                 onTouchEnd={() => { cancelLongPress(); if (!showReactionPicker) handleQuickLike(); }}
                 style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
-                {post.userReaction ? (() => { const r = FEED_REACTIONS.find(r => r.value === post.userReaction); return <span style={{fontSize: "1.2rem", lineHeight: 1}}>{r ? r.emoji : "👌"}</span>; })() : <span style={{fontSize: "1.2rem", lineHeight: 1, opacity: 0.5}}>👌</span>}
+                {post.userReaction ? (() => { const r = FEED_REACTIONS.find(r => r.value === post.userReaction); return <span style={{fontSize: "1.2rem", lineHeight: 1}}>{r ? r.emoji : "👍"}</span>; })() : <span style={{fontSize: "1.2rem", lineHeight: 1, opacity: 0.5}}>👍</span>}
                 <span style={{fontSize: "0.78rem", fontWeight: post.userReaction ? 700 : 400, color: post.userReaction ? "#1D9E75" : "#888"}}>
                   {post.userReaction ? REACTION_NAMES[REACTIONS.indexOf(post.userReaction)] || "Like" : "Like"}
                 </span>
@@ -427,30 +431,13 @@ export default function PostDetailPage() {
                 </div>
                 <div style={{display: "flex", gap: "12px", marginTop: "4px", paddingLeft: "4px", alignItems: "center"}}>
                   <span style={{fontSize: "0.72rem", color: "#888"}}>{formatTime(comment.created_at)}{comment.edited_at && <span style={{marginLeft: "4px", fontStyle: "italic", color: "#aaa"}}>· Edited</span>}</span>
-                  <div style={{position: "relative"}}>
-                    <button
-                      onMouseDown={() => startCommentLongPress(comment.id)}
-                      onMouseUp={() => { cancelCommentLongPress(); if (showCommentReactionPicker !== comment.id) handleQuickCommentLike(comment.id, comment.userReaction || null); }}
-                      onMouseLeave={cancelCommentLongPress}
-                      onTouchStart={() => startCommentLongPress(comment.id)}
-                      onTouchEnd={() => { cancelCommentLongPress(); if (showCommentReactionPicker !== comment.id) handleQuickCommentLike(comment.id, comment.userReaction || null); }}
-                      style={{background: "none", border: "none", cursor: "pointer", fontSize: "0.72rem", fontWeight: 700, color: comment.userReaction ? "#1D9E75" : "#888", padding: 0, fontFamily: "inherit"}}>
-                      {comment.userReaction ? <><img src={comment.userReaction} alt="reaction" style={{width: "14px", height: "14px", marginRight: "3px"}} />{REACTION_NAMES[REACTIONS.indexOf(comment.userReaction)] || "Like"}</> : "Like"}
-                    </button>
-                    {Object.values(comment.reactionCounts || {}).reduce((a,b) => a+b, 0) > 0 && (
-                      <span style={{display: "flex", alignItems: "center", gap: "2px", marginLeft: "4px"}}>
-                        {Object.entries(comment.reactionCounts || {}).sort((a,b) => b[1]-a[1]).slice(0,3).map(([k]) => <img key={k} src={k} alt="" style={{width: "12px", height: "12px"}} />)}
-                        <span style={{fontSize: "0.68rem", color: "#888"}}>{Object.values(comment.reactionCounts || {}).reduce((a,b) => a+b, 0)}</span>
-                      </span>
-                    )}
-                    {showCommentReactionPicker === comment.id && (
-                      <div style={{position: "absolute", bottom: "24px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", display: "flex", alignItems: "center", gap: "4px", zIndex: 600, border: "1px solid #F0F0F0", whiteSpace: "nowrap"}}>
-                        {REACTIONS.map((img, i) => (
-                          <button key={img} onClick={() => handleCommentReaction(comment.id, img, comment.userReaction || null)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <CommentReactionButton
+                    commentId={comment.id}
+                    userReaction={comment.userReaction || null}
+                    reactionCounts={comment.reactionCounts || {}}
+                    reactions={FEED_REACTIONS}
+                    onReact={handleCommentReactNew}
+                  />
                   <button onClick={() => { setReplyTo({ id: comment.id, name: comment.users?.full_name || "" }); commentInputRef.current?.focus(); }}
                     style={{background: "none", border: "none", cursor: "pointer", fontSize: "0.72rem", fontWeight: 700, color: "#888", padding: 0, fontFamily: "inherit"}}>
                     Reply
@@ -476,30 +463,13 @@ export default function PostDetailPage() {
                           </div>
                           <div style={{display: "flex", gap: "12px", marginTop: "4px", paddingLeft: "4px", alignItems: "center"}}>
                             <span style={{fontSize: "0.68rem", color: "#888"}}>{formatTime(reply.created_at)}{reply.edited_at && <span style={{marginLeft: "4px", fontStyle: "italic", color: "#aaa"}}>· Edited</span>}</span>
-                            <div style={{position: "relative"}}>
-                              <button
-                                onMouseDown={() => startCommentLongPress(reply.id)}
-                                onMouseUp={() => { cancelCommentLongPress(); if (showCommentReactionPicker !== reply.id) handleQuickCommentLike(reply.id, reply.userReaction || null); }}
-                                onMouseLeave={cancelCommentLongPress}
-                                onTouchStart={() => startCommentLongPress(reply.id)}
-                                onTouchEnd={() => { cancelCommentLongPress(); if (showCommentReactionPicker !== reply.id) handleQuickCommentLike(reply.id, reply.userReaction || null); }}
-                                style={{background: "none", border: "none", cursor: "pointer", fontSize: "0.68rem", fontWeight: 700, color: reply.userReaction ? "#1D9E75" : "#888", padding: 0, fontFamily: "inherit"}}>
-                                {reply.userReaction ? <><img src={reply.userReaction} alt="reaction" style={{width: "14px", height: "14px", marginRight: "3px"}} />{REACTION_NAMES[REACTIONS.indexOf(reply.userReaction)] || "Like"}</> : "Like"}
-                              </button>
-                              {Object.values(reply.reactionCounts || {}).reduce((a,b) => a+b, 0) > 0 && (
-                                <span style={{display: "flex", alignItems: "center", gap: "2px", marginLeft: "4px"}}>
-                                  {Object.entries(reply.reactionCounts || {}).sort((a,b) => b[1]-a[1]).slice(0,3).map(([k]) => <img key={k} src={k} alt="" style={{width: "12px", height: "12px"}} />)}
-                                  <span style={{fontSize: "0.65rem", color: "#888"}}>{Object.values(reply.reactionCounts || {}).reduce((a,b) => a+b, 0)}</span>
-                                </span>
-                              )}
-                              {showCommentReactionPicker === reply.id && (
-                                <div style={{position: "absolute", bottom: "24px", left: "0", backgroundColor: "#fff", borderRadius: "30px", padding: "8px 12px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", display: "flex", alignItems: "center", gap: "4px", zIndex: 600, border: "1px solid #F0F0F0", whiteSpace: "nowrap"}}>
-                                  {REACTIONS.map((img, i) => (
-                                    <button key={img} onClick={() => handleCommentReaction(comment.id, img, comment.userReaction || null)} title={REACTION_NAMES[i]} style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "4px 6px"}}><img src={img} alt={REACTION_NAMES[i]} style={{width: "36px", height: "36px", objectFit: "contain"}} /><span style={{fontSize: "0.62rem", color: "#888", fontFamily: "inherit"}}>{REACTION_NAMES[i]}</span></button>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
+                            <CommentReactionButton
+                              commentId={reply.id}
+                              userReaction={reply.userReaction || null}
+                              reactionCounts={reply.reactionCounts || {}}
+                              reactions={FEED_REACTIONS}
+                              onReact={handleCommentReactNew}
+                            />
                           </div>
                         </div>
                       </div>
