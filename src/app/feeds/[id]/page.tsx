@@ -381,10 +381,8 @@ export default function PostDetailPage() {
                 userReaction={post.userReaction || null}
                 reactionCounts={post.reactionCounts || {}}
                 reactions={FEED_REACTIONS}
-                defaultReaction={FEED_REACTIONS[0]}
                 onReact={handleReactNew}
                 onOpenReactionList={() => fetchReactionList()}
-                commentCount={post.commentCount}
               />
             </div>
             <button onClick={() => commentInputRef.current?.focus()} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>

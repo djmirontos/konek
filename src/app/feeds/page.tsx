@@ -754,7 +754,7 @@ export default function FeedsPage() {
                       userReaction={post.userReaction || null}
                       reactionCounts={post.reactionCounts || {}}
                       reactions={FEED_REACTIONS}
-                      defaultReaction={FEED_REACTIONS[0]}
+
                       onReact={handleReactNew}
                       onOpenReactionList={() => fetchReactionList(post.id)}
                     />
