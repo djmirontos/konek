@@ -21,7 +21,7 @@ type Listing = {
   id: string; user_id: string; title: string; description: string; price: number;
   is_negotiable: boolean; is_rental: boolean; rental_period: string | null;
   category: string; condition: string; images: string[] | null;
-  is_sold: boolean; created_at: string; school_id: string;
+  is_sold: boolean; created_at: string; bumped_at: string | null; school_id: string;
   users: { full_name: string; avatar_url: string | null; } | null;
   commentCount?: number;
 };
@@ -58,6 +58,7 @@ export default function BazaarPage() {
   const [filterCategory, setFilterCategory] = useState<string>("All");
   const [showMenu, setShowMenu] = useState<string | null>(null);
   const [toast, setToast] = useState("");
+  const [bumping, setBumping] = useState<string | null>(null);
 
   useEffect(() => { initPage(); }, []);
   useEffect(() => { if (currentUser) fetchListings(); }, [currentUser, selectedSchool, filterCategory]);
@@ -85,9 +86,9 @@ export default function BazaarPage() {
     setLoading(true);
     let query = supabase
       .from("listings")
-      .select("id, user_id, title, description, price, is_negotiable, is_rental, rental_period, category, condition, images, is_sold, created_at, school_id, users(full_name, avatar_url)")
+      .select("id, user_id, title, description, price, is_negotiable, is_rental, rental_period, category, condition, images, is_sold, created_at, bumped_at, school_id, users(full_name, avatar_url)")
       .eq("is_hidden", false)
-      .order("created_at", { ascending: false })
+      .order("bumped_at", { ascending: false })
       .limit(30);
     if (selectedSchool === "own") query = query.eq("school_id", currentUser.school_id);
     else if (selectedSchool !== "all") query = query.eq("school_id", selectedSchool);
@@ -161,6 +162,38 @@ export default function BazaarPage() {
   async function handleDeleteListing(listingId: string) {
     await supabase.from("listings").delete().eq("id", listingId);
     setShowMenu(null); showToast("Listing deleted!"); fetchListings();
+  }
+
+  async function handleBump(listingId: string) {
+    const listing = listings.find(l => l.id === listingId);
+    if (!listing) return;
+    if (listing.bumped_at) {
+      const diff = Date.now() - new Date(listing.bumped_at).getTime();
+      if (diff < 24 * 60 * 60 * 1000) {
+        const hoursLeft = Math.ceil((24 * 60 * 60 * 1000 - diff) / (60 * 60 * 1000));
+        showToast("Bump again in " + hoursLeft + "h");
+        setShowMenu(null);
+        return;
+      }
+    }
+    setBumping(listingId);
+    await supabase.from("listings").update({ bumped_at: new Date().toISOString() }).eq("id", listingId);
+    setShowMenu(null);
+    showToast("Listing bumped to top!");
+    setBumping(null);
+    fetchListings();
+  }
+
+  function isBumpedRecently(bumped_at: string | null) {
+    if (!bumped_at) return false;
+    return Date.now() - new Date(bumped_at).getTime() < 24 * 60 * 60 * 1000;
+  }
+
+  function getBumpCountdown(bumped_at: string | null) {
+    if (!bumped_at) return "";
+    const diff = Date.now() - new Date(bumped_at).getTime();
+    const hoursLeft = Math.ceil((24 * 60 * 60 * 1000 - diff) / (60 * 60 * 1000));
+    return "Bump again in " + hoursLeft + "h";
   }
 
   function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
@@ -317,6 +350,9 @@ export default function BazaarPage() {
                 {listing.is_sold && (
                   <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#EF4444", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", zIndex: 2}}>SOLD</div>
                 )}
+                {!listing.is_sold && isBumpedRecently(listing.bumped_at) && (
+                  <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#1D9E75", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", zIndex: 2}}>BUMPED</div>
+                )}
                 {listing.is_rental && (
                   <div style={{position: "absolute", top: "8px", right: "8px", backgroundColor: "#1D9E75", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", zIndex: 2}}>FOR RENT</div>
                 )}
@@ -454,9 +490,20 @@ export default function BazaarPage() {
               style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#1A1A1A"}}>
               👁️ View Listing
             </button>
+            {(() => {
+              const listing = listings.find(l => l.id === showMenu);
+              const canBump = !listing?.bumped_at || (Date.now() - new Date(listing.bumped_at).getTime() >= 24 * 60 * 60 * 1000);
+              return (
+                <button onClick={() => handleBump(showMenu)}
+                  disabled={bumping === showMenu || !canBump}
+                  style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: canBump ? "pointer" : "not-allowed", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: canBump ? "#F59E0B" : "#ccc"}}>
+                  {canBump ? "Bump to Top" : getBumpCountdown(listing?.bumped_at || null)}
+                </button>
+              );
+            })()}
             <button onClick={() => handleDeleteListing(showMenu)}
               style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#EF4444"}}>
-              🗑️ Delete Listing
+              Delete Listing
             </button>
           </div>
         </>
