@@ -25,6 +25,7 @@ export default function MessagesPage() {
   const [activeTab, setActiveTab] = useState<"chats" | "requests">("chats");
   const [chats, setChats] = useState<Conversation[]>([]);
   const [requests, setRequests] = useState<Conversation[]>([]);
+  const [sent, setSent] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadMessages, setUnreadMessages] = useState(0);
 
@@ -63,8 +64,10 @@ export default function MessagesPage() {
 
     const accepted = enriched.filter(c => c.status === "accepted");
     const pending = enriched.filter(c => c.status === "pending" && c.initiated_by !== user.id);
+    const sentPending = enriched.filter(c => c.status === "pending" && c.initiated_by === user.id);
     setChats(accepted);
     setRequests(pending);
+    setSent(sentPending);
   }
 
   async function handleAcceptRequest(convId: string) {
@@ -138,14 +141,39 @@ export default function MessagesPage() {
             <div style={{fontSize: "0.85rem"}}>Loading messages...</div>
           </div>
         ) : activeTab === "chats" ? (
-          chats.length === 0 ? (
+          sent.length === 0 && chats.length === 0 ? (
             <div style={{textAlign: "center", padding: "64px 24px"}}>
               <div style={{fontSize: "3rem", marginBottom: "12px"}}>💬</div>
               <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "6px"}}>No messages yet</div>
               <div style={{fontSize: "0.82rem", color: "#888"}}>Start a conversation from a seller or poster profile.</div>
             </div>
           ) : (
-            chats.map(conv => (
+            <>
+            {sent.map(conv => (
+              <div key={conv.id} onClick={() => router.push("/messages/" + conv.id)}
+                style={{backgroundColor: "#fff", padding: "14px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "12px", cursor: "pointer", opacity: 0.85}}>
+                <div style={{position: "relative", flexShrink: 0}}>
+                  <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem"}}>
+                    {conv.otherUser?.avatar_url
+                      ? <img src={conv.otherUser.avatar_url} alt="" style={{width: "100%", height: "100%", objectFit: "cover"}} />
+                      : "👤"}
+                  </div>
+                </div>
+                <div style={{flex: 1, minWidth: 0}}>
+                  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px"}}>
+                    <div style={{fontWeight: 600, fontSize: "0.9rem", color: "#1A1A1A"}}>{conv.otherUser?.full_name || "Unknown"}</div>
+                    <div style={{fontSize: "0.68rem", color: "#888", flexShrink: 0}}>{formatTime(conv.last_message_at)}</div>
+                  </div>
+                  <div style={{display: "flex", alignItems: "center", gap: "6px"}}>
+                    <span style={{backgroundColor: "#FEF3C7", color: "#F59E0B", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "8px", flexShrink: 0}}>⏳ Pending</span>
+                    <div style={{fontSize: "0.78rem", color: "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                      {conv.last_message || "Message sent"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {chats.map(conv => (
               <div key={conv.id} onClick={() => router.push("/messages/" + conv.id)}
                 style={{backgroundColor: "#fff", padding: "14px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "12px", cursor: "pointer"}}>
                 <div style={{position: "relative", flexShrink: 0}}>
@@ -170,7 +198,8 @@ export default function MessagesPage() {
                   </div>
                 </div>
               </div>
-            ))
+            ))}
+            </>
           )
         ) : (
           requests.length === 0 ? (

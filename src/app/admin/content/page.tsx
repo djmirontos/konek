@@ -177,6 +177,13 @@ export default function AdminContentPage() {
     return { bg: "#F7F7F7", color: "#888" };
   }
 
+  function getPostUrl(type: string, id: string) {
+    if (type === "feed") return "/feeds/" + id;
+    if (type === "soapbox" || type === "confession") return "/soapbox/" + id;
+    if (type === "quad") return "/quad/" + id;
+    return null;
+  }
+
   const TYPE_FILTERS = ["all", "feed", "soapbox", "quad", "confession", "bazaar", "living"] as const;
 
   return (
@@ -238,7 +245,11 @@ export default function AdminContentPage() {
                 </div>
                 <span style={{backgroundColor: typeStyle.bg, color: typeStyle.color, padding: "3px 10px", borderRadius: "10px", fontSize: "0.65rem", fontWeight: 700, flexShrink: 0, textTransform: "capitalize"}}>{post.type}</span>
               </div>
-              <div style={{fontSize: "0.85rem", color: "#1A1A1A", lineHeight: 1.5, marginBottom: "10px"}}>{post.content?.slice(0, 200)}{(post.content?.length || 0) > 200 ? "..." : ""}</div>
+              <div
+                onClick={() => { const url = getPostUrl(post.type, post.id); if (url) router.push(url); }}
+                style={{fontSize: "0.85rem", color: "#1A1A1A", lineHeight: 1.5, marginBottom: "10px", cursor: getPostUrl(post.type, post.id) ? "pointer" : "default", textDecoration: getPostUrl(post.type, post.id) ? "underline" : "none"}}>
+                {post.content?.slice(0, 200)}{(post.content?.length || 0) > 200 ? "..." : ""}
+              </div>
               <div style={{display: "flex", gap: "8px"}}>
                 <button onClick={() => handleToggleHide(post)} disabled={acting === post.id}
                   style={{flex: 1, padding: "8px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: post.is_hidden ? "#E1F5EE" : "#FEF2F2", color: post.is_hidden ? "#1D9E75" : "#EF4444", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
@@ -254,6 +265,96 @@ export default function AdminContentPage() {
             </div>
           );
         })}
+
+        {/* BAZAAR LISTINGS */}
+        {(typeFilter === "all" || typeFilter === "bazaar") && listings.map(listing => (
+          <div key={listing.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0", padding: "14px 16px"}}>
+            <div style={{display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px"}}>
+              {listing.users?.avatar_url
+                ? <img src={listing.users.avatar_url} alt="" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{listing.users?.full_name?.charAt(0).toUpperCase()}</div>
+              }
+              <div style={{flex: 1, minWidth: 0}}>
+                <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A"}}>{listing.users?.full_name || "Unknown"}</div>
+                <div style={{fontSize: "0.7rem", color: "#888"}}>{listing.schools?.abbreviation || "—"} · {formatTime(listing.created_at)}</div>
+              </div>
+              <span style={{backgroundColor: "#FEF3C7", color: "#F59E0B", padding: "3px 10px", borderRadius: "10px", fontSize: "0.65rem", fontWeight: 700, flexShrink: 0}}>Bazaar</span>
+            </div>
+            <div onClick={() => router.push("/bazaar/" + listing.id)} style={{fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A", marginBottom: "4px", cursor: "pointer", textDecoration: "underline"}}>{listing.title}</div>
+            <div style={{fontSize: "0.82rem", color: "#888", marginBottom: "4px"}}>₱{listing.price?.toLocaleString() || "—"} · {listing.category}</div>
+            <div style={{fontSize: "0.82rem", color: "#1A1A1A", lineHeight: 1.5, marginBottom: "10px"}}>{listing.description?.slice(0, 150)}{(listing.description?.length || 0) > 150 ? "..." : ""}</div>
+            <div style={{display: "flex", gap: "8px"}}>
+              <button onClick={() => handleToggleHideListing(listing)} disabled={acting === listing.id}
+                style={{flex: 1, padding: "8px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: listing.is_hidden ? "#E1F5EE" : "#FEF2F2", color: listing.is_hidden ? "#1D9E75" : "#EF4444", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
+                {listing.is_hidden ? "Unhide" : "Hide"}
+              </button>
+              {currentUser?.role === "admin" && (
+                <button onClick={() => setShowDeleteConfirm("listing_" + listing.id)} disabled={acting === listing.id}
+                  style={{padding: "8px 16px", borderRadius: "10px", border: "none", backgroundColor: "#1A1A1A", color: "#fff", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
+                  Delete
+                </button>
+              )}
+            </div>
+            {showDeleteConfirm === "listing_" + listing.id && (
+              <>
+                <div onClick={() => setShowDeleteConfirm(null)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+                <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "24px 16px 32px"}}>
+                  <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "8px", textAlign: "center"}}>Delete Listing?</div>
+                  <div style={{fontSize: "0.85rem", color: "#888", textAlign: "center", marginBottom: "20px"}}>This cannot be undone.</div>
+                  <div style={{display: "flex", gap: "10px"}}>
+                    <button onClick={() => setShowDeleteConfirm(null)} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
+                    <button onClick={() => handleDeleteListing(listing.id)} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: "#EF4444", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Delete</button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+
+        {/* LIVING LISTINGS */}
+        {(typeFilter === "all" || typeFilter === "living") && boardingHouses.map(bh => (
+          <div key={bh.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0", padding: "14px 16px"}}>
+            <div style={{display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px"}}>
+              {bh.users?.avatar_url
+                ? <img src={bh.users.avatar_url} alt="" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{bh.users?.full_name?.charAt(0).toUpperCase()}</div>
+              }
+              <div style={{flex: 1, minWidth: 0}}>
+                <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A"}}>{bh.users?.full_name || "Unknown"}</div>
+                <div style={{fontSize: "0.7rem", color: "#888"}}>{bh.schools?.abbreviation || "—"} · {formatTime(bh.created_at)}</div>
+              </div>
+              <span style={{backgroundColor: "#EFF6FF", color: "#3B82F6", padding: "3px 10px", borderRadius: "10px", fontSize: "0.65rem", fontWeight: 700, flexShrink: 0}}>Living</span>
+            </div>
+            <div onClick={() => router.push("/living/" + bh.id)} style={{fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A", marginBottom: "4px", cursor: "pointer", textDecoration: "underline"}}>{bh.title}</div>
+            <div style={{fontSize: "0.82rem", color: "#888", marginBottom: "4px"}}>₱{bh.price_per_month?.toLocaleString() || "—"}/mo · {bh.post_type}</div>
+            <div style={{fontSize: "0.82rem", color: "#1A1A1A", lineHeight: 1.5, marginBottom: "10px"}}>{bh.description?.slice(0, 150)}{(bh.description?.length || 0) > 150 ? "..." : ""}</div>
+            <div style={{display: "flex", gap: "8px"}}>
+              <button onClick={() => handleToggleHideBoardingHouse(bh)} disabled={acting === bh.id}
+                style={{flex: 1, padding: "8px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: bh.is_hidden ? "#E1F5EE" : "#FEF2F2", color: bh.is_hidden ? "#1D9E75" : "#EF4444", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
+                {bh.is_hidden ? "Unhide" : "Hide"}
+              </button>
+              {currentUser?.role === "admin" && (
+                <button onClick={() => setShowDeleteConfirm("bh_" + bh.id)} disabled={acting === bh.id}
+                  style={{padding: "8px 16px", borderRadius: "10px", border: "none", backgroundColor: "#1A1A1A", color: "#fff", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
+                  Delete
+                </button>
+              )}
+            </div>
+            {showDeleteConfirm === "bh_" + bh.id && (
+              <>
+                <div onClick={() => setShowDeleteConfirm(null)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+                <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "24px 16px 32px"}}>
+                  <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "8px", textAlign: "center"}}>Delete Living Post?</div>
+                  <div style={{fontSize: "0.85rem", color: "#888", textAlign: "center", marginBottom: "20px"}}>This cannot be undone.</div>
+                  <div style={{display: "flex", gap: "10px"}}>
+                    <button onClick={() => setShowDeleteConfirm(null)} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
+                    <button onClick={() => handleDeleteBoardingHouse(bh.id)} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: "#EF4444", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Delete</button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
