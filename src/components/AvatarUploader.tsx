@@ -131,6 +131,9 @@ export default function AvatarUploader({ onComplete, onCancel }: AvatarUploaderP
     exportCanvas.height = 512;
     const ctx = exportCanvas.getContext("2d");
     if (!ctx) return;
+    // Fill white background first so JPEG has no black corners
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 512, 512);
     ctx.drawImage(canvas, 0, 0, 512, 512);
     exportCanvas.toBlob((blob) => {
       if (!blob) return;
