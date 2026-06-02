@@ -16,20 +16,37 @@ type Post = {
   schools?: { abbreviation: string; } | null;
 };
 
+type Listing = {
+  id: string; title: string; description: string; price: number | null;
+  category: string; is_hidden: boolean; is_sold: boolean; created_at: string;
+  user_id: string;
+  users?: { full_name: string; avatar_url: string | null; } | null;
+  schools?: { abbreviation: string; } | null;
+};
+type BoardingHouse = {
+  id: string; title: string; description: string; price_per_month: number | null;
+  post_type: string; is_hidden: boolean; created_at: string;
+  user_id: string;
+  users?: { full_name: string; avatar_url: string | null; } | null;
+  schools?: { abbreviation: string; } | null;
+};
+
 export default function AdminContentPage() {
   const router = useRouter();
   const supabase = createClient();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [boardingHouses, setBoardingHouses] = useState<BoardingHouse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [typeFilter, setTypeFilter] = useState<"all" | "feed" | "soapbox" | "quad" | "confession">("all");
+  const [typeFilter, setTypeFilter] = useState<"all" | "feed" | "soapbox" | "quad" | "confession" | "bazaar" | "living">("all");
   const [showHidden, setShowHidden] = useState(false);
   const [toast, setToast] = useState("");
   const [acting, setActing] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   useEffect(() => { initPage(); }, []);
-  useEffect(() => { if (currentUser) fetchPosts(); }, [typeFilter, showHidden, currentUser]);
+  useEffect(() => { if (currentUser) { fetchPosts(); fetchListings(); fetchBoardingHouses(); } }, [typeFilter, showHidden, currentUser]);
 
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -55,6 +72,72 @@ export default function AdminContentPage() {
       schools: Array.isArray(p.schools) ? p.schools[0] ?? null : p.schools,
     })));
     setLoading(false);
+  }
+
+  async function fetchListings() {
+    if (typeFilter !== "all" && typeFilter !== "bazaar") return;
+    const { data } = await supabase
+      .from("listings")
+      .select("id, title, description, price, category, is_hidden, is_sold, created_at, user_id, users(full_name, avatar_url), schools(abbreviation)")
+      .eq("is_hidden", showHidden)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (data) setListings(data.map((l: any) => ({
+      ...l,
+      users: Array.isArray(l.users) ? l.users[0] ?? null : l.users,
+      schools: Array.isArray(l.schools) ? l.schools[0] ?? null : l.schools,
+    })));
+  }
+
+  async function fetchBoardingHouses() {
+    if (typeFilter !== "all" && typeFilter !== "living") return;
+    const { data } = await supabase
+      .from("boarding_houses")
+      .select("id, title, description, price_per_month, post_type, is_hidden, created_at, user_id, users(full_name, avatar_url), schools(abbreviation)")
+      .eq("is_hidden", showHidden)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (data) setBoardingHouses(data.map((b: any) => ({
+      ...b,
+      users: Array.isArray(b.users) ? b.users[0] ?? null : b.users,
+      schools: Array.isArray(b.schools) ? b.schools[0] ?? null : b.schools,
+    })));
+  }
+
+  async function handleToggleHideListing(listing: Listing) {
+    setActing(listing.id);
+    await supabase.from("listings").update({ is_hidden: !listing.is_hidden }).eq("id", listing.id);
+    showToast(listing.is_hidden ? "Listing unhidden." : "Listing hidden.");
+    fetchListings();
+    setActing(null);
+  }
+
+  async function handleDeleteListing(id: string) {
+    if (currentUser?.role !== "admin") { showToast("Only admins can delete."); return; }
+    setActing(id);
+    await supabase.from("listings").delete().eq("id", id);
+    showToast("Listing deleted.");
+    setShowDeleteConfirm(null);
+    fetchListings();
+    setActing(null);
+  }
+
+  async function handleToggleHideBoardingHouse(bh: BoardingHouse) {
+    setActing(bh.id);
+    await supabase.from("boarding_houses").update({ is_hidden: !bh.is_hidden }).eq("id", bh.id);
+    showToast(bh.is_hidden ? "Listing unhidden." : "Listing hidden.");
+    fetchBoardingHouses();
+    setActing(null);
+  }
+
+  async function handleDeleteBoardingHouse(id: string) {
+    if (currentUser?.role !== "admin") { showToast("Only admins can delete."); return; }
+    setActing(id);
+    await supabase.from("boarding_houses").delete().eq("id", id);
+    showToast("Listing deleted.");
+    setShowDeleteConfirm(null);
+    fetchBoardingHouses();
+    setActing(null);
   }
 
   async function handleToggleHide(post: Post) {
@@ -94,7 +177,7 @@ export default function AdminContentPage() {
     return { bg: "#F7F7F7", color: "#888" };
   }
 
-  const TYPE_FILTERS = ["all", "feed", "soapbox", "quad", "confession"] as const;
+  const TYPE_FILTERS = ["all", "feed", "soapbox", "quad", "confession", "bazaar", "living"] as const;
 
   return (
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>

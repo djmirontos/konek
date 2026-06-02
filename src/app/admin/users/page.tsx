@@ -150,10 +150,10 @@ export default function AdminUsersPage() {
           </div>
         ) : filtered.map(user => (
           <div key={user.id} style={{backgroundColor: "#fff", marginBottom: "1px", borderBottom: "1px solid #F0F0F0", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px"}}>
-            <div style={{position: "relative", flexShrink: 0}}>
+            <div onClick={() => router.push("/profile/" + user.id)} style={{position: "relative", flexShrink: 0, cursor: "pointer"}}>
               {user.avatar_url
-                ? <img src={user.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover"}} />
-                : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem"}}>{user.full_name?.charAt(0).toUpperCase()}</div>
+                ? <img src={user.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", border: "2px solid #1D9E75"}} />
+                : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", border: "2px solid #1D9E75"}}>{user.full_name?.charAt(0).toUpperCase()}</div>
               }
               {user.is_banned && <div style={{position: "absolute", bottom: "-2px", right: "-2px", backgroundColor: "#EF4444", borderRadius: "50%", width: "14px", height: "14px", fontSize: "0.5rem", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff"}}>🚫</div>}
             </div>
