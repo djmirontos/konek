@@ -125,7 +125,7 @@ export default function SignupPage() {
     setLoading(true);
     try {
       const cleanPhone = phone.trim();
-      const placeholderEmail = email.trim() || (cleanPhone + "@konek.app");
+      const placeholderEmail = cleanPhone + "@konek.app";
       const fullName = firstName.trim() + " " + lastName.trim();
 
       // create auth account
