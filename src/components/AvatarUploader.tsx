@@ -2,7 +2,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
 interface AvatarUploaderProps {
-  onComplete: (file: File) => void;
+  onComplete: (croppedFile: File, originalFile: File) => void;
   onCancel: () => void;
 }
 
@@ -19,6 +19,7 @@ export default function AvatarUploader({ onComplete, onCancel }: AvatarUploaderP
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const originalFileRef = useRef<File | null>(null);
   const animRef = useRef<number | null>(null);
 
   const SIZE = 300;
@@ -27,6 +28,7 @@ export default function AvatarUploader({ onComplete, onCancel }: AvatarUploaderP
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 20 * 1024 * 1024) { alert("Image must be under 20MB"); return; }
+    originalFileRef.current = file;
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
@@ -131,14 +133,13 @@ export default function AvatarUploader({ onComplete, onCancel }: AvatarUploaderP
     exportCanvas.height = 512;
     const ctx = exportCanvas.getContext("2d");
     if (!ctx) return;
-    // Fill white background first so JPEG has no black corners
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, 512, 512);
     ctx.drawImage(canvas, 0, 0, 512, 512);
     exportCanvas.toBlob((blob) => {
       if (!blob) return;
-      const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
-      onComplete(file);
+      const croppedFile = new File([blob], "avatar.jpg", { type: "image/jpeg" });
+      const original = originalFileRef.current;
+      if (!original) return;
+      onComplete(croppedFile, original);
     }, "image/jpeg", 0.88);
   }
 

@@ -9,7 +9,7 @@ import { startConversation } from "@/lib/startConversation";
 
 type School = { id: string; name: string; abbreviation: string; };
 type ProfileUser = {
-  id: string; full_name: string; avatar_url: string | null;
+  id: string; full_name: string; avatar_url: string | null; avatar_original_url: string | null;
   school_id: string; role: string; bio: string | null; birthdate: string | null; course: string | null; year_level: string | null; hometown: string | null;
   phone_number: string | null; created_at: string;
   verification_status: string | null;
@@ -202,18 +202,30 @@ export default function ProfilePage() {
     }
   }
 
-  async function handleAvatarComplete(file: File) {
+  async function handleAvatarComplete(croppedFile: File, originalFile: File) {
     if (!currentUser) return;
     try {
-      const path = "avatars/" + currentUser.id + "/" + Date.now() + ".jpg";
-      const { error: uploadError } = await supabase.storage.from("konek-images").upload(path, file);
-      if (uploadError) throw uploadError;
-      const { data: urlData } = supabase.storage.from("konek-images").getPublicUrl(path);
-      const { error: updateError } = await supabase.from("users").update({ avatar_url: urlData.publicUrl }).eq("id", currentUser.id);
+      const ts = Date.now();
+      // Upload cropped avatar
+      const croppedPath = "avatars/" + currentUser.id + "/" + ts + "_cropped.jpg";
+      const { error: cropError } = await supabase.storage.from("konek-images").upload(croppedPath, croppedFile);
+      if (cropError) throw cropError;
+      const { data: croppedUrl } = supabase.storage.from("konek-images").getPublicUrl(croppedPath);
+      // Upload original photo
+      const ext = originalFile.name.split(".").pop() || "jpg";
+      const originalPath = "avatars/" + currentUser.id + "/" + ts + "_original." + ext;
+      const { error: origError } = await supabase.storage.from("konek-images").upload(originalPath, originalFile);
+      if (origError) throw origError;
+      const { data: originalUrl } = supabase.storage.from("konek-images").getPublicUrl(originalPath);
+      // Save both to users table
+      const { error: updateError } = await supabase.from("users").update({
+        avatar_url: croppedUrl.publicUrl,
+        avatar_original_url: originalUrl.publicUrl,
+      }).eq("id", currentUser.id);
       if (updateError) throw updateError;
-      setProfileUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
-      setCurrentUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
-      setNewAvatarUrl(urlData.publicUrl);
+      setProfileUser(prev => prev ? { ...prev, avatar_url: croppedUrl.publicUrl, avatar_original_url: originalUrl.publicUrl } : prev);
+      setCurrentUser(prev => prev ? { ...prev, avatar_url: croppedUrl.publicUrl } : prev);
+      setNewAvatarUrl(originalUrl.publicUrl);
       setShowSharePhotoPrompt(true);
     } catch {
       showToast("Failed to update avatar.");
@@ -228,14 +240,18 @@ export default function ProfilePage() {
     if (file.size > 5 * 1024 * 1024) { showToast("Image must be under 5MB"); return; }
     setUploadingAvatar(true);
     try {
-      const ext = file.name.split(".").pop();
-      const path = `avatars/${currentUser.id}/${Date.now()}.${ext}`;
+      const ts = Date.now();
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = "avatars/" + currentUser.id + "/" + ts + "." + ext;
       const { error: uploadError } = await supabase.storage.from("konek-images").upload(path, file, { upsert: true });
       if (uploadError) throw uploadError;
       const { data: urlData } = supabase.storage.from("konek-images").getPublicUrl(path);
-      const { error: updateError } = await supabase.from("users").update({ avatar_url: urlData.publicUrl }).eq("id", currentUser.id);
+      const { error: updateError } = await supabase.from("users").update({
+        avatar_url: urlData.publicUrl,
+        avatar_original_url: urlData.publicUrl,
+      }).eq("id", currentUser.id);
       if (updateError) throw updateError;
-      setProfileUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
+      setProfileUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl, avatar_original_url: urlData.publicUrl } : prev);
       setCurrentUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
       setNewAvatarUrl(urlData.publicUrl);
       setShowSharePhotoPrompt(true);
@@ -489,7 +505,7 @@ export default function ProfilePage() {
       <div style={{backgroundColor: "#fff", padding: "24px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center", borderBottom: "1px solid #F0F0F0"}}>
         <div style={{position: "relative", marginBottom: "12px"}}>
           {profileUser.avatar_url
-            ? <img src={profileUser.avatar_url} alt="avatar" onClick={() => profileUser.avatar_url ? setViewAvatar({src: profileUser.avatar_url, name: profileUser.full_name}) : null} style={{cursor: "pointer", width: "88px", height: "88px", borderRadius: "50%", objectFit: "cover", border: "3px solid #1D9E75"}} />
+            ? <img src={profileUser.avatar_url} alt="avatar" onClick={() => setViewAvatar({src: profileUser.avatar_original_url || profileUser.avatar_url || '', name: profileUser.full_name})} style={{cursor: "pointer", width: "88px", height: "88px", borderRadius: "50%", objectFit: "cover", border: "3px solid #1D9E75"}} />
             : <div style={{width: "88px", height: "88px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "3px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "2rem"}}>{profileUser.full_name?.charAt(0).toUpperCase()}</div>
           }
           {isOwnProfile && (
