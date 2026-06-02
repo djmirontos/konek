@@ -413,7 +413,7 @@ export default function ProfilePage() {
       <div style={{backgroundColor: "#fff", padding: "24px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center", borderBottom: "1px solid #F0F0F0"}}>
         <div style={{position: "relative", marginBottom: "12px"}}>
           {profileUser.avatar_url
-            ? <img src={profileUser.avatar_url} alt="avatar" style={{width: "88px", height: "88px", borderRadius: "50%", objectFit: "cover", border: "3px solid #1D9E75"}} />
+            ? <img src={profileUser.avatar_url} alt="avatar" onClick={() => profileUser.avatar_url ? setViewAvatar({src: profileUser.avatar_url, name: profileUser.full_name}) : null} style={{cursor: "pointer", width: "88px", height: "88px", borderRadius: "50%", objectFit: "cover", border: "3px solid #1D9E75"}} />
             : <div style={{width: "88px", height: "88px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "3px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "2rem"}}>{profileUser.full_name?.charAt(0).toUpperCase()}</div>
           }
           {isOwnProfile && (
