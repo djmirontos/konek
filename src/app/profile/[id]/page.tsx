@@ -73,6 +73,9 @@ export default function ProfilePage() {
   const [hasLiving, setHasLiving] = useState(false);
 
   const [showEditSheet, setShowEditSheet] = useState(false);
+  const [showSharePhotoPrompt, setShowSharePhotoPrompt] = useState(false);
+  const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null);
+  const [sharingPhoto, setSharingPhoto] = useState(false);
   const [editBio, setEditBio] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [editBirthdate, setEditBirthdate] = useState("");
@@ -210,7 +213,8 @@ export default function ProfilePage() {
       if (updateError) throw updateError;
       setProfileUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
       setCurrentUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
-      showToast("Profile photo updated!");
+      setNewAvatarUrl(urlData.publicUrl);
+      setShowSharePhotoPrompt(true);
     } catch {
       showToast("Failed to update avatar.");
     } finally {
@@ -233,11 +237,35 @@ export default function ProfilePage() {
       if (updateError) throw updateError;
       setProfileUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
       setCurrentUser(prev => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
-      showToast("Avatar updated!");
+      setNewAvatarUrl(urlData.publicUrl);
+      setShowSharePhotoPrompt(true);
     } catch (err) {
       showToast("Failed to update avatar.");
     } finally {
       setUploadingAvatar(false);
+    }
+  }
+
+  async function sharePhotoToFeed() {
+    if (!currentUser || !newAvatarUrl) return;
+    setSharingPhoto(true);
+    try {
+      await supabase.from("posts").insert({
+        user_id: currentUser.id,
+        school_id: currentUser.school_id,
+        content: "updated their profile photo.",
+        type: "feed",
+        images: [newAvatarUrl],
+        is_hidden: false,
+        is_flagged: false,
+      });
+      showToast("Shared to feed!");
+    } catch {
+      showToast("Failed to share.");
+    } finally {
+      setSharingPhoto(false);
+      setShowSharePhotoPrompt(false);
+      setNewAvatarUrl(null);
     }
   }
 
@@ -837,6 +865,30 @@ export default function ProfilePage() {
       </div>
 
       <BottomNav active="/feeds" unreadMessages={unreadMessages} />
+
+      {showSharePhotoPrompt && (
+        <>
+          <div style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "24px 16px 40px"}}>
+            <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "0 auto 16px"}} />
+            <div style={{textAlign: "center", marginBottom: "20px"}}>
+              {newAvatarUrl && <img src={newAvatarUrl} alt="" style={{width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", border: "3px solid #1D9E75", marginBottom: "12px"}} />}
+              <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "6px"}}>Profile photo updated!</div>
+              <div style={{fontSize: "0.82rem", color: "#888"}}>Would you like to share this to your school feed?</div>
+            </div>
+            <div style={{display: "flex", gap: "10px"}}>
+              <button onClick={() => { setShowSharePhotoPrompt(false); setNewAvatarUrl(null); showToast("Profile photo updated!"); }}
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>
+                Skip
+              </button>
+              <button onClick={sharePhotoToFeed} disabled={sharingPhoto}
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: sharingPhoto ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: sharingPhoto ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                {sharingPhoto ? "Sharing..." : "Share to Feed"}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {showEditSheet && (
         <>
