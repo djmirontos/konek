@@ -92,6 +92,7 @@ export default function AdminPage() {
     { label: "Users", icon: "👥", route: "/admin/users", badge: null, desc: "Manage all users" },
     { label: "Content", icon: "📋", route: "/admin/content", badge: null, desc: "Moderate posts" },
     { label: "School Requests", icon: "🏫", route: "/admin/schools", badge: stats?.pendingSchoolRequests, desc: "Approve new schools" },
+    { label: "Retention", icon: "📊", route: "/admin/retention", badge: null, desc: "Analytics & active users" },
   ];
 
   if (loading) return (
