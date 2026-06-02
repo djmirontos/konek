@@ -260,13 +260,13 @@ export default function SignupPage() {
               <div style={{flex: 1}}>
                 <label style={labelStyle}>First Name</label>
                 <input type="text" placeholder="Juan" value={firstName}
-                  onChange={e => { setFirstName(e.target.value); setError(""); }}
+                  onChange={e => { setFirstName(e.target.value.replace(/[0-9]/g, '')); setError(""); }}
                   style={inputStyle} />
               </div>
               <div style={{flex: 1}}>
                 <label style={labelStyle}>Last Name</label>
                 <input type="text" placeholder="dela Cruz" value={lastName}
-                  onChange={e => { setLastName(e.target.value); setError(""); }}
+                  onChange={e => { setLastName(e.target.value.replace(/[0-9]/g, '')); setError(""); }}
                   style={inputStyle} />
               </div>
             </div>
