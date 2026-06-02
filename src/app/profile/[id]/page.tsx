@@ -243,6 +243,7 @@ export default function ProfilePage() {
 
   function canView(field: string): boolean {
     if (isOwnProfile) return true;
+    if (currentUser?.role === "admin" || currentUser?.role === "moderator") return true;
     const setting = privacySettings[field] || "public";
     if (setting === "public") return true;
     if (setting === "school_only") return currentUser?.school_id === profileUser?.school_id;
