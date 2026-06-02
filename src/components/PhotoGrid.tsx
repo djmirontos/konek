@@ -17,7 +17,7 @@ export default function PhotoGrid({ images, onImageClick }: Props) {
   // Single photo
   if (count === 1) {
     return (
-      <div style={{borderRadius: "12px", overflow: "hidden", marginBottom: "8px", backgroundColor: "#000"}}>
+      <div style={{borderRadius: "12px", overflow: "hidden", marginBottom: "8px", backgroundColor: "#F7F7F7"}}>
         <img src={images[0]} alt="" onClick={() => onImageClick(0)}
           style={{width: "100%", maxHeight: "400px", objectFit: "cover", display: "block", cursor: "pointer"}} />
       </div>

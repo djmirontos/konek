@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import { useRouter, useParams } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
-import AvatarViewer from "@/components/AvatarViewer";
+import PhotoViewer from "@/components/PhotoViewer";
 import AvatarUploader from "@/components/AvatarUploader";
 import { startConversation } from "@/lib/startConversation";
 
@@ -468,7 +468,17 @@ export default function ProfilePage() {
 
   return (
     <>
-    {viewAvatar && <AvatarViewer src={viewAvatar.src} name={viewAvatar.name} onClose={() => setViewAvatar(null)} />}
+    {viewAvatar && (
+      <PhotoViewer
+        images={[viewAvatar.src]}
+        startIndex={0}
+        currentIndex={0}
+        onIndexChange={() => {}}
+        onClose={() => setViewAvatar(null)}
+        posterName={viewAvatar.name}
+        posterAvatar={viewAvatar.src}
+      />
+    )}
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>

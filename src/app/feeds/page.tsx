@@ -7,7 +7,6 @@ import PhotoViewer from "@/components/PhotoViewer";
 import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
 import PhotoGrid from "@/components/PhotoGrid";
 import BottomNav from "@/components/BottomNav";
-import AvatarViewer from "@/components/AvatarViewer";
 import AppHeader from "@/components/AppHeader";
 import imageCompression from "browser-image-compression";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -979,7 +978,17 @@ export default function FeedsPage() {
         </>
       )}
 
-      {viewAvatar && <AvatarViewer src={viewAvatar.src} name={viewAvatar.name} onClose={() => setViewAvatar(null)} />}
+      {viewAvatar && (
+        <PhotoViewer
+          images={[viewAvatar.src]}
+          startIndex={0}
+          currentIndex={0}
+          onIndexChange={() => {}}
+          onClose={() => setViewAvatar(null)}
+          posterName={viewAvatar.name}
+          posterAvatar={viewAvatar.src}
+        />
+      )}
       <BottomNav active="/feeds" unreadMessages={unreadMessages} show={showNav} />
 
       {toast && (
