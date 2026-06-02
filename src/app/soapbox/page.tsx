@@ -370,7 +370,6 @@ export default function SoapboxPage() {
 
   async function handleConfessionReact(postId: string, reactionType: string) {
     if (!currentUser) return;
-    setReactionPicker(null);
     const confession = confessions.find(c => c.id === postId);
     if (!confession) return;
 
