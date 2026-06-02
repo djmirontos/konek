@@ -23,6 +23,7 @@ export default function SignupPage() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [birthdate, setBirthdate] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   // step 2 fields
@@ -184,6 +185,7 @@ export default function SignupPage() {
         invite_code: myInviteCode,
         referred_by: referredByCode,
         referral_count: 0,
+        birthdate: birthdate || null,
       });
       if (profileError) throw profileError;
 
@@ -294,6 +296,13 @@ export default function SignupPage() {
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Birthday <span style={{color: "#1D9E75", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional)</span></label>
+              <input type="date" value={birthdate}
+                onChange={e => { setBirthdate(e.target.value); setError(""); }}
+                style={inputStyle} max={new Date().toISOString().split("T")[0]} />
             </div>
 
             <div>

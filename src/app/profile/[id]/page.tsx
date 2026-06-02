@@ -10,7 +10,7 @@ import { startConversation } from "@/lib/startConversation";
 type School = { id: string; name: string; abbreviation: string; };
 type ProfileUser = {
   id: string; full_name: string; avatar_url: string | null;
-  school_id: string; role: string; bio: string | null;
+  school_id: string; role: string; bio: string | null; birthdate: string | null; course: string | null; year_level: string | null; hometown: string | null;
   phone_number: string | null; created_at: string;
   verification_status: string | null;
   verification_rejection_reason: string | null;
@@ -75,6 +75,10 @@ export default function ProfilePage() {
   const [showEditSheet, setShowEditSheet] = useState(false);
   const [editBio, setEditBio] = useState("");
   const [editPhone, setEditPhone] = useState("");
+  const [editBirthdate, setEditBirthdate] = useState("");
+  const [editCourse, setEditCourse] = useState("");
+  const [editYearLevel, setEditYearLevel] = useState("");
+  const [editHometown, setEditHometown] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
@@ -115,6 +119,10 @@ export default function ProfilePage() {
       setProfileUser(profileData);
       setEditBio(profileData.bio || "");
       setEditPhone(profileData.phone_number || "");
+      setEditBirthdate(profileData.birthdate || "");
+      setEditCourse(profileData.course || "");
+      setEditYearLevel(profileData.year_level || "");
+      setEditHometown(profileData.hometown || "");
     }
 
     await fetchStats(targetId);
@@ -232,10 +240,14 @@ export default function ProfilePage() {
       const { error } = await supabase.from("users").update({
         bio: editBio.trim() || null,
         phone_number: editPhone.trim() || null,
+        birthdate: editBirthdate || null,
+        course: editCourse.trim() || null,
+        year_level: editYearLevel || null,
+        hometown: editHometown.trim() || null,
         updated_at: new Date().toISOString(),
       }).eq("id", currentUser.id);
       if (error) throw error;
-      setProfileUser(prev => prev ? { ...prev, bio: editBio.trim() || null, phone_number: editPhone.trim() || null } : prev);
+      setProfileUser(prev => prev ? { ...prev, bio: editBio.trim() || null, phone_number: editPhone.trim() || null, birthdate: editBirthdate || null, course: editCourse.trim() || null, year_level: editYearLevel || null, hometown: editHometown.trim() || null } : prev);
       setShowEditSheet(false);
       showToast("Profile updated!");
     } catch (err) {
@@ -435,6 +447,21 @@ export default function ProfilePage() {
         {school && <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600, marginBottom: "4px"}}>{school.abbreviation}</div>}
         <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "12px"}}>Member since {formatMemberSince(profileUser.created_at)}</div>
         {profileUser.bio && <div style={{fontSize: "0.85rem", color: "#555", textAlign: "center", marginBottom: "12px", lineHeight: 1.5, maxWidth: "320px"}}>{profileUser.bio}</div>}
+        {(profileUser.course || profileUser.year_level) && (
+          <div style={{fontSize: "0.78rem", color: "#1D9E75", fontWeight: 600, marginBottom: "6px", textAlign: "center"}}>
+            {profileUser.course}{profileUser.course && profileUser.year_level ? " · " : ""}{profileUser.year_level}
+          </div>
+        )}
+        {profileUser.hometown && (
+          <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "6px", textAlign: "center"}}>
+            From {profileUser.hometown}
+          </div>
+        )}
+        {profileUser.birthdate && (
+          <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "6px", textAlign: "center"}}>
+            {new Date(profileUser.birthdate).toLocaleDateString("en-PH", {month: "long", day: "numeric", year: "numeric"})}
+          </div>
+        )}
 
         {isOwnProfile ? (
           <button onClick={() => setShowEditSheet(true)}
@@ -778,6 +805,35 @@ export default function ProfilePage() {
             <div style={{marginBottom: "20px"}}>
               <label style={{fontSize: "0.78rem", fontWeight: 600, color: "#888", display: "block", marginBottom: "6px"}}>Phone Number (optional)</label>
               <input type="tel" value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="+63 9XX XXX XXXX"
+                style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
+            </div>
+            <div style={{marginBottom: "16px"}}>
+              <label style={{fontSize: "0.78rem", fontWeight: 600, color: "#888", display: "block", marginBottom: "6px"}}>Birthday (optional)</label>
+              <input type="date" value={editBirthdate} onChange={e => setEditBirthdate(e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
+                style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
+            </div>
+            <div style={{marginBottom: "16px"}}>
+              <label style={{fontSize: "0.78rem", fontWeight: 600, color: "#888", display: "block", marginBottom: "6px"}}>Course / Program (optional)</label>
+              <input type="text" value={editCourse} onChange={e => setEditCourse(e.target.value)} placeholder="e.g. BS Computer Science" maxLength={80}
+                style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
+            </div>
+            <div style={{marginBottom: "16px"}}>
+              <label style={{fontSize: "0.78rem", fontWeight: 600, color: "#888", display: "block", marginBottom: "6px"}}>Year Level (optional)</label>
+              <select value={editYearLevel} onChange={e => setEditYearLevel(e.target.value)}
+                style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: editYearLevel ? "#1A1A1A" : "#aaa", backgroundColor: "#F7F7F7", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}}>
+                <option value="">Select year level</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+                <option value="5th Year">5th Year</option>
+                <option value="Graduate">Graduate</option>
+              </select>
+            </div>
+            <div style={{marginBottom: "20px"}}>
+              <label style={{fontSize: "0.78rem", fontWeight: 600, color: "#888", display: "block", marginBottom: "6px"}}>Hometown (optional)</label>
+              <input type="text" value={editHometown} onChange={e => setEditHometown(e.target.value)} placeholder="e.g. Cebu City" maxLength={80}
                 style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             </div>
             <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "12px 14px", marginBottom: "20px", display: "flex", gap: "10px", alignItems: "flex-start"}}>
