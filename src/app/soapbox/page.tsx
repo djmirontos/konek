@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { shareContent } from "@/lib/share";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
+import ReactionButton, { CONFESSION_REACTIONS as REACTION_SET } from "@/components/ReactionButton";
 import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
 import { useRouter } from "next/navigation";
@@ -51,12 +52,7 @@ function generatePseudonym(userId: string, postSeed: string): string {
   return adj + " na " + noun + " #" + num;
 }
 
-const CONFESSION_REACTIONS = [
-  { type: "laban", icon: "/laban.png", label: "Laban" },
-  { type: "love",  icon: "/love.png",  label: "Love"  },
-  { type: "sad",   icon: "/sad.png",   label: "Sad"   },
-  { type: "haha",  icon: "/haha.png",  label: "Haha"  },
-];
+
 
 type School = { id: string; name: string; abbreviation: string; };
 type User = { id: string; full_name: string; avatar_url: string | null; school_id: string; role: string; };
@@ -125,7 +121,6 @@ export default function SoapboxPage() {
   const [confessionSeed] = useState(() => (Date.now() + 1).toString());
   const [myConfessionPseudonym, setMyConfessionPseudonym] = useState("");
   const [showConfessionPhotoWarning, setShowConfessionPhotoWarning] = useState(false);
-  const [reactionPicker, setReactionPicker] = useState<string | null>(null);
   const [confessionMenu, setConfessionMenu] = useState<string | null>(null);
   const [editingConfession, setEditingConfession] = useState<string | null>(null);
   const [editConfessionContent, setEditConfessionContent] = useState("");
@@ -398,14 +393,6 @@ export default function SoapboxPage() {
       // rollback
       setConfessions(cs => cs.map(c => c.id === postId ? { ...c, reactionCounts: prev, userReaction: prevUser } : c));
     }
-  }
-
-  function startLongPress(postId: string) {
-    longPressTimer.current = setTimeout(() => { setReactionPicker(postId); }, 500);
-  }
-
-  function cancelLongPress() {
-    if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; }
   }
 
   async function handleEditConfession(postId: string) {
@@ -694,47 +681,15 @@ export default function SoapboxPage() {
                   </div>
                 )}
 
-                {/* REACTION COUNTS ROW */}
-                <div style={{display: "flex", gap: "12px", padding: "4px 16px 8px"}}>
-                  {CONFESSION_REACTIONS.map(r => (
-                    <div key={r.type} style={{display: "flex", alignItems: "center", gap: "3px"}}>
-                      <Image src={r.icon} alt={r.label} width={14} height={14} style={{opacity: confession.reactionCounts[r.type as keyof typeof confession.reactionCounts] > 0 ? 1 : 0.3}} />
-                      <span style={{fontSize: "0.72rem", color: confession.userReaction === r.type ? "#1D9E75" : "#888", fontWeight: confession.userReaction === r.type ? 700 : 400}}>
-                        {confession.reactionCounts[r.type as keyof typeof confession.reactionCounts]}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
                 <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
                 <div style={{display: "flex", padding: "6px 12px", alignItems: "center", gap: "8px", position: "relative"}}>
-
-                  {/* LABAN BUTTON (default tap) with long press */}
-                  <div style={{position: "relative"}}>
-                    {reactionPicker === confession.id && (
-                      <div style={{position: "absolute", bottom: "40px", left: 0, backgroundColor: "#fff", borderRadius: "30px", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", padding: "8px 12px", display: "flex", gap: "12px", zIndex: 200, border: "1px solid #F0F0F0"}}>
-                        {CONFESSION_REACTIONS.map(r => (
-                          <button key={r.type} onClick={() => handleConfessionReact(confession.id, r.type)}
-                            style={{background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", padding: "4px"}}>
-                            <Image src={r.icon} alt={r.label} width={28} height={28} style={{transform: confession.userReaction === r.type ? "scale(1.3)" : "scale(1)", transition: "transform 0.15s"}} />
-                            <span style={{fontSize: "0.6rem", color: "#888", fontWeight: 600}}>{r.label}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                    <button
-                      onMouseDown={() => startLongPress(confession.id)}
-                      onMouseUp={() => { cancelLongPress(); if (!reactionPicker) handleConfessionReact(confession.id, "laban"); }}
-                      onMouseLeave={cancelLongPress}
-                      onTouchStart={() => startLongPress(confession.id)}
-                      onTouchEnd={(e) => { e.preventDefault(); cancelLongPress(); if (!reactionPicker) handleConfessionReact(confession.id, "laban"); }}
-                      style={{background: confession.userReaction === "laban" ? "#E1F5EE" : "none", border: "1px solid " + (confession.userReaction ? "#1D9E75" : "#F0F0F0"), borderRadius: "20px", cursor: "pointer", padding: "5px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
-                      <Image src="/laban.png" alt="laban" width={16} height={16} />
-                      <span style={{fontSize: "0.8rem", fontWeight: 700, color: confession.userReaction ? "#1D9E75" : "#888"}}>
-                        {confession.userReaction ? (CONFESSION_REACTIONS.find(r => r.type === confession.userReaction)?.label || "Laban") : "Laban"}
-                      </span>
-                    </button>
-                  </div>
+                  <ReactionButton
+                    postId={confession.id}
+                    userReaction={confession.userReaction || null}
+                    reactionCounts={confession.reactionCounts as Record<string, number>}
+                    reactions={REACTION_SET}
+                    onReact={handleConfessionReact}
+                  />
 
                   <button onClick={() => router.push("/soapbox/" + confession.id)}
                     style={{background: "none", border: "1px solid #F0F0F0", borderRadius: "20px", cursor: "pointer", padding: "5px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
@@ -846,10 +801,7 @@ export default function SoapboxPage() {
         </>
       )}
 
-      {/* REACTION PICKER BACKDROP */}
-      {reactionPicker && (
-        <div onClick={() => setReactionPicker(null)} style={{position: "fixed", inset: 0, zIndex: 150}} />
-      )}
+
 
     </div>
   );
