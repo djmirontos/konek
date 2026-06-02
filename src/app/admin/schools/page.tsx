@@ -42,10 +42,17 @@ export default function AdminSchoolsPage() {
     setLoading(true);
     const { data } = await supabase
       .from("school_requests")
-      .select("*, requester:requested_by_user_id(full_name)")
+      .select("*")
       .eq("status", filter)
       .order("created_at", { ascending: false });
-    if (data) setRequests(data.map((r: any) => ({ ...r, requester: Array.isArray(r.requester) ? r.requester[0] ?? null : r.requester })));
+    if (data) {
+      const enriched = await Promise.all(data.map(async (r: any) => {
+        if (!r.requested_by_user_id) return { ...r, requester: null };
+        const { data: userData } = await supabase.from("users").select("full_name").eq("id", r.requested_by_user_id).single();
+        return { ...r, requester: userData || null };
+      }));
+      setRequests(enriched);
+    }
     setLoading(false);
   }
 

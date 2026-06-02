@@ -95,22 +95,8 @@ export default function SignupPage() {
     if (!requestForm.school_name.trim() || !requestForm.city.trim() || !requestForm.province.trim()) {
       setError("Please fill in school name, city, and province"); return;
     }
-    setRequestSubmitting(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      await supabase.from("school_requests").insert({
-        school_name: requestForm.school_name.trim(),
-        city: requestForm.city.trim(),
-        province: requestForm.province.trim(),
-        notes: requestForm.notes.trim() || null,
-        requested_by_user_id: user?.id || null,
-      });
-      setRequestSuccess(true);
-    } catch {
-      setError("Failed to submit request. Please try again.");
-    } finally {
-      setRequestSubmitting(false);
-    }
+    // Just validate and mark as ready - actual submission happens after signup
+    setRequestSuccess(true);
   }
 
   function generateInviteCode(firstName: string): string {
@@ -169,6 +155,17 @@ export default function SignupPage() {
           .eq("invite_code", inviteCode.trim().toUpperCase())
           .single();
         if (inviter) referredByCode = inviter.invite_code;
+      }
+
+      // submit school request now that we have a real user id
+      if (requestForm.school_name.trim() && requestForm.city.trim() && requestForm.province.trim()) {
+        await supabase.from("school_requests").insert({
+          school_name: requestForm.school_name.trim(),
+          city: requestForm.city.trim(),
+          province: requestForm.province.trim(),
+          notes: requestForm.notes.trim() || null,
+          requested_by_user_id: authData.user.id,
+        });
       }
 
       // insert user profile
