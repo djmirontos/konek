@@ -235,7 +235,7 @@ export default function NotificationsPage() {
         ) : notifications.length === 0 ? (
           <div style={{textAlign: "center", padding: "64px 16px"}}>
             <div style={{fontSize: "3.5rem", marginBottom: "12px"}}>🔔</div>
-            <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>Walay notifications pa.</div>
+            <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>No notifications yet.</div>
             <div style={{color: "#888", fontSize: "0.82rem"}}>When someone reacts or comments, it shows up here.</div>
           </div>
         ) : (

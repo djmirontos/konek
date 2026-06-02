@@ -306,7 +306,7 @@ export default function BazaarPage() {
         ) : listings.length === 0 ? (
           <div style={{textAlign: "center", padding: "48px 16px"}}>
             <div style={{fontSize: "3rem", marginBottom: "12px"}}>🛒</div>
-            <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>Walay listings pa!</div>
+            <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>No listings yet!</div>
             <div style={{color: "#888", fontSize: "0.8rem"}}>Be the first to sell something.</div>
           </div>
         ) : (

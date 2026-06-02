@@ -519,7 +519,7 @@ export default function SoapboxPage() {
             ) : posts.length === 0 ? (
               <div style={{textAlign: "center", padding: "48px 16px"}}>
                 <div style={{fontSize: "3rem", marginBottom: "12px"}}>🎭</div>
-                <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>Walay soapbox pa diri!</div>
+                <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>No shoutouts yet!</div>
                 <div style={{color: "#888", fontSize: "0.8rem"}}>Be the first to vent. Anonymous ka, promise!</div>
               </div>
             ) : posts.map(post => (
@@ -654,7 +654,7 @@ export default function SoapboxPage() {
             ) : confessions.length === 0 ? (
               <div style={{textAlign: "center", padding: "48px 16px"}}>
                 <div style={{fontSize: "3rem", marginBottom: "12px"}}>💌</div>
-                <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>Walay confession pa diri!</div>
+                <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>No confessions yet!</div>
                 <div style={{color: "#888", fontSize: "0.8rem"}}>Be the first to share. Safe ka diri, promise.</div>
               </div>
             ) : confessions.map(confession => (

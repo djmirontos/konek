@@ -283,7 +283,7 @@ export default function SoapboxDetailPage({ params }: { params: Promise<{ id: st
             {comments.length === 0 ? (
               <div style={{textAlign: "center", padding: "32px 0"}}>
                 <Image src="/nocomment.png" alt="no comments" width={80} height={80} style={{opacity: 0.5, marginBottom: "12px"}} />
-                <div style={{color: "#888", fontSize: "0.82rem"}}>Walay comment pa. Ikaw ang una!</div>
+                <div style={{color: "#888", fontSize: "0.82rem"}}>No comments yet. Be the first!</div>
               </div>
             ) : comments.map(comment => (
               <div key={comment.id} style={{marginBottom: "16px"}}>

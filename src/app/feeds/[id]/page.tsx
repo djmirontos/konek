@@ -413,7 +413,7 @@ export default function PostDetailPage() {
         {comments.length === 0 ? (
           <div style={{textAlign: "center", padding: "40px 16px", color: "#888", display: "flex", flexDirection: "column", alignItems: "center"}}>
             <img src="/nocomment.png" alt="No comments" style={{width: "120px", height: "120px", objectFit: "contain", marginBottom: "12px", opacity: 0.7}} />
-            <div style={{fontSize: "0.95rem", fontWeight: 700, color: "#1A1A1A", marginBottom: "4px"}}>Walay comment pa!</div>
+            <div style={{fontSize: "0.95rem", fontWeight: 700, color: "#1A1A1A", marginBottom: "4px"}}>No comments yet!</div>
             <div style={{fontSize: "0.82rem", color: "#888"}}>Be the first to comment.</div>
           </div>
         ) : comments.map(comment => (
