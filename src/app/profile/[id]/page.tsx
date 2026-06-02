@@ -79,6 +79,11 @@ export default function ProfilePage() {
   const [editCourse, setEditCourse] = useState("");
   const [editYearLevel, setEditYearLevel] = useState("");
   const [editHometown, setEditHometown] = useState("");
+  const [privacySettings, setPrivacySettings] = useState<Record<string,string>>({
+    phone: "private", email: "private", birthdate: "school_only",
+    course: "public", year_level: "public", hometown: "public"
+  });
+  const [savingPrivacy, setSavingPrivacy] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
@@ -120,6 +125,9 @@ export default function ProfilePage() {
       setEditBio(profileData.bio || "");
       setEditPhone(profileData.phone_number || "");
       setEditBirthdate(profileData.birthdate || "");
+      if (profileData.privacy_settings) {
+        setPrivacySettings(profileData.privacy_settings);
+      }
       setEditCourse(profileData.course || "");
       setEditYearLevel(profileData.year_level || "");
       setEditHometown(profileData.hometown || "");
@@ -231,6 +239,15 @@ export default function ProfilePage() {
     } finally {
       setUploadingAvatar(false);
     }
+  }
+
+  async function handleSavePrivacy(field: string, value: string) {
+    if (!currentUser) return;
+    setSavingPrivacy(true);
+    const updated = { ...privacySettings, [field]: value };
+    setPrivacySettings(updated);
+    await supabase.from("users").update({ privacy_settings: updated }).eq("id", currentUser.id);
+    setSavingPrivacy(false);
   }
 
   async function handleSaveProfile() {
@@ -762,10 +779,32 @@ export default function ProfilePage() {
                   <div style={{padding: "8px 14px", backgroundColor: "#F7F7F7", borderRadius: "20px", fontSize: "0.78rem", color: "#aaa", display: "inline-block"}}>🏅 Founding Member — Coming Soon</div>
                 </div>
 
+                {isOwnProfile && (
                 <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", marginBottom: "12px", border: "1px solid #F0F0F0"}}>
-                  <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Settings</div>
-                  <div style={{fontSize: "0.82rem", color: "#aaa", fontStyle: "italic"}}>Coming soon — Privacy, Notifications, Blocked Users</div>
+                  <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Privacy Settings</div>
+                  {[
+                    { field: "phone", label: "Phone Number" },
+                    { field: "email", label: "Email" },
+                    { field: "birthdate", label: "Birthday" },
+                    { field: "course", label: "Course & Year" },
+                    { field: "hometown", label: "Hometown" },
+                  ].map(item => (
+                    <div key={item.field} style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px"}}>
+                      <span style={{fontSize: "0.82rem", color: "#1A1A1A", fontWeight: 500}}>{item.label}</span>
+                      <select
+                        value={privacySettings[item.field] || "public"}
+                        onChange={e => handleSavePrivacy(item.field, e.target.value)}
+                        disabled={savingPrivacy}
+                        style={{fontSize: "0.75rem", fontWeight: 600, color: "#1D9E75", border: "1px solid #E0E0E0", borderRadius: "8px", padding: "4px 8px", backgroundColor: "#F7F7F7", cursor: "pointer", fontFamily: "inherit", outline: "none"}}>
+                        <option value="public">Public</option>
+                        <option value="school_only">School Only</option>
+                        <option value="private">Private</option>
+                      </select>
+                    </div>
+                  ))}
+                  <div style={{fontSize: "0.68rem", color: "#AAA", marginTop: "4px"}}>Public = everyone · School Only = same school · Private = only you</div>
                 </div>
+                )}
 
                 {isOwnProfile && (
                   <>
