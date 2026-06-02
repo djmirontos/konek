@@ -241,6 +241,14 @@ export default function ProfilePage() {
     }
   }
 
+  function canView(field: string): boolean {
+    if (isOwnProfile) return true;
+    const setting = privacySettings[field] || "public";
+    if (setting === "public") return true;
+    if (setting === "school_only") return currentUser?.school_id === profileUser?.school_id;
+    return false; // private
+  }
+
   async function handleSavePrivacy(field: string, value: string) {
     if (!currentUser) return;
     setSavingPrivacy(true);
@@ -464,17 +472,17 @@ export default function ProfilePage() {
         {school && <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600, marginBottom: "4px"}}>{school.abbreviation}</div>}
         <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "12px"}}>Member since {formatMemberSince(profileUser.created_at)}</div>
         {profileUser.bio && <div style={{fontSize: "0.85rem", color: "#555", textAlign: "center", marginBottom: "12px", lineHeight: 1.5, maxWidth: "320px"}}>{profileUser.bio}</div>}
-        {(profileUser.course || profileUser.year_level) && (
+        {(profileUser.course || profileUser.year_level) && canView("course") && (
           <div style={{fontSize: "0.78rem", color: "#1D9E75", fontWeight: 600, marginBottom: "6px", textAlign: "center"}}>
             {profileUser.course}{profileUser.course && profileUser.year_level ? " · " : ""}{profileUser.year_level}
           </div>
         )}
-        {profileUser.hometown && (
+        {profileUser.hometown && canView("hometown") && (
           <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "6px", textAlign: "center"}}>
             From {profileUser.hometown}
           </div>
         )}
-        {profileUser.birthdate && (
+        {profileUser.birthdate && canView("birthdate") && (
           <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "6px", textAlign: "center"}}>
             {new Date(profileUser.birthdate).toLocaleDateString("en-PH", {month: "long", day: "numeric", year: "numeric"})}
           </div>
@@ -696,7 +704,7 @@ export default function ProfilePage() {
                         </div>
                       </div>
                     )}
-                    {profileUser.phone_number && (
+                    {profileUser.phone_number && canView("phone") && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
                         <span style={{fontSize: "1.1rem"}}>📱</span>
                         <div>
