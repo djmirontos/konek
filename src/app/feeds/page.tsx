@@ -252,7 +252,7 @@ export default function FeedsPage() {
     if (!append) setLoading(true);
     else setLoadingMore(true);
     try {
-      const schoolId = selectedSchool === "own" || selectedSchool === "all" ? currentUser.school_id : selectedSchool;
+      const schoolId = selectedSchool === "all" ? null : selectedSchool === "own" ? currentUser.school_id : selectedSchool;
       const { data, error } = await supabase.rpc("get_feed_posts", { p_school_id: schoolId, p_user_id: currentUser.id, p_limit: 20, p_offset: customOffset });
       if (error) throw error;
       if (data) {
