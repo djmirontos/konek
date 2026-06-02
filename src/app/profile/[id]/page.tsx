@@ -15,6 +15,8 @@ type ProfileUser = {
   verification_rejection_reason: string | null;
   verification_front_url: string | null;
   verification_back_url: string | null;
+  invite_code: string | null;
+  referral_count: number;
 };
 type Post = {
   id: string; content: string; tag: string | null; type: string;
@@ -445,6 +447,49 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
+
+      {/* INVITE CARD — only on own profile */}
+      {isOwnProfile && profileUser.invite_code && (
+        <div style={{margin: "12px 16px", backgroundColor: "#E1F5EE", borderRadius: "16px", padding: "16px", border: "1px solid #9FE1CB"}}>
+          <div style={{fontSize: "0.72rem", fontWeight: 700, color: "#0F6E56", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "8px"}}>🎁 Your Invite Code</div>
+          <div style={{display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px"}}>
+            <div style={{flex: 1, backgroundColor: "#fff", borderRadius: "10px", padding: "10px 14px", fontWeight: 800, fontSize: "1.2rem", color: "#1D9E75", letterSpacing: "0.08em", fontFamily: "monospace", border: "1.5px dashed #1D9E75"}}>
+              {profileUser.invite_code}
+            </div>
+            <button onClick={() => { navigator.clipboard.writeText(profileUser.invite_code || ""); }}
+              style={{backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "10px", padding: "10px 16px", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+              Copy
+            </button>
+          </div>
+          <div style={{fontSize: "0.75rem", color: "#0F6E56", lineHeight: 1.6}}>
+            Share this code with your schoolmates. When they sign up using your code, you earn referral badges!
+          </div>
+          {/* Milestones */}
+          <div style={{marginTop: "12px", display: "flex", flexDirection: "column", gap: "6px"}}>
+            {[
+              {count: 5,   emoji: "🎓", label: "Campus Connector"},
+              {count: 20,  emoji: "🌟", label: "Community Builder"},
+              {count: 50,  emoji: "🚀", label: "Campus Ambassador"},
+              {count: 100, emoji: "👑", label: "Founding Influencer"},
+            ].map(m => {
+              const done = (profileUser.referral_count || 0) >= m.count;
+              return (
+                <div key={m.count} style={{display: "flex", alignItems: "center", gap: "8px", opacity: done ? 1 : 0.5}}>
+                  <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: done ? "#1D9E75" : "#ccc", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: "#fff", fontWeight: 700, flexShrink: 0}}>
+                    {done ? "✓" : m.count}
+                  </div>
+                  <span style={{fontSize: "0.78rem", fontWeight: done ? 700 : 400, color: done ? "#0F6E56" : "#888"}}>
+                    {m.emoji} {m.label} — {m.count} referrals
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <div style={{marginTop: "10px", fontSize: "0.82rem", fontWeight: 700, color: "#0F6E56"}}>
+            Total referrals: {profileUser.referral_count || 0}
+          </div>
+        </div>
+      )}
 
       <div style={{backgroundColor: "#fff", display: "flex", borderBottom: "1px solid #F0F0F0", marginBottom: "8px"}}>
         {[{label: "Posts", value: postCount}, {label: "Comments", value: commentCount}, {label: "Reactions", value: reactionsReceived}].map((stat, i) => (
