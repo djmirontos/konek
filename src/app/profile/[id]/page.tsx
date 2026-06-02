@@ -43,8 +43,6 @@ function VerifiedBadge({ size = 15 }: { size?: number }) {
       </svg>
     </span>
   );
-  </>
-  );
 }
 
 export default function ProfilePage() {
