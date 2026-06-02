@@ -85,7 +85,7 @@ export default function MessagesPage() {
     if (!currentUser || startingChat) return;
     setStartingChat(otherUserId);
     try {
-      const convId = await startConversation(supabase, currentUser.id, otherUserId);
+      const convId = await startConversation(currentUser.id, otherUserId);
       if (convId) router.push("/messages/" + convId);
     } finally {
       setStartingChat(null);
