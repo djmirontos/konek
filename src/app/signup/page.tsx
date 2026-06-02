@@ -43,6 +43,7 @@ export default function SignupPage() {
   // shared
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
 
   useEffect(() => {
     supabase.from("schools").select("id, name, abbreviation").order("name").then(({ data }) => {
@@ -112,6 +113,12 @@ export default function SignupPage() {
     }
   }
 
+  function generateInviteCode(firstName: string): string {
+    const clean = firstName.trim().toUpperCase().replace(/[^A-Z]/g, "").slice(0, 8);
+    const digits = Math.floor(10 + Math.random() * 90).toString();
+    return clean + digits;
+  }
+
   async function handleSignup() {
     setError("");
     if (!selectedSchool) { setError("Please select your school"); return; }
@@ -150,6 +157,20 @@ export default function SignupPage() {
         }
       }
 
+      // generate unique invite code
+      const myInviteCode = generateInviteCode(firstName);
+
+      // check if invite code entered is valid
+      let referredByCode: string | null = null;
+      if (inviteCode.trim()) {
+        const { data: inviter } = await supabase
+          .from("users")
+          .select("id, invite_code, referral_count")
+          .eq("invite_code", inviteCode.trim().toUpperCase())
+          .single();
+        if (inviter) referredByCode = inviter.invite_code;
+      }
+
       // insert user profile
       const { error: profileError } = await supabase.from("users").insert({
         id: authData.user.id,
@@ -163,8 +184,26 @@ export default function SignupPage() {
         is_banned: false,
         ban_count: 0,
         role: "student",
+        invite_code: myInviteCode,
+        referred_by: referredByCode,
+        referral_count: 0,
       });
       if (profileError) throw profileError;
+
+      // increment inviter referral count
+      if (referredByCode) {
+        const { data: inviter } = await supabase
+          .from("users")
+          .select("id, referral_count")
+          .eq("invite_code", referredByCode)
+          .single();
+        if (inviter) {
+          await supabase
+            .from("users")
+            .update({ referral_count: (inviter.referral_count || 0) + 1 })
+            .eq("id", inviter.id);
+        }
+      }
 
       router.push("/feeds");
     } catch (err: unknown) {
@@ -258,6 +297,13 @@ export default function SignupPage() {
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Invite Code <span style={{color: "#1D9E75", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional — if a schoolmate invited you)</span></label>
+              <input type="text" placeholder="e.g. DARYL27" value={inviteCode}
+                onChange={e => { setInviteCode(e.target.value.toUpperCase()); setError(""); }}
+                style={inputStyle} maxLength={12} />
             </div>
 
             <button onClick={handleNext}
