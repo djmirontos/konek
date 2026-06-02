@@ -60,7 +60,7 @@ export default function AdminContentPage() {
     setLoading(true);
     let query = supabase
       .from("posts")
-      .select("id, content, type, is_hidden, created_at, user_id, school_id, users(full_name, avatar_url), schools(abbreviation)")
+      .select("id, content, type, is_hidden, created_at, user_id, school_id, users(full_name, avatar_url)")
       .eq("is_hidden", showHidden)
       .order("created_at", { ascending: false })
       .limit(50);
@@ -69,7 +69,6 @@ export default function AdminContentPage() {
     if (data) setPosts(data.map((p: any) => ({
       ...p,
       users: Array.isArray(p.users) ? p.users[0] ?? null : p.users,
-      schools: Array.isArray(p.schools) ? p.schools[0] ?? null : p.schools,
     })));
     setLoading(false);
   }
@@ -78,14 +77,13 @@ export default function AdminContentPage() {
     if (typeFilter !== "all" && typeFilter !== "bazaar") return;
     const { data } = await supabase
       .from("listings")
-      .select("id, title, description, price, category, is_hidden, is_sold, created_at, user_id, users(full_name, avatar_url), schools(abbreviation)")
+      .select("id, title, description, price, category, is_hidden, is_sold, created_at, user_id, school_id, users(full_name, avatar_url)")
       .eq("is_hidden", showHidden)
       .order("created_at", { ascending: false })
       .limit(50);
     if (data) setListings(data.map((l: any) => ({
       ...l,
       users: Array.isArray(l.users) ? l.users[0] ?? null : l.users,
-      schools: Array.isArray(l.schools) ? l.schools[0] ?? null : l.schools,
     })));
   }
 
@@ -93,14 +91,13 @@ export default function AdminContentPage() {
     if (typeFilter !== "all" && typeFilter !== "living") return;
     const { data } = await supabase
       .from("boarding_houses")
-      .select("id, title, description, price_per_month, post_type, is_hidden, created_at, user_id, users(full_name, avatar_url), schools(abbreviation)")
+      .select("id, title, description, price_per_month, post_type, is_hidden, created_at, user_id, school_id, users(full_name, avatar_url)")
       .eq("is_hidden", showHidden)
       .order("created_at", { ascending: false })
       .limit(50);
     if (data) setBoardingHouses(data.map((b: any) => ({
       ...b,
       users: Array.isArray(b.users) ? b.users[0] ?? null : b.users,
-      schools: Array.isArray(b.schools) ? b.schools[0] ?? null : b.schools,
     })));
   }
 
