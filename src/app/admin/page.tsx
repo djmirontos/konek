@@ -22,6 +22,10 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [showNewToday, setShowNewToday] = useState(false);
   const [newTodayUsers, setNewTodayUsers] = useState<{id:string;full_name:string;avatar_url:string|null;school_id:string;created_at:string;schools?:{abbreviation:string}|null}[]>([]);
+  const [showPostsToday, setShowPostsToday] = useState(false);
+  const [postsTodayList, setPostsTodayList] = useState<{id:string;content:string;type:string;created_at:string;user_id:string;real_name:string;avatar_url:string|null;anonymous_name:string|null}[]>([]);
+  const [showActiveQuad, setShowActiveQuad] = useState(false);
+  const [activeQuadList, setActiveQuadList] = useState<{id:string;content:string;created_at:string;expires_at:string;real_name:string;avatar_url:string|null}[]>([]);
 
   useEffect(() => { initPage(); }, []);
 
@@ -86,6 +90,46 @@ export default function AdminPage() {
     setShowNewToday(true);
   }
 
+  async function fetchPostsToday() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { data } = await supabase
+      .from("posts")
+      .select("id, content, type, created_at, user_id, anonymous_name, users(full_name, avatar_url)")
+      .gte("created_at", today.toISOString())
+      .order("created_at", { ascending: false });
+    if (data) setPostsTodayList(data.map((p: any) => ({
+      id: p.id,
+      content: p.content,
+      type: p.type,
+      created_at: p.created_at,
+      user_id: p.user_id,
+      real_name: Array.isArray(p.users) ? p.users[0]?.full_name ?? "Unknown" : p.users?.full_name ?? "Unknown",
+      avatar_url: Array.isArray(p.users) ? p.users[0]?.avatar_url ?? null : p.users?.avatar_url ?? null,
+      anonymous_name: p.anonymous_name || null,
+    })));
+    setShowPostsToday(true);
+  }
+
+  async function fetchActiveQuad() {
+    const { data } = await supabase
+      .from("posts")
+      .select("id, content, created_at, expires_at, user_id, users(full_name, avatar_url)")
+      .eq("type", "quad")
+      .eq("is_hidden", false)
+      .gt("expires_at", new Date().toISOString())
+      .order("created_at", { ascending: false });
+    if (data) setActiveQuadList(data.map((p: any) => ({
+      id: p.id,
+      content: p.content,
+      created_at: p.created_at,
+      expires_at: p.expires_at,
+      real_name: Array.isArray(p.users) ? p.users[0]?.full_name ?? "Unknown" : p.users?.full_name ?? "Unknown",
+      avatar_url: Array.isArray(p.users) ? p.users[0]?.avatar_url ?? null : p.users?.avatar_url ?? null,
+    })));
+    setShowActiveQuad(true);
+  }
+
   const MENU = [
     { label: "Reports Queue", icon: "🚨", route: "/admin/reports", badge: stats?.pendingReports, desc: "Review flagged content" },
     { label: "Verification", icon: "🎓", route: "/admin/verification", badge: stats?.pendingVerifications, desc: "Approve student IDs" },
@@ -119,8 +163,8 @@ export default function AdminPage() {
         {[
           { label: "Total Users", value: stats?.totalUsers, icon: "👥", color: "#1D9E75" },
           { label: "New Today", value: stats?.newUsersToday, icon: "🆕", color: "#3B82F6", onClick: fetchNewTodayUsers },
-          { label: "Posts Today", value: stats?.totalPostsToday, icon: "📝", color: "#8B5CF6" },
-          { label: "Active Quad", value: stats?.activeQuadPosts, icon: "🗺️", color: "#F59E0B" },
+          { label: "Posts Today", value: stats?.totalPostsToday, icon: "📝", color: "#8B5CF6", onClick: fetchPostsToday },
+          { label: "Active Quad", value: stats?.activeQuadPosts, icon: "🗺️", color: "#F59E0B", onClick: fetchActiveQuad },
         ].map((stat, i) => (
           <div key={i} onClick={(stat as any).onClick} style={{backgroundColor: "#fff", borderRadius: "14px", padding: "14px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", cursor: (stat as any).onClick ? "pointer" : "default"}}>
             <div style={{fontSize: "1.6rem", marginBottom: "6px"}}>{stat.icon}</div>
@@ -178,6 +222,76 @@ export default function AdminPage() {
           </div>
         ))}
       </div>
+      {/* POSTS TODAY BOTTOM SHEET */}
+      {showPostsToday && (
+        <>
+          <div onClick={() => setShowPostsToday(false)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, maxHeight: "75vh", display: "flex", flexDirection: "column"}}>
+            <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "12px auto 0"}}></div>
+            <div style={{padding: "14px 16px 10px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+              <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A"}}>Posts Today — {postsTodayList.length}</div>
+              <button onClick={() => setShowPostsToday(false)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.1rem"}}>x</button>
+            </div>
+            <div style={{overflowY: "auto", flex: 1, paddingBottom: "24px"}}>
+              {postsTodayList.length === 0 ? (
+                <div style={{textAlign: "center", padding: "32px", color: "#888", fontSize: "0.85rem"}}>No posts today yet.</div>
+              ) : postsTodayList.map(p => (
+                <div key={p.id} onClick={() => { setShowPostsToday(false); router.push("/feeds/" + p.id); }}
+                  style={{display: "flex", alignItems: "flex-start", gap: "12px", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", cursor: "pointer"}}>
+                  {p.avatar_url
+                    ? <img src={p.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{p.real_name?.charAt(0).toUpperCase()}</div>
+                  }
+                  <div style={{flex: 1, minWidth: 0}}>
+                    <div style={{display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px", flexWrap: "wrap"}}>
+                      <span style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A"}}>{p.real_name}</span>
+                      {p.anonymous_name && <span style={{fontSize: "0.7rem", color: "#888", backgroundColor: "#F0F0F0", padding: "1px 6px", borderRadius: "8px"}}>as {p.anonymous_name}</span>}
+                      <span style={{fontSize: "0.65rem", color: "#fff", backgroundColor: p.type === "confession" ? "#F59E0B" : p.type === "soapbox" ? "#8B5CF6" : "#1D9E75", padding: "1px 6px", borderRadius: "8px", textTransform: "capitalize"}}>{p.type}</span>
+                    </div>
+                    <div style={{fontSize: "0.78rem", color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{p.content}</div>
+                    <div style={{fontSize: "0.65rem", color: "#AAA", marginTop: "2px"}}>{new Date(p.created_at).toLocaleTimeString("en-PH", {hour: "2-digit", minute: "2-digit"})}</div>
+                  </div>
+                  <span style={{color: "#1D9E75", fontSize: "1.1rem"}}>›</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ACTIVE QUAD BOTTOM SHEET */}
+      {showActiveQuad && (
+        <>
+          <div onClick={() => setShowActiveQuad(false)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, maxHeight: "75vh", display: "flex", flexDirection: "column"}}>
+            <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "12px auto 0"}}></div>
+            <div style={{padding: "14px 16px 10px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+              <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A"}}>Active Quad Posts — {activeQuadList.length}</div>
+              <button onClick={() => setShowActiveQuad(false)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.1rem"}}>x</button>
+            </div>
+            <div style={{overflowY: "auto", flex: 1, paddingBottom: "24px"}}>
+              {activeQuadList.length === 0 ? (
+                <div style={{textAlign: "center", padding: "32px", color: "#888", fontSize: "0.85rem"}}>No active quad posts.</div>
+              ) : activeQuadList.map(p => (
+                <div key={p.id} onClick={() => { setShowActiveQuad(false); router.push("/quad/" + p.id); }}
+                  style={{display: "flex", alignItems: "flex-start", gap: "12px", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", cursor: "pointer"}}>
+                  {p.avatar_url
+                    ? <img src={p.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{p.real_name?.charAt(0).toUpperCase()}</div>
+                  }
+                  <div style={{flex: 1, minWidth: 0}}>
+                    <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A", marginBottom: "2px"}}>{p.real_name}</div>
+                    <div style={{fontSize: "0.78rem", color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{p.content}</div>
+                    <div style={{fontSize: "0.65rem", color: "#F59E0B", marginTop: "2px"}}>Expires: {new Date(p.expires_at).toLocaleString("en-PH", {month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"})}</div>
+                  </div>
+                  <span style={{color: "#1D9E75", fontSize: "1.1rem"}}>›</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
       {/* NEW TODAY BOTTOM SHEET */}
       {showNewToday && (
         <>
