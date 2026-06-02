@@ -95,7 +95,7 @@ export default function AdminPage() {
     today.setHours(0, 0, 0, 0);
     const { data } = await supabase
       .from("posts")
-      .select("id, content, type, created_at, user_id, anonymous_name, users(full_name, avatar_url)")
+      .select("id, content, type, created_at, user_id, pseudonym, is_anonymous, users(full_name, avatar_url)")
       .gte("created_at", today.toISOString())
       .order("created_at", { ascending: false });
     if (data) setPostsTodayList(data.map((p: any) => ({
@@ -106,7 +106,7 @@ export default function AdminPage() {
       user_id: p.user_id,
       real_name: Array.isArray(p.users) ? p.users[0]?.full_name ?? "Unknown" : p.users?.full_name ?? "Unknown",
       avatar_url: Array.isArray(p.users) ? p.users[0]?.avatar_url ?? null : p.users?.avatar_url ?? null,
-      anonymous_name: p.anonymous_name || null,
+      anonymous_name: p.is_anonymous ? (p.pseudonym || "Anonymous") : null,
     })));
     setShowPostsToday(true);
   }

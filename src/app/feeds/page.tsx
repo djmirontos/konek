@@ -7,6 +7,7 @@ import PhotoViewer from "@/components/PhotoViewer";
 import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
 import PhotoGrid from "@/components/PhotoGrid";
 import BottomNav from "@/components/BottomNav";
+import AvatarViewer from "@/components/AvatarViewer";
 import AppHeader from "@/components/AppHeader";
 import imageCompression from "browser-image-compression";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -77,6 +78,7 @@ export default function FeedsPage() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [toast, setToast] = useState("");
+  const [viewAvatar, setViewAvatar] = useState<{src:string;name:string}|null>(null);
   const [showMenu, setShowMenu] = useState<string | null>(null);
   const [editingPost, setEditingPost] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -728,9 +730,9 @@ export default function FeedsPage() {
             ) : posts.map(post => (
               <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0"}}>
                 <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
-                  <div onClick={() => router.push(`/profile/${post.user_id}`)} style={{cursor: "pointer"}}>
+                  <div style={{cursor: "pointer"}}>
                     {post.users?.avatar_url
-                      ? <img src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
+                      ? <img src={post.users.avatar_url} alt="" onClick={() => post.users?.avatar_url ? setViewAvatar({src: post.users.avatar_url, name: post.users.full_name}) : router.push(`/profile/${post.user_id}`)} style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
                       : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                     }
                   </div>
@@ -977,6 +979,7 @@ export default function FeedsPage() {
         </>
       )}
 
+      {viewAvatar && <AvatarViewer src={viewAvatar.src} name={viewAvatar.name} onClose={() => setViewAvatar(null)} />}
       <BottomNav active="/feeds" unreadMessages={unreadMessages} show={showNav} />
 
       {toast && (

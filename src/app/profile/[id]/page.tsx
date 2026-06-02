@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import { useRouter, useParams } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
+import AvatarViewer from "@/components/AvatarViewer";
 import AvatarUploader from "@/components/AvatarUploader";
 import { startConversation } from "@/lib/startConversation";
 
@@ -42,6 +43,8 @@ function VerifiedBadge({ size = 15 }: { size?: number }) {
       </svg>
     </span>
   );
+  </>
+  );
 }
 
 export default function ProfilePage() {
@@ -56,6 +59,7 @@ export default function ProfilePage() {
   const [isVerified, setIsVerified] = useState(false);
   const [schools, setSchools] = useState<School[]>([]);
   const [activeTab, setActiveTab] = useState("Posts");
+  const [viewAvatar, setViewAvatar] = useState<{src:string;name:string}|null>(null);
   const [loading, setLoading] = useState(true);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
@@ -399,6 +403,8 @@ export default function ProfilePage() {
   const visibleTabs = hasLiving ? TABS : TABS.filter(t => t !== "Living");
 
   return (
+    <>
+    {viewAvatar && <AvatarViewer src={viewAvatar.src} name={viewAvatar.name} onClose={() => setViewAvatar(null)} />}
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
@@ -883,5 +889,7 @@ export default function ProfilePage() {
       )}
 
     </div>
+  );
+  </>
   );
 }
