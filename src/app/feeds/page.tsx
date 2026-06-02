@@ -175,7 +175,10 @@ export default function FeedsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
     const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
-    if (userData) setCurrentUser(userData);
+    if (userData) {
+      setCurrentUser(userData);
+      supabase.from("users").update({ last_seen_at: new Date().toISOString() }).eq("id", user.id);
+    }
     const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
     if (schoolData) setSchools(schoolData);
     fetchUnreadCount(userData);

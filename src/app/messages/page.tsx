@@ -4,8 +4,10 @@ import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import BottomNav from "@/components/BottomNav";
+import { startConversation } from "@/lib/startConversation";
 
 type User = { id: string; full_name: string; avatar_url: string | null; school_id: string; role: string; };
+type OnlineUser = { id: string; full_name: string; avatar_url: string | null; last_seen_at: string; };
 type Conversation = {
   id: string;
   participant_1: string;
@@ -28,8 +30,25 @@ export default function MessagesPage() {
   const [sent, setSent] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
+  const [startingChat, setStartingChat] = useState<string | null>(null);
 
   useEffect(() => { initPage(); }, []);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const channel = supabase
+      .channel("online-users")
+      .on("postgres_changes", {
+        event: "UPDATE", schema: "public", table: "users",
+        filter: "school_id=eq." + currentUser.school_id
+      }, () => { fetchOnlineUsers(currentUser); })
+      .subscribe();
+    // Refresh every 30 seconds
+    const interval = setInterval(() => fetchOnlineUsers(currentUser), 30000);
+    return () => { supabase.removeChannel(channel); clearInterval(interval); };
+  }, [currentUser]);
 
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -38,8 +57,39 @@ export default function MessagesPage() {
     if (userData) {
       setCurrentUser(userData);
       await fetchConversations(userData);
+      await fetchOnlineUsers(userData);
+      await updateLastSeen(userData.id);
     }
     setLoading(false);
+  }
+
+  async function updateLastSeen(userId: string) {
+    await supabase.from("users").update({ last_seen_at: new Date().toISOString() }).eq("id", userId);
+  }
+
+  async function fetchOnlineUsers(user: User) {
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { data } = await supabase
+      .from("users")
+      .select("id, full_name, avatar_url, last_seen_at")
+      .eq("school_id", user.school_id)
+      .eq("show_online_status", true)
+      .neq("id", user.id)
+      .gte("last_seen_at", fiveMinAgo)
+      .order("last_seen_at", { ascending: false })
+      .limit(20);
+    if (data) setOnlineUsers(data);
+  }
+
+  async function handleStartChat(otherUserId: string) {
+    if (!currentUser || startingChat) return;
+    setStartingChat(otherUserId);
+    try {
+      const convId = await startConversation(supabase, currentUser.id, otherUserId);
+      if (convId) router.push("/messages/" + convId);
+    } finally {
+      setStartingChat(null);
+    }
   }
 
   async function fetchConversations(user: User) {
@@ -133,6 +183,38 @@ export default function MessagesPage() {
           Requests {requests.length > 0 && <span style={{backgroundColor: "#EF4444", color: "#fff", borderRadius: "10px", padding: "1px 7px", fontSize: "0.65rem", marginLeft: "4px"}}>{requests.length}</span>}
         </button>
       </div>
+
+      {/* ONLINE STUDENTS */}
+      {onlineUsers.length > 0 && (
+        <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "12px 0 12px 16px"}}>
+          <div style={{fontSize: "0.72rem", fontWeight: 700, color: "#888", letterSpacing: "0.06em", marginBottom: "10px", textTransform: "uppercase"}}>
+            Online Now — {onlineUsers.length}
+          </div>
+          <div style={{display: "flex", gap: "16px", overflowX: "auto", scrollbarWidth: "none", paddingRight: "16px"}}>
+            {onlineUsers.slice(0, 20).map(user => (
+              <div key={user.id} onClick={() => handleStartChat(user.id)}
+                style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", cursor: "pointer", flexShrink: 0, opacity: startingChat === user.id ? 0.5 : 1}}>
+                <div style={{position: "relative"}}>
+                  {user.avatar_url
+                    ? <img src={user.avatar_url} alt="" style={{width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}} />
+                    : <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}}>{user.full_name?.charAt(0).toUpperCase()}</div>
+                  }
+                  <div style={{position: "absolute", bottom: "1px", right: "1px", width: "12px", height: "12px", backgroundColor: "#22C55E", borderRadius: "50%", border: "2px solid #fff"}} />
+                </div>
+                <span style={{fontSize: "0.65rem", color: "#555", fontWeight: 600, maxWidth: "52px", textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>
+                  {user.full_name?.split(" ")[0]}
+                </span>
+              </div>
+            ))}
+            {onlineUsers.length > 20 && (
+              <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", flexShrink: 0}}>
+                <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#F0F0F0", display: "flex", alignItems: "center", justifyContent: "center", color: "#888", fontWeight: 700, fontSize: "0.75rem"}}>+{onlineUsers.length - 20}</div>
+                <span style={{fontSize: "0.65rem", color: "#888"}}>more</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div style={{flex: 1, paddingBottom: "80px"}}>
         {loading ? (
