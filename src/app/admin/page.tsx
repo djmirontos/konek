@@ -20,6 +20,8 @@ export default function AdminPage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showNewToday, setShowNewToday] = useState(false);
+  const [newTodayUsers, setNewTodayUsers] = useState<{id:string;full_name:string;avatar_url:string|null;school_id:string;created_at:string;schools?:{abbreviation:string}|null}[]>([]);
 
   useEffect(() => { initPage(); }, []);
 
@@ -69,6 +71,21 @@ export default function AdminPage() {
     });
   }
 
+  async function fetchNewTodayUsers() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { data } = await supabase
+      .from("users")
+      .select("id, full_name, avatar_url, school_id, created_at, schools(abbreviation)")
+      .gte("created_at", today.toISOString())
+      .order("created_at", { ascending: false });
+    if (data) setNewTodayUsers(data.map((u: any) => ({
+      ...u,
+      schools: Array.isArray(u.schools) ? u.schools[0] ?? null : u.schools,
+    })));
+    setShowNewToday(true);
+  }
+
   const MENU = [
     { label: "Reports Queue", icon: "🚨", route: "/admin/reports", badge: stats?.pendingReports, desc: "Review flagged content" },
     { label: "Verification", icon: "🎓", route: "/admin/verification", badge: stats?.pendingVerifications, desc: "Approve student IDs" },
@@ -100,11 +117,11 @@ export default function AdminPage() {
       <div style={{padding: "16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px"}}>
         {[
           { label: "Total Users", value: stats?.totalUsers, icon: "👥", color: "#1D9E75" },
-          { label: "New Today", value: stats?.newUsersToday, icon: "🆕", color: "#3B82F6" },
+          { label: "New Today", value: stats?.newUsersToday, icon: "🆕", color: "#3B82F6", onClick: fetchNewTodayUsers },
           { label: "Posts Today", value: stats?.totalPostsToday, icon: "📝", color: "#8B5CF6" },
           { label: "Active Quad", value: stats?.activeQuadPosts, icon: "🗺️", color: "#F59E0B" },
         ].map((stat, i) => (
-          <div key={i} style={{backgroundColor: "#fff", borderRadius: "14px", padding: "14px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)"}}>
+          <div key={i} onClick={(stat as any).onClick} style={{backgroundColor: "#fff", borderRadius: "14px", padding: "14px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", cursor: (stat as any).onClick ? "pointer" : "default"}}>
             <div style={{fontSize: "1.6rem", marginBottom: "6px"}}>{stat.icon}</div>
             <div style={{fontSize: "1.6rem", fontWeight: 800, color: stat.color, lineHeight: 1}}>{stat.value ?? "—"}</div>
             <div style={{fontSize: "0.72rem", color: "#888", marginTop: "4px", fontWeight: 500}}>{stat.label}</div>
@@ -160,6 +177,39 @@ export default function AdminPage() {
           </div>
         ))}
       </div>
+      {/* NEW TODAY BOTTOM SHEET */}
+      {showNewToday && (
+        <>
+          <div onClick={() => setShowNewToday(false)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, maxHeight: "75vh", display: "flex", flexDirection: "column"}}>
+            <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "12px auto 0"}}></div>
+            <div style={{padding: "14px 16px 10px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+              <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A"}}>🆕 New Today — {newTodayUsers.length} user{newTodayUsers.length !== 1 ? "s" : ""}</div>
+              <button onClick={() => setShowNewToday(false)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.1rem"}}>✕</button>
+            </div>
+            <div style={{overflowY: "auto", flex: 1, paddingBottom: "24px"}}>
+              {newTodayUsers.length === 0 ? (
+                <div style={{textAlign: "center", padding: "32px", color: "#888", fontSize: "0.85rem"}}>No new signups today yet.</div>
+              ) : newTodayUsers.map(u => (
+                <div key={u.id} onClick={() => { setShowNewToday(false); router.push("/profile/" + u.id); }}
+                  style={{display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", cursor: "pointer"}}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F7F7F7")}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
+                  {u.avatar_url
+                    ? <img src={u.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                    : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", flexShrink: 0}}>{u.full_name?.charAt(0).toUpperCase()}</div>
+                  }
+                  <div style={{flex: 1}}>
+                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{u.full_name}</div>
+                    <div style={{fontSize: "0.72rem", color: "#888"}}>{(u.schools as any)?.abbreviation || "—"} · {new Date(u.created_at).toLocaleTimeString("en-PH", {hour: "2-digit", minute: "2-digit"})}</div>
+                  </div>
+                  <span style={{color: "#1D9E75", fontSize: "1.1rem"}}>›</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
