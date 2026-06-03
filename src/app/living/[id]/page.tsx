@@ -688,7 +688,6 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
         )}
 
       </div>
-    </div>
       {avatarMenu && currentUser && (
         <AvatarMenu
           user={avatarMenu}
@@ -696,5 +695,6 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
           onClose={() => setAvatarMenu(null)}
         />
       )}
+    </div>
   );
 }

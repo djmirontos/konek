@@ -627,7 +627,6 @@ export default function PostDetailPage() {
           onClose={() => setViewerImages([])}
         />
       )}
-    </div>
       {avatarMenu && currentUser && (
         <AvatarMenu
           user={avatarMenu}
@@ -635,5 +634,6 @@ export default function PostDetailPage() {
           onClose={() => setAvatarMenu(null)}
         />
       )}
+    </div>
   );
 }
