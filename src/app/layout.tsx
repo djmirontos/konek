@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SchoolProvider } from "@/context/SchoolContext";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import DesktopLayout from "@/components/DesktopLayout";
@@ -52,7 +53,8 @@ export default function RootLayout({
       </head>
       <body style={{margin: 0, padding: 0, backgroundColor: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
         <SchoolProvider>
-      <DesktopLayout>{children}</DesktopLayout>
+          <DesktopLayout>{children}</DesktopLayout>
+        </SchoolProvider>
         <script src="/sw-register.js" defer></script>
       </body>
     </html>
