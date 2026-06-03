@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
+import EmojiPicker from "@/components/EmojiPicker";
 import { sendPushToUser } from "@/lib/pushNotifications";
 
 type User = { id: string; full_name: string; avatar_url: string | null; school_id: string | null; };
@@ -32,6 +33,7 @@ export default function ConversationPage() {
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
   const [isAccepted, setIsAccepted] = useState<boolean | null>(null);
@@ -111,6 +113,22 @@ export default function ConversationPage() {
     if (file.size > 10 * 1024 * 1024) { alert("Image must be under 10MB"); return; }
     setImageFile(file);
     setImagePreview(prev => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(file); });
+  }
+
+  function insertEmoji(emoji: string) {
+    setText(prev => prev + emoji);
+    setShowEmoji(false);
+  }
+
+  function isEmojiOnly(text: string): boolean {
+    const emojiRegex = /^(\p{Emoji_Presentation}|\p{Extended_Pictographic})(\uFE0F|\u20E3|[\u1F3FB-\u1F3FF])?(?:\u200D(\p{Emoji_Presentation}|\p{Extended_Pictographic})(\uFE0F|\u20E3|[\u1F3FB-\u1F3FF])?)*$/u;
+    const segments = [...new Intl.Segmenter().segment(text.trim())].map(s => s.segment);
+    if (segments.length === 0 || segments.length > 3) return false;
+    return segments.every(s => /\p{Emoji_Presentation}|\p{Extended_Pictographic}/u.test(s));
+  }
+
+  function getEmojiCount(text: string): number {
+    return [...new Intl.Segmenter().segment(text.trim())].length;
   }
 
   async function handleSend() {
@@ -274,12 +292,26 @@ export default function ConversationPage() {
                 const isLast = idx === group.messages.length - 1;
                 return (
                   <div key={msg.id} style={{display: "flex", flexDirection: "column", alignItems: isMine ? "flex-end" : "flex-start", marginBottom: "4px"}}>
-                    <div style={{maxWidth: "75%", backgroundColor: isMine ? "#1D9E75" : "#fff", color: isMine ? "#fff" : "#1A1A1A", borderRadius: isMine ? "16px 16px 4px 16px" : "16px 16px 16px 4px", padding: msg.image_url && !msg.content ? "4px" : "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)"}}>
-                      {msg.image_url && (
-                        <img src={msg.image_url} alt="" style={{width: "100%", maxWidth: "220px", borderRadius: "12px", display: "block", marginBottom: msg.content ? "6px" : 0}} />
-                      )}
-                      {msg.content && <div style={{fontSize: "0.875rem", lineHeight: 1.45}}>{msg.content}</div>}
-                    </div>
+                    {(() => {
+                      const emojiOnly = msg.content ? isEmojiOnly(msg.content) : false;
+                      const emojiCount = msg.content ? getEmojiCount(msg.content) : 0;
+                      const isLargeEmoji = emojiOnly && emojiCount <= 3 && !msg.image_url;
+                      if (isLargeEmoji) {
+                        return (
+                          <div style={{fontSize: emojiCount === 1 ? "3.5rem" : emojiCount === 2 ? "2.8rem" : "2.2rem", lineHeight: 1.2, padding: "4px 2px", textAlign: isMine ? "right" : "left"}}>
+                            {msg.content}
+                          </div>
+                        );
+                      }
+                      return (
+                        <div style={{maxWidth: "75%", backgroundColor: isMine ? "#1D9E75" : "#fff", color: isMine ? "#fff" : "#1A1A1A", borderRadius: isMine ? "16px 16px 4px 16px" : "16px 16px 16px 4px", padding: msg.image_url && !msg.content ? "4px" : "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)"}}>
+                          {msg.image_url && (
+                            <img src={msg.image_url} alt="" style={{width: "100%", maxWidth: "220px", borderRadius: "12px", display: "block", marginBottom: msg.content ? "6px" : 0}} />
+                          )}
+                          {msg.content && <div style={{fontSize: "0.875rem", lineHeight: 1.45}}>{msg.content}</div>}
+                        </div>
+                      );
+                    })()}
                     {isMine && isLast && (
                       <div style={{fontSize: "0.62rem", color: "#888", marginTop: "2px", marginRight: "2px"}}>
                         {msg.is_seen ? "Seen" : "Sent"} · {formatTime(msg.created_at)}
@@ -309,6 +341,11 @@ export default function ConversationPage() {
         </div>
       )}
 
+      {/* EMOJI PICKER */}
+      {showEmoji && (
+        <EmojiPicker onSelect={insertEmoji} onClose={() => setShowEmoji(false)} />
+      )}
+
       {/* INPUT BAR */}
       <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "10px 12px", paddingBottom: "calc(10px + env(safe-area-inset-bottom))", display: "flex", alignItems: "center", gap: "8px", zIndex: 100}}>
         <label htmlFor="chat-photo-input" style={{cursor: "pointer", padding: "6px", flexShrink: 0, opacity: 0.7, display: "flex", alignItems: "center"}}>
@@ -316,6 +353,10 @@ export default function ConversationPage() {
         </label>
         <input id="chat-photo-input" ref={fileInputRef} type="file" accept="image/*" style={{display: "none"}} onChange={handleImageSelect} />
 
+        <button onClick={() => setShowEmoji(!showEmoji)}
+          style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.4rem", padding: "4px", flexShrink: 0, opacity: 0.7, display: "flex", alignItems: "center"}}>
+          😊
+        </button>
         <input
           type="text"
           placeholder="Type a message..."
