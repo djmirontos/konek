@@ -210,6 +210,17 @@ export default function FeedsPage() {
 
 
 
+  async function notifyPostOwner(postId: string, type: string, actorName: string) {
+    try {
+      const { data: post } = await supabase.from("posts").select("user_id, content").eq("id", postId).single();
+      if (!post || post.user_id === currentUser?.id) return;
+      const preview = post.content ? post.content.slice(0, 50) : "your post";
+      const title = type === "reaction" ? actorName + " reacted to your post" : actorName + " commented on your post";
+      const body = preview + (post.content && post.content.length > 50 ? "..." : "");
+      await sendPushToUser(post.user_id, title, body, "/feeds/" + postId, type + "-" + postId, supabase);
+    } catch {}
+  }
+
   async function handleReactNew(postId: string, value: string) {
     if (!currentUser) return;
     const post = posts.find(p => p.id === postId);
