@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { shareContent } from "@/lib/share";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
+import { sendPushToUser } from "@/lib/pushNotifications";
 import PhotoViewer from "@/components/PhotoViewer";
 import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
 import CommentReactionButton from "@/components/CommentReactionButton";
@@ -189,16 +190,16 @@ export default function PostDetailPage() {
           message: currentUser.full_name + (replyTo ? " replied to a comment on your post" : " commented on your post"),
           is_read: false,
         });
-      }
-      if (post && post.user_id !== currentUser.id) {
-        await supabase.from("notifications").insert({
-          recipient_id: post.user_id,
-          sender_id: currentUser.id,
-          type: "comment",
-          post_id: postId,
-          message: currentUser.full_name + (replyTo ? " replied to a comment on your post" : " commented on your post"),
-          is_read: false,
-        });
+        // Push notification
+        const preview = post.content ? post.content.slice(0, 50) : "your post";
+        await sendPushToUser(
+          post.user_id,
+          currentUser.full_name + (replyTo ? " replied to your post" : " commented on your post"),
+          preview + (post.content && post.content.length > 50 ? "..." : ""),
+          "/feeds/" + postId,
+          "comment-" + postId,
+          supabase
+        );
       }
       setCommentText("");
       setReplyTo(null);

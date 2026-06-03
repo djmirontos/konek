@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
+import { sendPushToUser } from "@/lib/pushNotifications";
 
 type User = { id: string; full_name: string; avatar_url: string | null; school_id: string | null; };
 type School = { id: string; name: string; abbreviation: string; };
@@ -160,6 +161,18 @@ export default function ConversationPage() {
         last_message: optimisticMsg.content || "Photo",
         last_message_at: new Date().toISOString(),
       }).eq("id", convId);
+
+      // Send push notification to recipient
+      if (otherUser) {
+        await sendPushToUser(
+          otherUser.id,
+          currentUser.full_name,
+          optimisticMsg.content || "Sent you a photo",
+          "/messages/" + convId,
+          "message-" + convId,
+          supabase
+        );
+      }
     } catch { } finally { setSending(false); }
   }
 

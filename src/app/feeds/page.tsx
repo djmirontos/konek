@@ -7,6 +7,7 @@ import PhotoViewer from "@/components/PhotoViewer";
 import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
 import PhotoGrid from "@/components/PhotoGrid";
 import BottomNav from "@/components/BottomNav";
+import { subscribeToPush } from "@/lib/pushNotifications";
 import AppHeader from "@/components/AppHeader";
 import imageCompression from "browser-image-compression";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -178,6 +179,8 @@ export default function FeedsPage() {
     if (userData) {
       setCurrentUser(userData);
       supabase.from("users").update({ last_seen_at: new Date().toISOString() }).eq("id", user.id);
+      // Subscribe to push notifications silently
+      subscribeToPush(userData.id, supabase).catch(() => {});
     }
     const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
     if (schoolData) setSchools(schoolData);
@@ -238,6 +241,8 @@ export default function FeedsPage() {
           recipient_id: post.user_id, sender_id: currentUser.id, type: "reaction",
           post_id: postId, message: currentUser.full_name + " reacted " + (reaction?.emoji || "") + " to your post", is_read: false,
         });
+        // Push notification
+        await notifyPostOwner(postId, "reaction", currentUser.full_name);
       }
     }
   }
