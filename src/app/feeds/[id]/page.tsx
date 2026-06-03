@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase";
 import { shareContent } from "@/lib/share";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
+import AvatarMenu from "@/components/AvatarMenu";
+import { useSchool } from "@/context/SchoolContext";
 import { sendPushToUser } from "@/lib/pushNotifications";
 import PhotoViewer from "@/components/PhotoViewer";
 import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
@@ -50,6 +52,7 @@ export default function PostDetailPage() {
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [avatarMenu, setAvatarMenu] = useState<{id:string;full_name:string;avatar_url:string|null}|null>(null);
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -348,8 +351,8 @@ export default function PostDetailPage() {
       <div style={{backgroundColor: "#fff", marginBottom: "8px"}}>
         <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
           {post.users?.avatar_url
-            ? <img onClick={() => router.push(`/profile/${post.user_id}`)} src={post.users.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
-            : <div onClick={() => router.push(`/profile/${post.user_id}`)} style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+            ? <img onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users.avatar_url})} src={post.users.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
+            : <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: null})} style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
           }
           <div>
             <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{post.users?.full_name}{verifiedUsers.has(post.user_id) && <VerifiedBadge />}</div>
@@ -421,8 +424,8 @@ export default function PostDetailPage() {
           <div key={comment.id} style={{backgroundColor: "#fff", marginBottom: "4px", padding: "12px 16px"}}>
             <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
               {comment.users?.avatar_url
-                ? <img onClick={() => router.push(`/profile/${comment.user_id}`)} src={comment.users.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
-                : <div onClick={() => router.push(`/profile/${comment.user_id}`)} style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0, cursor: "pointer"}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
+                ? <img onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: comment.users.avatar_url})} src={comment.users.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
+                : <div onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: null})} style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0, cursor: "pointer"}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
               }
               <div style={{flex: 1}}>
                 <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "8px 12px", position: "relative"}}>
@@ -453,8 +456,8 @@ export default function PostDetailPage() {
                     {comment.replies.map(reply => (
                       <div key={reply.id} style={{display: "flex", gap: "8px", alignItems: "flex-start"}}>
                         {reply.users?.avatar_url
-                          ? <img onClick={() => router.push(`/profile/${reply.user_id}`)} src={reply.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
-                          : <div onClick={() => router.push(`/profile/${reply.user_id}`)} style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.72rem", flexShrink: 0, cursor: "pointer"}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
+                          ? <img onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: reply.users.avatar_url})} src={reply.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
+                          : <div onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: null})} style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.72rem", flexShrink: 0, cursor: "pointer"}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
                         }
                         <div style={{flex: 1}}>
                           <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "6px 10px"}}>
@@ -625,5 +628,12 @@ export default function PostDetailPage() {
         />
       )}
     </div>
+      {avatarMenu && currentUser && (
+        <AvatarMenu
+          user={avatarMenu}
+          currentUserId={currentUser.id}
+          onClose={() => setAvatarMenu(null)}
+        />
+      )}
   );
 }

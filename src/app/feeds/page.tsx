@@ -9,6 +9,7 @@ import PhotoGrid from "@/components/PhotoGrid";
 import BottomNav from "@/components/BottomNav";
 import { subscribeToPush, sendPushToUser } from "@/lib/pushNotifications";
 import { useSchool } from "@/context/SchoolContext";
+import AvatarMenu from "@/components/AvatarMenu";
 import AppHeader from "@/components/AppHeader";
 import imageCompression from "browser-image-compression";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -80,6 +81,7 @@ export default function FeedsPage() {
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [toast, setToast] = useState("");
   const [viewAvatar, setViewAvatar] = useState<{src:string;name:string}|null>(null);
+  const [avatarMenu, setAvatarMenu] = useState<{id:string;full_name:string;avatar_url:string|null;school?:string|null}|null>(null);
   const [showMenu, setShowMenu] = useState<string | null>(null);
   const [editingPost, setEditingPost] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -776,7 +778,7 @@ export default function FeedsPage() {
             ) : posts.map(post => (
               <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0"}}>
                 <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
-                  <div onClick={() => router.push(`/profile/${post.user_id}`)} style={{cursor: "pointer"}}>
+                  <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} style={{cursor: "pointer"}}>
                     {post.users?.avatar_url
                       ? <img src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
                       : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
@@ -969,9 +971,9 @@ export default function FeedsPage() {
                   {post.isExpired ? (
                     <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E0E0E0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0}}>⏰</div>
                   ) : post.users?.avatar_url ? (
-                    <img onClick={() => router.push(`/profile/${post.user_id}`)} src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
+                    <img onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
                   ) : (
-                    <div onClick={() => router.push(`/profile/${post.user_id}`)} style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+                    <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                   )}
                   <div style={{flex: 1}}>
                     <div style={{fontWeight: 700, fontSize: "0.875rem", color: post.isExpired ? "#888" : "#1A1A1A"}}>{post.isExpired ? "Expired Post" : post.users?.full_name}</div>
@@ -1025,6 +1027,13 @@ export default function FeedsPage() {
         </>
       )}
 
+      {avatarMenu && currentUser && (
+        <AvatarMenu
+          user={avatarMenu}
+          currentUserId={currentUser.id}
+          onClose={() => setAvatarMenu(null)}
+        />
+      )}
       {viewAvatar && (
         <PhotoViewer
           images={[viewAvatar.src]}
