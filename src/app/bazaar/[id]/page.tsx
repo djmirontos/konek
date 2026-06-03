@@ -396,7 +396,7 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
             </div>
             <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
               {listing?.users?.avatar_url
-                ? <img onClick={() => listing && setAvatarMenu({id: listing.user_id, full_name: listing.users?.full_name || "", avatar_url: listing.users.avatar_url})} src={listing.users.avatar_url} alt="" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
+                ? <img onClick={() => listing && setAvatarMenu({id: listing.user_id, full_name: listing.users?.full_name || "", avatar_url: listing.users?.avatar_url || null})} src={listing.users.avatar_url} alt="" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
                 : <div onClick={() => listing && setAvatarMenu({id: listing.user_id, full_name: listing.users?.full_name || "", avatar_url: null})} style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.95rem", cursor: "pointer"}}>{listing?.users?.full_name?.charAt(0).toUpperCase()}</div>}
               <div>
                 <div style={{fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{listing?.users?.full_name}{listing && verifiedUsers.has(listing.user_id) && <VerifiedBadge />}</div>
@@ -423,7 +423,7 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
               <div key={comment.id} style={{marginBottom: "16px"}}>
                 <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
                   {comment.users?.avatar_url
-                    ? <img onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: comment.users.avatar_url})} src={comment.users.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
+                    ? <img onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: comment.users?.avatar_url || null})} src={comment.users.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
                     : <div onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: null})} style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0, cursor: "pointer"}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div style={{flex: 1}}>
@@ -464,7 +464,7 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
                         {comment.replies.map(reply => (
                           <div key={reply.id} style={{display: "flex", gap: "8px", alignItems: "flex-start", marginBottom: "10px"}}>
                             {reply.users?.avatar_url
-                              ? <img onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: reply.users.avatar_url})} src={reply.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
+                              ? <img onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: reply.users?.avatar_url || null})} src={reply.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
                               : <div onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: null})} style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.75rem", flexShrink: 0, cursor: "pointer"}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
                             }
                             <div style={{flex: 1}}>
