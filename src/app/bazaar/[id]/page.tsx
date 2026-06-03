@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { shareContent } from "@/lib/share";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import AvatarMenu from "@/components/AvatarMenu";
 import { startConversation } from "@/lib/startConversation";
 import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
 import CommentReactionButton from "@/components/CommentReactionButton";
