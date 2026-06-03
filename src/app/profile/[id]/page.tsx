@@ -11,7 +11,7 @@ type School = { id: string; name: string; abbreviation: string; };
 type ProfileUser = {
   id: string; full_name: string; avatar_url: string | null; avatar_original_url: string | null;
   school_id: string; role: string; bio: string | null; birthdate: string | null; course: string | null; year_level: string | null; hometown: string | null;
-  phone_number: string | null; created_at: string;
+  phone_number: string | null; created_at: string; show_online_status: boolean;
   verification_status: string | null;
   verification_rejection_reason: string | null;
   verification_front_url: string | null;
@@ -865,6 +865,22 @@ export default function ProfilePage() {
                       </select>
                     </div>
                   ))}
+                  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", marginTop: "8px", paddingTop: "12px", borderTop: "1px solid #F0F0F0"}}>
+                    <div>
+                      <div style={{fontSize: "0.82rem", color: "#1A1A1A", fontWeight: 500}}>Show Online Status</div>
+                      <div style={{fontSize: "0.68rem", color: "#AAA", marginTop: "1px"}}>Let classmates see when you are online</div>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (!currentUser) return;
+                        const newVal = !(profileUser?.show_online_status !== false);
+                        await supabase.from("users").update({ show_online_status: newVal }).eq("id", currentUser.id);
+                        setProfileUser(prev => prev ? { ...prev, show_online_status: newVal } : prev);
+                      }}
+                      style={{width: "44px", height: "24px", borderRadius: "12px", border: "none", cursor: "pointer", backgroundColor: profileUser?.show_online_status !== false ? "#1D9E75" : "#E0E0E0", position: "relative", flexShrink: 0, transition: "background-color 0.2s"}}>
+                      <div style={{position: "absolute", top: "2px", width: "20px", height: "20px", borderRadius: "50%", backgroundColor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.2)", transition: "left 0.2s", left: profileUser?.show_online_status !== false ? "22px" : "2px"}} />
+                    </button>
+                  </div>
                   <div style={{fontSize: "0.68rem", color: "#AAA", marginTop: "4px"}}>Public = everyone · School Only = same school · Private = only you</div>
                 </div>
                 )}
