@@ -127,23 +127,39 @@ export default function ConversationPage() {
         }
       }
 
-      await supabase.from("messages").insert({
+      // Optimistic update — show message instantly for sender
+      const optimisticMsg: Message = {
+        id: "temp-" + Date.now(),
         conversation_id: convId,
         sender_id: currentUser.id,
         content: text.trim() || null,
         image_url: imageUrl,
         is_seen: false,
-      });
-
-      await supabase.from("conversations").update({
-        last_message: text.trim() || "📷 Photo",
-        last_message_at: new Date().toISOString(),
-      }).eq("id", convId);
-
+        created_at: new Date().toISOString(),
+      };
+      setMessages(prev => [...prev, optimisticMsg]);
       setText("");
       setImageFile(null);
       setImagePreview("");
       setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+
+      const { data: inserted } = await supabase.from("messages").insert({
+        conversation_id: convId,
+        sender_id: currentUser.id,
+        content: optimisticMsg.content,
+        image_url: imageUrl,
+        is_seen: false,
+      }).select().single();
+
+      // Replace optimistic message with real one
+      if (inserted) {
+        setMessages(prev => prev.map(m => m.id === optimisticMsg.id ? inserted : m));
+      }
+
+      await supabase.from("conversations").update({
+        last_message: optimisticMsg.content || "Photo",
+        last_message_at: new Date().toISOString(),
+      }).eq("id", convId);
     } catch { } finally { setSending(false); }
   }
 
