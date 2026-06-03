@@ -37,6 +37,20 @@ export default function MessagesPage() {
 
   useEffect(() => {
     if (!currentUser) return;
+    const channel = supabase
+      .channel("messages-realtime-" + currentUser.id)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" },
+        () => { fetchUnreadMessages(currentUser.id); fetchConversations(currentUser); })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "conversations" },
+        () => { fetchConversations(currentUser); fetchUnreadMessages(currentUser.id); })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "conversations" },
+        () => { fetchConversations(currentUser); fetchUnreadMessages(currentUser.id); })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser) return;
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
     const channel = supabase
       .channel("online-users")
@@ -122,7 +136,7 @@ export default function MessagesPage() {
 
   async function handleAcceptRequest(convId: string) {
     await supabase.from("conversations").update({ status: "accepted" }).eq("id", convId);
-    if (currentUser) await fetchConversations(currentUser);
+    router.push("/messages/" + convId);
   }
 
   async function handleDeclineRequest(convId: string) {
@@ -142,23 +156,25 @@ export default function MessagesPage() {
 
 
   async function fetchUnreadMessages(userId: string) {
-    const supabase = createClient();
-    const { data: convs } = await supabase
-      .from("conversations")
-      .select("id")
+    const { data: convs } = await supabase.from("conversations").select("id")
       .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
       .eq("status", "accepted");
-    if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
-    const convIds = convs.map((c: {id: string}) => c.id);
     let total = 0;
-    for (const cid of convIds) {
-      const { count } = await supabase.from("messages")
-        .select("id", { count: "exact", head: true })
-        .eq("conversation_id", cid)
-        .eq("is_seen", false)
-        .neq("sender_id", userId);
-      total += count || 0;
+    if (convs && convs.length > 0) {
+      const convIds = convs.map((c: {id: string}) => c.id);
+      for (const cid of convIds) {
+        const { count } = await supabase.from("messages").select("id", { count: "exact", head: true })
+          .eq("conversation_id", cid).eq("is_seen", false).neq("sender_id", userId);
+        total += count || 0;
+      }
     }
+    // Also count pending message requests
+    const { count: requestCount } = await supabase.from("conversations")
+      .select("id", { count: "exact", head: true })
+      .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
+      .eq("status", "pending")
+      .neq("initiated_by", userId);
+    total += requestCount || 0;
     setUnreadMessages(total);
   }
 
