@@ -10,6 +10,7 @@ import BottomNav from "@/components/BottomNav";
 import { subscribeToPush, sendPushToUser } from "@/lib/pushNotifications";
 import { useSchool } from "@/context/SchoolContext";
 import AvatarMenu from "@/components/AvatarMenu";
+import EmojiPicker from "@/components/EmojiPicker";
 import AppHeader from "@/components/AppHeader";
 import imageCompression from "browser-image-compression";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -82,6 +83,7 @@ export default function FeedsPage() {
   const [toast, setToast] = useState("");
   const [viewAvatar, setViewAvatar] = useState<{src:string;name:string}|null>(null);
   const [avatarMenu, setAvatarMenu] = useState<{id:string;full_name:string;avatar_url:string|null;school?:string|null}|null>(null);
+  const [showPostEmoji, setShowPostEmoji] = useState(false);
   const [showMenu, setShowMenu] = useState<string | null>(null);
   const [editingPost, setEditingPost] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -715,6 +717,16 @@ export default function FeedsPage() {
                     rows={4}
                     style={{width: "100%", border: "none", padding: "0", fontSize: "0.95rem", color: "#1A1A1A", backgroundColor: "#fff", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box", lineHeight: 1.5}}
                   />
+                  <button onClick={() => setShowPostEmoji(!showPostEmoji)}
+                    style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.3rem", padding: "4px", opacity: 0.6, alignSelf: "flex-start"}}>
+                    😊
+                  </button>
+                  {showPostEmoji && (
+                    <EmojiPicker
+                      onSelect={(emoji) => { setPostContent(prev => prev + emoji); setShowPostEmoji(false); }}
+                      onClose={() => setShowPostEmoji(false)}
+                    />
+                  )}
                   {imagePreviews.length > 0 && (
                     <div style={{display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap"}}>
                       {imagePreviews.map((src, i) => (

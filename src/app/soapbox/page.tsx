@@ -9,6 +9,7 @@ import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
 import { useRouter } from "next/navigation";
 import { useSchool } from "@/context/SchoolContext";
+import EmojiPicker from "@/components/EmojiPicker";
 
 
 const ADJECTIVES = [
@@ -100,6 +101,8 @@ export default function SoapboxPage() {
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
   const [postContent, setPostContent] = useState("");
+  const [showSoapboxEmoji, setShowSoapboxEmoji] = useState(false);
+  const [showConfessionEmoji, setShowConfessionEmoji] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [postError, setPostError] = useState("");
@@ -504,11 +507,23 @@ export default function SoapboxPage() {
                 <Image src="/photos.png" alt="photos" width={22} height={22} />
               </button>
               <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleImageSelect} />
-              <button onClick={handlePost} disabled={posting || !postContent.trim()}
-                style={{backgroundColor: posting || !postContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 20px", fontWeight: 700, fontSize: "0.8rem", cursor: posting || !postContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
-                {posting ? "Posting..." : "Post"}
-              </button>
+              <div style={{display: "flex", alignItems: "center", gap: "8px"}}>
+                <button onClick={() => setShowSoapboxEmoji(!showSoapboxEmoji)}
+                  style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.3rem", padding: "4px", opacity: 0.6}}>
+                  😊
+                </button>
+                <button onClick={handlePost} disabled={posting || !postContent.trim()}
+                  style={{backgroundColor: posting || !postContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 20px", fontWeight: 700, fontSize: "0.8rem", cursor: posting || !postContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                  {posting ? "Posting..." : "Post"}
+                </button>
+              </div>
             </div>
+            {showSoapboxEmoji && (
+              <EmojiPicker
+                onSelect={(emoji) => { setPostContent(prev => prev + emoji); setShowSoapboxEmoji(false); }}
+                onClose={() => setShowSoapboxEmoji(false)}
+              />
+            )}
           </div>
 
           <div style={{flex: 1, paddingBottom: "80px"}}>
@@ -612,11 +627,23 @@ export default function SoapboxPage() {
                 <Image src="/photos.png" alt="photos" width={22} height={22} />
               </button>
               <input ref={confessionFileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleConfessionImageSelect} />
-              <button onClick={handleConfessionPost} disabled={confessionPosting || !confessionContent.trim()}
-                style={{backgroundColor: confessionPosting || !confessionContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 20px", fontWeight: 700, fontSize: "0.8rem", cursor: confessionPosting || !confessionContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
-                {confessionPosting ? "Posting..." : "Confess"}
-              </button>
+              <div style={{display: "flex", alignItems: "center", gap: "8px"}}>
+                <button onClick={() => setShowConfessionEmoji(!showConfessionEmoji)}
+                  style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.3rem", padding: "4px", opacity: 0.6}}>
+                  😊
+                </button>
+                <button onClick={handleConfessionPost} disabled={confessionPosting || !confessionContent.trim()}
+                  style={{backgroundColor: confessionPosting || !confessionContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 20px", fontWeight: 700, fontSize: "0.8rem", cursor: confessionPosting || !confessionContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                  {confessionPosting ? "Posting..." : "Confess"}
+                </button>
+              </div>
             </div>
+            {showConfessionEmoji && (
+              <EmojiPicker
+                onSelect={(emoji) => { setConfessionContent(prev => prev + emoji); setShowConfessionEmoji(false); }}
+                onClose={() => setShowConfessionEmoji(false)}
+              />
+            )}
           </div>
 
           <div style={{flex: 1, paddingBottom: "80px"}}>

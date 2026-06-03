@@ -5,6 +5,7 @@ import { shareContent } from "@/lib/share";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import AvatarMenu from "@/components/AvatarMenu";
+import EmojiPicker from "@/components/EmojiPicker";
 import { startConversation } from "@/lib/startConversation";
 import ReactionButton from "@/components/ReactionButton";
 import CommentReactionButton from "@/components/CommentReactionButton";
@@ -56,6 +57,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [avatarMenu, setAvatarMenu] = useState<{id:string;full_name:string;avatar_url:string|null}|null>(null);
+  const [showCommentEmoji, setShowCommentEmoji] = useState(false);
   const [verifiedUsers, setVerifiedUsers] = useState<Set<string>>(new Set());
   const [messagingOwner, setMessagingOwner] = useState(false);
   const [post, setPost] = useState<BoardingHouse | null>(null);
@@ -569,6 +571,10 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
             ? <img src={currentUser.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
             : <div style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
           }
+          <button onClick={() => setShowCommentEmoji(!showCommentEmoji)}
+            style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.3rem", padding: "4px", opacity: 0.6, flexShrink: 0}}>
+            😊
+          </button>
           <input placeholder="Ask the poster..." value={commentText} onChange={e => setCommentText(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleComment(); } }}
             style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 16px", fontSize: "0.85rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}} />
@@ -576,6 +582,12 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
             style={{backgroundColor: submitting || !commentText.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 18px", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit"}}>
             {submitting ? "..." : "Ask"}
           </button>
+          {showCommentEmoji && (
+            <EmojiPicker
+              onSelect={(emoji) => { setCommentText(prev => prev + emoji); setShowCommentEmoji(false); }}
+              onClose={() => setShowCommentEmoji(false)}
+            />
+          )}
         </div>
 
         {/* Owner Menu */}

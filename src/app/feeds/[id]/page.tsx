@@ -5,6 +5,7 @@ import { shareContent } from "@/lib/share";
 import Image from "next/image";
 import { useRouter, useParams } from "next/navigation";
 import AvatarMenu from "@/components/AvatarMenu";
+import EmojiPicker from "@/components/EmojiPicker";
 import { useSchool } from "@/context/SchoolContext";
 import { sendPushToUser } from "@/lib/pushNotifications";
 import PhotoViewer from "@/components/PhotoViewer";
@@ -53,6 +54,7 @@ export default function PostDetailPage() {
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [avatarMenu, setAvatarMenu] = useState<{id:string;full_name:string;avatar_url:string|null}|null>(null);
+  const [showCommentEmoji, setShowCommentEmoji] = useState(false);
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -501,6 +503,10 @@ export default function PostDetailPage() {
             ? <img src={currentUser.avatar_url} alt="" style={{width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
             : <div style={{width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.8rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
           }
+          <button onClick={() => setShowCommentEmoji(!showCommentEmoji)}
+            style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.3rem", padding: "4px", opacity: 0.6, flexShrink: 0, display: "flex", alignItems: "center"}}>
+            😊
+          </button>
           <input
             ref={commentInputRef}
             type="text"
@@ -514,6 +520,12 @@ export default function PostDetailPage() {
             style={{backgroundColor: submitting || !commentText.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "50%", width: "34px", height: "34px", cursor: submitting || !commentText.trim() ? "not-allowed" : "pointer", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
             ➤
           </button>
+          {showCommentEmoji && (
+            <EmojiPicker
+              onSelect={(emoji) => { setCommentText(prev => prev + emoji); setShowCommentEmoji(false); }}
+              onClose={() => setShowCommentEmoji(false)}
+            />
+          )}
         </div>
       </div>
 
