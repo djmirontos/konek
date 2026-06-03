@@ -7,7 +7,7 @@ import PhotoViewer from "@/components/PhotoViewer";
 import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
 import PhotoGrid from "@/components/PhotoGrid";
 import BottomNav from "@/components/BottomNav";
-import { subscribeToPush } from "@/lib/pushNotifications";
+import { subscribeToPush, sendPushToUser } from "@/lib/pushNotifications";
 import AppHeader from "@/components/AppHeader";
 import imageCompression from "browser-image-compression";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
