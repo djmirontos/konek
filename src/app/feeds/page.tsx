@@ -8,6 +8,7 @@ import ReactionButton, { FEED_REACTIONS } from "@/components/ReactionButton";
 import PhotoGrid from "@/components/PhotoGrid";
 import BottomNav from "@/components/BottomNav";
 import { subscribeToPush, sendPushToUser } from "@/lib/pushNotifications";
+import { useSchool } from "@/context/SchoolContext";
 import AppHeader from "@/components/AppHeader";
 import imageCompression from "browser-image-compression";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -73,7 +74,7 @@ export default function FeedsPage() {
   const [activeTab, setActiveTab] = useState<"feeds" | "quad">("feeds");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [schools, setSchools] = useState<School[]>([]);
-  const [selectedSchool, setSelectedSchool] = useState<string>("own");
+  const { selectedSchool, setSelectedSchool } = useSchool();
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);

@@ -51,7 +51,8 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
       </head>
       <body style={{margin: 0, padding: 0, backgroundColor: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-        <DesktopLayout>{children}</DesktopLayout>
+        <SchoolProvider>
+      <DesktopLayout>{children}</DesktopLayout>
         <script src="/sw-register.js" defer></script>
       </body>
     </html>

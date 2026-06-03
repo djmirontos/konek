@@ -8,6 +8,7 @@ import ReactionButton, { CONFESSION_REACTIONS as REACTION_SET } from "@/componen
 import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
 import { useRouter } from "next/navigation";
+import { useSchool } from "@/context/SchoolContext";
 
 
 const ADJECTIVES = [
@@ -88,7 +89,7 @@ export default function SoapboxPage() {
   const [activeTab, setActiveTab] = useState<"soapbox" | "confession">("soapbox");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [schools, setSchools] = useState<School[]>([]);
-  const [selectedSchool, setSelectedSchool] = useState<string>("own");
+  const { selectedSchool, setSelectedSchool } = useSchool();
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);

@@ -7,6 +7,7 @@ import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
 
 import { useRouter } from "next/navigation";
+import { useSchool } from "@/context/SchoolContext";
 
 const CATEGORIES = ["Textbooks", "Uniforms", "Gadgets", "School Supplies", "Dorm Essentials", "Food", "Entertainment", "Sports", "Others"];
 const CONDITIONS = ["Brand New", "Like New", "Slightly Used", "Good"];
@@ -39,7 +40,7 @@ export default function BazaarPage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
-  const [selectedSchool, setSelectedSchool] = useState<string>("own");
+  const { selectedSchool, setSelectedSchool } = useSchool();
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [showComposer, setShowComposer] = useState(false);
   const [title, setTitle] = useState("");

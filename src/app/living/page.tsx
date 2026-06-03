@@ -7,6 +7,7 @@ import AppHeader from "@/components/AppHeader";
 import SchoolPicker from "@/components/SchoolPicker";
 
 import { useRouter } from "next/navigation";
+import { useSchool } from "@/context/SchoolContext";
 
 const AMENITIES = ["WiFi", "Water", "Electricity", "Private CR", "Shared CR", "Kitchen", "Laundry", "Aircon", "Furnished", "With meals"];
 
@@ -34,7 +35,7 @@ export default function LivingPage() {
   const [posts, setPosts] = useState<BoardingHouse[]>([]);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
-  const [selectedSchool, setSelectedSchool] = useState<string>("own");
+  const { selectedSchool, setSelectedSchool } = useSchool();
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [showComposer, setShowComposer] = useState(false);
   const [filterType, setFilterType] = useState<string>("All");
