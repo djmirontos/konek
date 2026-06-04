@@ -186,16 +186,16 @@ export default function SettingsPage() {
         <Card>
           <Row icon="✏️" iconBg="#EAF3DE" title="Edit profile" subtitle="Name, bio, course, hometown"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
-            onClick={() => router.push("/profile/" + currentUser?.id)} />
+            onClick={() => router.push("/profile/" + currentUser?.id + "?edit=true")} />
           <Row icon="📱" iconBg="#EAF3DE" title="Phone number" subtitle={currentUser?.phone_number || "Not set"}
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
-            onClick={() => router.push("/profile/" + currentUser?.id)} />
+            onClick={() => router.push("/profile/" + currentUser?.id + "?edit=true")} />
           <Row icon="🔒" iconBg="#EAF3DE" title="Change password"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => setShowChangePassword(true)} />
           <Row icon="🪪" iconBg="#E6F1FB" title="Student verification" subtitle={getVerificationLabel()}
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
-            onClick={() => router.push("/profile/" + currentUser?.id + "?tab=about")} />
+            onClick={() => router.push("/profile/" + currentUser?.id + "?verify=true")} />
         </Card>
 
         {/* PRIVACY */}

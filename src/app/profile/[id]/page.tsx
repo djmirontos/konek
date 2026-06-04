@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import PhotoViewer from "@/components/PhotoViewer";
 import AvatarUploader from "@/components/AvatarUploader";
@@ -65,6 +65,7 @@ export default function ProfilePage() {
   const params = useParams();
   const profileId = params?.id as string;
   const supabase = createClient();
+  const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [currentUser, setCurrentUser] = useState<ProfileUser | null>(null);
@@ -118,6 +119,12 @@ export default function ProfilePage() {
 
   useEffect(() => { initPage(); }, [profileId]);
   useEffect(() => { if (profileUser) fetchTabData(activeTab); }, [activeTab, profileUser]);
+  useEffect(() => {
+    if (!loading && profileUser) {
+      if (searchParams?.get("edit") === "true") { setShowEditSheet(true); setActiveTab("About"); }
+      if (searchParams?.get("verify") === "true") { setShowVerifySheet(true); setActiveTab("About"); }
+    }
+  }, [loading, profileUser, searchParams]);
 
   async function initPage() {
     setLoading(true);
@@ -907,16 +914,11 @@ export default function ProfilePage() {
                   </div>
                 )}
 
-                {/* ADMIN + LOGOUT — own profile only */}
-                {isOwnProfile && (
-                  <div style={{display: "flex", flexDirection: "column", gap: "10px", paddingBottom: "8px"}}>
-                    {(currentUser?.role === "admin" || currentUser?.role === "moderator") && (
-                      <button onClick={() => router.push("/admin")} style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #1D9E75", backgroundColor: "#E1F5EE", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
-                        🛡️ Admin Panel
-                      </button>
-                    )}
-                    <button onClick={() => setShowLogoutConfirm(true)} style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #EF4444", backgroundColor: "#FEF2F2", color: "#EF4444", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
-                      🚪 Log Out
+                {/* ADMIN PANEL — admin/mod only */}
+                {isOwnProfile && (currentUser?.role === "admin" || currentUser?.role === "moderator") && (
+                  <div style={{paddingBottom: "8px"}}>
+                    <button onClick={() => router.push("/admin")} style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #1D9E75", backgroundColor: "#E1F5EE", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
+                      🛡️ Admin Panel
                     </button>
                   </div>
                 )}
