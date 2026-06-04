@@ -81,6 +81,8 @@ export default function ProfilePage() {
   const [postCount, setPostCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
   const [reactionsReceived, setReactionsReceived] = useState(0);
+  const [commentsToday, setCommentsToday] = useState(0);
+  const [reactionsToday, setReactionsToday] = useState(0);
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
@@ -188,9 +190,20 @@ export default function ProfilePage() {
         .from("reactions").select("id", { count: "exact", head: true })
         .in("post_id", postIds);
       setReactionsReceived(rCount || 0);
+      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+      const { count: rToday } = await supabase
+        .from("reactions").select("id", { count: "exact", head: true })
+        .in("post_id", postIds).gte("created_at", todayStart.toISOString());
+      setReactionsToday(rToday || 0);
     } else {
       setReactionsReceived(0);
+      setReactionsToday(0);
     }
+    const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+    const { count: cToday } = await supabase
+      .from("comments").select("id", { count: "exact", head: true })
+      .eq("user_id", userId).gte("created_at", todayStart.toISOString());
+    setCommentsToday(cToday || 0);
   }
 
   async function fetchTabData(tab: string) {
@@ -558,21 +571,19 @@ export default function ProfilePage() {
         {school && <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600, marginBottom: "2px"}}>{school.abbreviation}</div>}
         {profileUser.bio && <div style={{fontSize: "0.83rem", color: "#555", textAlign: "center", marginBottom: "10px", lineHeight: 1.5, maxWidth: "300px", marginTop: "4px"}}>{profileUser.bio}</div>}
 
-        <div style={{display: "grid", gridTemplateColumns: "1fr 1fr 1fr", width: "100%", margin: "8px 0 14px", backgroundColor: "#F7F7F7", borderRadius: "12px", overflow: "hidden"}}>
-          {[{label: "Posts", value: postCount}, {label: "Comments", value: commentCount}, {label: "Reactions", value: reactionsReceived}].map((stat, i) => (
-            <div key={i} style={{padding: "12px 8px", textAlign: "center", borderRight: i < 2 ? "1px solid #E8E8E8" : "none"}}>
-              <div style={{fontWeight: 700, fontSize: "1.3rem", color: "#1D9E75"}}>{stat.value.toLocaleString()}</div>
-              <div style={{fontSize: "0.68rem", color: "#888", marginTop: "1px"}}>{stat.label}</div>
-            </div>
-          ))}
+        <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", margin: "8px 0 14px", backgroundColor: "#F7F7F7", borderRadius: "12px", overflow: "hidden"}}>
+          <div style={{padding: "14px 8px", textAlign: "center", borderRight: "1px solid #E8E8E8"}}>
+            <div style={{fontWeight: 700, fontSize: "1.5rem", color: "#1A1A1A"}}>{commentCount.toLocaleString()}</div>
+            {commentsToday > 0 && <div style={{fontSize: "0.72rem", color: "#1D9E75", fontWeight: 700, marginTop: "2px"}}>+{commentsToday} today</div>}
+            <div style={{fontSize: "0.7rem", color: "#888", marginTop: "2px"}}>Commented on your post</div>
+          </div>
+          <div style={{padding: "14px 8px", textAlign: "center"}}>
+            <div style={{fontWeight: 700, fontSize: "1.5rem", color: "#1A1A1A"}}>{reactionsReceived.toLocaleString()}</div>
+            {reactionsToday > 0 && <div style={{fontSize: "0.72rem", color: "#1D9E75", fontWeight: 700, marginTop: "2px"}}>+{reactionsToday} today</div>}
+            <div style={{fontSize: "0.7rem", color: "#888", marginTop: "2px"}}>Reactions received</div>
+          </div>
         </div>
-
-        {isOwnProfile ? (
-          <button onClick={() => setShowEditSheet(true)}
-            style={{padding: "9px 28px", borderRadius: "20px", border: "1.5px solid #1D9E75", backgroundColor: "#fff", color: "#1D9E75", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>
-            ✏️ Edit Profile
-          </button>
-        ) : (
+        {!isOwnProfile && (
           <div style={{display: "flex", gap: "10px"}}>
             <button onClick={handleMessageUser} disabled={messagingUser}
               style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: messagingUser ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: messagingUser ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
