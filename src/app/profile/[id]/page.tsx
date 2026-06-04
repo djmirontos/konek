@@ -838,10 +838,10 @@ export default function ProfilePage() {
                         const done = (profileUser.referral_count || 0) >= m.count;
                         return (
                           <div key={m.count} style={{display: "flex", alignItems: "center", gap: "8px", opacity: done ? 1 : 0.5}}>
-                            <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: done ? "#1D9E75" : "#E0E0E0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: "#fff", fontWeight: 700, flexShrink: 0}}>
+                            <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: done ? "#1D9E75" : "#888", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: "#fff", fontWeight: 700, flexShrink: 0}}>
                               {done ? "✓" : m.count}
                             </div>
-                            <span style={{fontSize: "0.75rem", fontWeight: done ? 700 : 400, color: done ? "#0F6E56" : "#555", textDecoration: done ? "none" : "none"}}>
+                            <span style={{fontSize: "0.75rem", fontWeight: done ? 700 : 400, color: done ? "#0F6E56" : "#1A1A1A", textDecoration: done ? "none" : "none"}}>
                               {m.emoji} {m.label} — {m.count} referrals
                             </span>
                           </div>
