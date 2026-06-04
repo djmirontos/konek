@@ -31,7 +31,7 @@ type User = { id: string; full_name: string; avatar_url: string | null; school_i
 type Post = {
   id: string; user_id: string; content: string; tag: string | null;
   images: string[] | null; created_at: string; school_id: string;
-  users: { full_name: string; avatar_url: string | null; school_id: string; } | null;
+  users: { full_name: string; avatar_url: string | null; school_id: string; trust_xp?: number; } | null;
   reactionCounts?: Record<string, number>;
   userReaction?: string | null;
   commentCount?: number;
@@ -41,7 +41,7 @@ type QuadPost = {
   id: string; user_id: string; content: string; tag: string | null;
   images: string[] | null; created_at: string; school_id: string; expires_at: string | null;
   location?: string | null;
-  users: { full_name: string; avatar_url: string | null; school_id: string; } | null;
+  users: { full_name: string; avatar_url: string | null; school_id: string; trust_xp?: number; } | null;
   commentCount?: number;
   isExpired?: boolean;
   edited_at?: string | null;
