@@ -18,6 +18,7 @@ type ProfileUser = {
   verification_back_url: string | null;
   invite_code: string | null;
   referral_count: number;
+  trust_xp: number;
 };
 type Post = {
   id: string; content: string; tag: string | null; type: string;
@@ -43,6 +44,20 @@ function VerifiedBadge({ size = 15 }: { size?: number }) {
       </svg>
     </span>
   );
+}
+
+function getTrustLevel(xp: number) {
+  if (xp >= 1000) return { label: "Legend",  emoji: "👑", bg: "#FAEEDA", color: "#633806", border: "#FAC775", track: "#FAC775", fill: "#BA7517" };
+  if (xp >= 500)  return { label: "Trusted",  emoji: "⭐", bg: "#E6F1FB", color: "#185FA5", border: "#B5D4F4", track: "#B5D4F4", fill: "#378ADD" };
+  if (xp >= 100)  return { label: "Regular",  emoji: "🌿", bg: "#EAF3DE", color: "#3B6D11", border: "#C0DD97", track: "#C0DD97", fill: "#1D9E75" };
+  return null;
+}
+
+function getNextLevel(xp: number) {
+  if (xp >= 1000) return { label: "Legend", threshold: 1000 };
+  if (xp >= 500)  return { label: "Legend",  threshold: 1000 };
+  if (xp >= 100)  return { label: "Trusted", threshold: 500 };
+  return { label: "Regular", threshold: 100 };
 }
 
 export default function ProfilePage() {
@@ -523,7 +538,9 @@ export default function ProfilePage() {
           )}
         </div>
 
-        <div style={{fontWeight: 700, fontSize: "1.2rem", color: "#1A1A1A", marginBottom: "4px", display: "flex", alignItems: "center", justifyContent: "center"}}>{profileUser.full_name}{isVerified && <VerifiedBadge size={18} />}</div>
+        <div style={{fontWeight: 700, fontSize: "1.2rem", color: "#1A1A1A", marginBottom: "4px", display: "flex", alignItems: "center", justifyContent: "center"}}>{profileUser.full_name}{isVerified && <VerifiedBadge size={18} />}
+          {(() => { const tl = getTrustLevel(profileUser.trust_xp || 0); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.68rem",fontWeight:700,padding:"2px 8px",borderRadius:"10px",marginLeft:"6px",verticalAlign:"middle"}}>{tl.emoji} {tl.label}</span> : null; })()}
+        </div>
         {school && <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600, marginBottom: "4px"}}>{school.abbreviation}</div>}
         <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "12px"}}>Member since {formatMemberSince(profileUser.created_at)}</div>
         {profileUser.bio && <div style={{fontSize: "0.85rem", color: "#555", textAlign: "center", marginBottom: "12px", lineHeight: 1.5, maxWidth: "320px"}}>{profileUser.bio}</div>}
@@ -838,8 +855,48 @@ export default function ProfilePage() {
                     </div>
                   )}
 
-                  <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Badges</div>
-                  <div style={{padding: "8px 14px", backgroundColor: "#F7F7F7", borderRadius: "20px", fontSize: "0.78rem", color: "#aaa", display: "inline-block"}}>🏅 Founding Member — Coming Soon</div>
+                  <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Trust Level</div>
+                  {(() => {
+                    const xp = profileUser.trust_xp || 0;
+                    const tl = getTrustLevel(xp);
+                    const next = getNextLevel(xp);
+                    const prevThreshold = xp >= 1000 ? 1000 : xp >= 500 ? 500 : xp >= 100 ? 100 : 0;
+                    const pct = xp >= 1000 ? 100 : Math.round(((xp - prevThreshold) / (next.threshold - prevThreshold)) * 100);
+                    return (
+                      <div style={{backgroundColor: tl ? tl.bg : "#F1EFE8", borderRadius: "12px", padding: "14px", border: "1px solid " + (tl ? tl.border : "#D3D1C7")}}>
+                        <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px"}}>
+                          <div style={{display: "flex", alignItems: "center", gap: "8px"}}>
+                            <span style={{fontSize: "1.6rem"}}>{tl ? tl.emoji : "🌱"}</span>
+                            <div>
+                              <div style={{fontSize: "0.88rem", fontWeight: 700, color: tl ? tl.color : "#444441"}}>{tl ? tl.label : "Newbie"}</div>
+                              <div style={{fontSize: "0.7rem", color: tl ? tl.color : "#888", opacity: 0.8}}>{xp} XP total</div>
+                            </div>
+                          </div>
+                          <div style={{backgroundColor: tl ? tl.border : "#D3D1C7", color: tl ? tl.color : "#444441", fontSize: "0.72rem", fontWeight: 700, padding: "3px 10px", borderRadius: "10px"}}>{xp} XP</div>
+                        </div>
+                        {xp < 1000 && (
+                          <>
+                            <div style={{display: "flex", justifyContent: "space-between", marginBottom: "4px"}}>
+                              <span style={{fontSize: "0.68rem", color: tl ? tl.color : "#888", fontWeight: 600}}>{tl ? tl.label : "Newbie"} → {next.label}</span>
+                              <span style={{fontSize: "0.68rem", color: tl ? tl.color : "#888"}}>{xp} / {next.threshold} XP</span>
+                            </div>
+                            <div style={{height: "6px", borderRadius: "3px", backgroundColor: tl ? tl.track : "#D3D1C7", overflow: "hidden"}}>
+                              <div style={{height: "100%", borderRadius: "3px", backgroundColor: tl ? tl.fill : "#888780", width: pct + "%"}} />
+                            </div>
+                          </>
+                        )}
+                        {xp >= 1000 && <div style={{fontSize: "0.75rem", color: "#633806", fontWeight: 600, textAlign: "center", marginTop: "4px"}}>Maximum level reached!</div>}
+                        <div style={{marginTop: "10px", borderTop: "1px solid " + (tl ? tl.border : "#D3D1C7"), paddingTop: "10px"}}>
+                          <div style={{fontSize: "0.68rem", color: tl ? tl.color : "#888", fontWeight: 600, marginBottom: "6px"}}>How to earn XP</div>
+                          <div style={{display: "flex", gap: "5px", flexWrap: "wrap"}}>
+                            {[["Post","5"],["Comment","3"],["Reaction received","2"],["Upvote received","3"]].map(([act, pts]) => (
+                              <span key={act} style={{fontSize: "0.65rem", padding: "2px 7px", borderRadius: "8px", backgroundColor: tl ? tl.border : "#D3D1C7", color: tl ? tl.color : "#444441", fontWeight: 600}}>+{pts} {act}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {isOwnProfile && (

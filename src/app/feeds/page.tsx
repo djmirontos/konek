@@ -64,6 +64,13 @@ function VerifiedBadge() {
   );
 }
 
+function getTrustLevel(xp: number | undefined | null) {
+  if (!xp || xp < 100) return null;
+  if (xp >= 1000) return { label: "Legend",  emoji: "👑", bg: "#FAEEDA", color: "#633806" };
+  if (xp >= 500)  return { label: "Trusted",  emoji: "⭐", bg: "#E6F1FB", color: "#185FA5" };
+  return { label: "Regular", emoji: "🌿", bg: "#EAF3DE", color: "#3B6D11" };
+}
+
 export default function FeedsPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -321,7 +328,7 @@ export default function FeedsPage() {
             id: row.id, user_id: row.user_id, content: row.content, tag: row.tag,
             images: row.images, created_at: row.created_at, edited_at: row.edited_at, school_id: row.school_id,
             reactionCounts, userReaction, commentCount: Number(row.comment_count) || 0,
-            users: { full_name: row.full_name, avatar_url: row.avatar_url, school_id: row.user_school_id },
+            users: { full_name: row.full_name, avatar_url: row.avatar_url, school_id: row.user_school_id, trust_xp: row.trust_xp },
           };
         });
         if (append) { setPosts(prev => { const ids = new Set(prev.map(p => p.id)); return [...prev, ...mapped.filter((p: Post) => !ids.has(p.id))]; }); }
@@ -338,7 +345,7 @@ export default function FeedsPage() {
     setQuadLoading(true);
     let query = supabase
       .from("posts")
-      .select("id, user_id, content, tag, images, created_at, school_id, expires_at, location, edited_at, users(full_name, avatar_url, school_id)")
+      .select("id, user_id, content, tag, images, created_at, school_id, expires_at, location, edited_at, users(full_name, avatar_url, school_id, trust_xp)")
       .eq("type", "quad")
       .eq("is_hidden", false)
       .order("created_at", { ascending: false })
@@ -797,7 +804,7 @@ export default function FeedsPage() {
                     }
                   </div>
                   <div style={{flex: 1}}>
-                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{post.users?.full_name}{verifiedUsers.has(post.user_id) && <VerifiedBadge />}</div>
+                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{post.users?.full_name}{verifiedUsers.has(post.user_id) && <VerifiedBadge />}{(() => { const tl = getTrustLevel(post.users?.trust_xp); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.62rem",fontWeight:700,padding:"2px 6px",borderRadius:"8px",marginLeft:"5px"}}>{tl.emoji} {tl.label}</span> : null; })()}</div>
                     <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px"}}>
                       {formatTime(post.created_at)}
                       {post.edited_at && <span style={{marginLeft: "6px", color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
@@ -988,7 +995,7 @@ export default function FeedsPage() {
                     <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                   )}
                   <div style={{flex: 1}}>
-                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: post.isExpired ? "#888" : "#1A1A1A"}}>{post.isExpired ? "Expired Post" : post.users?.full_name}</div>
+                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: post.isExpired ? "#888" : "#1A1A1A", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "4px"}}>{post.isExpired ? "Expired Post" : post.users?.full_name}{!post.isExpired && (() => { const tl = getTrustLevel(post.users?.trust_xp); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.62rem",fontWeight:700,padding:"2px 6px",borderRadius:"8px"}}>{tl.emoji} {tl.label}</span> : null; })()}</div>
                     <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px"}}>
                       {formatTime(post.created_at)}
                       {post.edited_at && <span style={{marginLeft: "6px", color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}

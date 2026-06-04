@@ -11,6 +11,13 @@ import { useRouter } from "next/navigation";
 import { useSchool } from "@/context/SchoolContext";
 import EmojiPicker from "@/components/EmojiPicker";
 
+function getTrustLevel(xp: number | undefined | null) {
+  if (!xp || xp < 100) return null;
+  if (xp >= 1000) return { label: "Legend",  emoji: "👑", bg: "#FAEEDA", color: "#633806" };
+  if (xp >= 500)  return { label: "Trusted",  emoji: "⭐", bg: "#E6F1FB", color: "#185FA5" };
+  return { label: "Regular", emoji: "🌿", bg: "#EAF3DE", color: "#3B6D11" };
+}
+
 const MOODS = [
   { emoji: "😊", label: "Happy",        value: "happy",        bg: "#EAF3DE", color: "#3B6D11" },
   { emoji: "😤", label: "Frustrated",   value: "frustrated",   bg: "#FAECE7", color: "#712B13" },
@@ -80,6 +87,7 @@ type SoapboxPost = {
   userVote?: "upvote" | "downvote" | null;
   commentCount?: number;
   edited_at?: string | null;
+  trust_xp?: number | null;
   mood?: string | null;
 };
 type ConfessionPost = {
@@ -211,7 +219,7 @@ export default function SoapboxPage() {
     setLoading(true);
     let query = supabase
       .from("posts")
-      .select("id, user_id, content, tag, images, created_at, school_id, pseudonym, upvotes, downvotes, edited_at, mood")
+      .select("id, user_id, content, tag, images, created_at, school_id, pseudonym, upvotes, downvotes, edited_at, mood, trust_xp:user_id(trust_xp)")
       .eq("type", "soapbox")
       .eq("is_hidden", false)
       .order("upvotes", { ascending: false })
@@ -583,7 +591,7 @@ export default function SoapboxPage() {
                   <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
                     <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#1A1A1A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0}}>🎭</div>
                     <div style={{flex: 1}}>
-                      <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{post.pseudonym}</div>
+                      <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "4px"}}>{post.pseudonym}{(() => { const tl = getTrustLevel((post.trust_xp as any)?.[0]?.trust_xp ?? post.trust_xp); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.62rem",fontWeight:700,padding:"2px 6px",borderRadius:"8px"}}>{tl.emoji} {tl.label}</span> : null; })()}</div>
                       <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
                         {formatTime(post.created_at)}
                         {post.edited_at && <span style={{color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
