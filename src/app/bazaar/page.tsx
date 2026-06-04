@@ -8,6 +8,7 @@ import SchoolPicker from "@/components/SchoolPicker";
 
 import { useRouter } from "next/navigation";
 import { useSchool } from "@/context/SchoolContext";
+import imageCompression from "browser-image-compression";
 
 const CATEGORIES = ["Textbooks", "Uniforms", "Gadgets", "School Supplies", "Dorm Essentials", "Food", "Entertainment", "Sports", "Others"];
 const CONDITIONS = ["Brand New", "Like New", "Slightly Used", "Good"];
@@ -197,12 +198,18 @@ export default function BazaarPage() {
     return "Bump again in " + hoursLeft + "h";
   }
 
-  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
-    const valid = files.filter(f => f.size <= 5 * 1024 * 1024 && (f.type === "image/jpeg" || f.type === "image/png"));
-    const combined = [...selectedImages, ...valid].slice(0, 4);
+    const valid = files.filter(f => f.size <= 10 * 1024 * 1024 && (f.type === "image/jpeg" || f.type === "image/png"));
+    const compressed = await Promise.all(valid.map(async (file) => {
+      try {
+        return await imageCompression(file, { maxSizeMB: 0.5, maxWidthOrHeight: 1280, useWebWorker: true, initialQuality: 0.8 });
+      } catch { return file; }
+    }));
+    const combined = [...selectedImages, ...compressed].slice(0, 4);
     setSelectedImages(combined);
     setImagePreviews(prev => { prev.forEach(url => URL.revokeObjectURL(url)); return combined.map(f => URL.createObjectURL(f)); });
+  }
   }
 
   function removeImage(index: number) {
@@ -344,47 +351,48 @@ export default function BazaarPage() {
             <div style={{color: "#888", fontSize: "0.8rem"}}>Be the first to sell something.</div>
           </div>
         ) : (
-          <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", padding: "12px"}}>
+          <div style={{display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px", padding: "12px", background: "#F7F7F7"}}>
             {listings.map(listing => (
               <div key={listing.id} onClick={() => router.push("/bazaar/" + listing.id)}
-                style={{backgroundColor: "#fff", borderRadius: "12px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", cursor: "pointer", position: "relative"}}>
-                {listing.is_sold && (
-                  <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#EF4444", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", zIndex: 2}}>SOLD</div>
-                )}
-                {!listing.is_sold && isBumpedRecently(listing.bumped_at) && (
-                  <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#1D9E75", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", zIndex: 2}}>BUMPED</div>
-                )}
-                {listing.is_rental && (
-                  <div style={{position: "absolute", top: "8px", right: "8px", backgroundColor: "#1D9E75", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px", zIndex: 2}}>FOR RENT</div>
-                )}
-                {listing.images && listing.images.length > 0 ? (
-                  <img src={listing.images[0]} alt="" style={{width: "100%", height: "140px", objectFit: "cover", borderRadius: "12px 12px 0 0"}} />
-                ) : (
-                  <div style={{width: "100%", height: "140px", backgroundColor: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.5rem", borderRadius: "12px 12px 0 0"}}>
-                    {CATEGORY_ICONS[listing.category] || "📦"}
-                  </div>
-                )}
-                <div style={{padding: "8px 10px 10px"}}>
-                  <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A", marginBottom: "3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{listing.title}</div>
-                  <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1D9E75", marginBottom: "3px"}}>{formatPrice(listing.price, listing.is_rental, listing.rental_period)}</div>
-                  {listing.is_negotiable && <div style={{fontSize: "0.65rem", color: "#888", marginBottom: "3px"}}>Negotiable</div>}
-                  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "4px"}}>
-                    <span style={{fontSize: "0.65rem", color: "#888", backgroundColor: "#F7F7F7", padding: "2px 6px", borderRadius: "6px"}}>{listing.condition}</span>
-                    <span style={{fontSize: "0.65rem", color: "#888"}}>{formatTime(listing.created_at)}</span>
-                  </div>
-                  <div style={{display: "flex", alignItems: "center", gap: "4px", marginTop: "6px"}}>
-                    {listing.users?.avatar_url
-                      ? <img src={listing.users.avatar_url} alt="" style={{width: "16px", height: "16px", borderRadius: "50%", objectFit: "cover"}} />
-                      : <div style={{width: "16px", height: "16px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.5rem", color: "#1D9E75", fontWeight: 700}}>{listing.users?.full_name?.charAt(0).toUpperCase()}</div>
-                    }
-                    <span style={{fontSize: "0.65rem", color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{listing.users?.full_name}</span>
-                  </div>
+                style={{backgroundColor: "#fff", borderRadius: "12px", border: "0.5px solid #F0F0F0", cursor: "pointer", position: "relative", overflow: "hidden"}}>
+                {/* Image */}
+                <div style={{position: "relative", width: "100%", aspectRatio: "1 / 1", overflow: "hidden"}}>
+                  {listing.images && listing.images.length > 0
+                    ? <img src={listing.images[0]} alt="" style={{width: "100%", height: "100%", objectFit: "cover", display: "block"}} />
+                    : <div style={{width: "100%", height: "100%", backgroundColor: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.5rem"}}>{CATEGORY_ICONS[listing.category] || "📦"}</div>
+                  }
+                  {listing.is_sold && (
+                    <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#EF4444", color: "#fff", fontSize: "9px", fontWeight: 500, padding: "2px 7px", borderRadius: "6px", zIndex: 2}}>SOLD</div>
+                  )}
+                  {!listing.is_sold && isBumpedRecently(listing.bumped_at) && (
+                    <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#1a8a4a", color: "#fff", fontSize: "9px", fontWeight: 500, padding: "2px 7px", borderRadius: "6px", zIndex: 2}}>BUMPED</div>
+                  )}
+                  {listing.is_rental && (
+                    <div style={{position: "absolute", top: "8px", right: "8px", backgroundColor: "#1a8a4a", color: "#fff", fontSize: "9px", fontWeight: 500, padding: "2px 7px", borderRadius: "6px", zIndex: 2}}>FOR RENT</div>
+                  )}
                   {currentUser?.id === listing.user_id && (
                     <button onClick={e => { e.stopPropagation(); setShowMenu(showMenu === listing.id ? null : listing.id); }}
-                      style={{position: "absolute", top: "8px", right: listing.is_rental ? "60px" : "8px", background: "rgba(255,255,255,0.9)", border: "none", borderRadius: "50%", width: "28px", height: "28px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", zIndex: 3}}>
+                      style={{position: "absolute", top: "6px", right: listing.is_rental ? "56px" : "6px", background: "rgba(255,255,255,0.9)", border: "none", borderRadius: "50%", width: "26px", height: "26px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem", zIndex: 3}}>
                       •••
                     </button>
                   )}
+                </div>
+                {/* Card body */}
+                <div style={{padding: "8px 10px 10px"}}>
+                  <div style={{fontSize: "12px", fontWeight: 500, color: "#1A1A1A", marginBottom: "3px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.4}}>{listing.title}</div>
+                  <div style={{fontSize: "14px", fontWeight: 500, color: "#1a8a4a", marginBottom: "4px"}}>{formatPrice(listing.price, listing.is_rental, listing.rental_period)}</div>
+                  {listing.is_negotiable && <div style={{fontSize: "10px", color: "#888", marginBottom: "3px"}}>Negotiable</div>}
+                  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px"}}>
+                    <span style={{fontSize: "10px", color: "#888", backgroundColor: "#F7F7F7", padding: "2px 6px", borderRadius: "6px"}}>{listing.condition}</span>
+                    <span style={{fontSize: "10px", color: "#aaa"}}>{formatTime(listing.created_at)}</span>
+                  </div>
+                  <div style={{display: "flex", alignItems: "center", gap: "4px"}}>
+                    {listing.users?.avatar_url
+                      ? <img src={listing.users.avatar_url} alt="" style={{width: "16px", height: "16px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                      : <div style={{width: "16px", height: "16px", borderRadius: "50%", backgroundColor: "#C0DD97", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "8px", color: "#27500A", fontWeight: 700, flexShrink: 0}}>{listing.users?.full_name?.charAt(0).toUpperCase()}</div>
+                    }
+                    <span style={{fontSize: "10px", color: "#aaa", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{listing.users?.full_name}</span>
+                  </div>
                 </div>
               </div>
             ))}
