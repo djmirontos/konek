@@ -800,7 +800,7 @@ export default function ProfilePage() {
                       {xp >= 1000 && <div style={{fontSize: "0.78rem", color: "#633806", fontWeight: 600, textAlign: "center", marginBottom: "12px"}}>Maximum level reached! 🎉</div>}
                       <div style={{borderTop: "1px solid " + (tl ? tl.border : "#D3D1C7"), paddingTop: "10px"}}>
                         <div style={{fontSize: "0.7rem", color: tl ? tl.color : "#888", fontWeight: 600, marginBottom: "7px"}}>How to earn XP</div>
-                        <div style={{display: "flex", gap: "5px", flexWrap: "wrap"}}>
+                        <div style={{display: "flex", gap: "5px", flexWrap: "nowrap", overflowX: "auto"}}>
                           {[["Post","5"],["Comment","3"],["Reaction received","2"],["Upvote received","3"]].map(([act, pts]) => (
                             <span key={act} style={{fontSize: "0.68rem", padding: "3px 8px", borderRadius: "8px", backgroundColor: tl ? tl.border : "#D3D1C7", color: tl ? tl.color : "#444441", fontWeight: 600}}>+{pts} {act}</span>
                           ))}
@@ -816,10 +816,10 @@ export default function ProfilePage() {
                     <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px"}}>
                       <span style={{fontSize: "1rem"}}>🎁</span>
                       <span style={{fontWeight: 700, fontSize: "0.88rem", color: "#1A1A1A"}}>Your Invite Code</span>
-                      <span style={{marginLeft: "auto", fontSize: "0.75rem", color: "#1D9E75", fontWeight: 700}}>{profileUser.referral_count || 0} referrals</span>
+                      <span style={{marginLeft: "auto", fontSize: "0.75rem", color: "#0F6E56", fontWeight: 700, backgroundColor: "#E1F5EE", padding: "2px 8px", borderRadius: "8px"}}>{profileUser.referral_count || 0} referrals</span>
                     </div>
                     <div style={{display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px"}}>
-                      <div style={{flex: 1, backgroundColor: "#E1F5EE", borderRadius: "10px", padding: "10px 14px", fontWeight: 800, fontSize: "1.1rem", color: "#1D9E75", letterSpacing: "0.08em", fontFamily: "monospace", border: "1.5px dashed #1D9E75"}}>
+                      <div style={{flex: 1, backgroundColor: "#E1F5EE", borderRadius: "10px", padding: "10px 14px", fontWeight: 800, fontSize: "1.2rem", color: "#0F6E56", letterSpacing: "0.1em", fontFamily: "monospace", border: "2px dashed #0F6E56"}}>
                         {profileUser.invite_code}
                       </div>
                       <button onClick={() => { navigator.clipboard.writeText(profileUser.invite_code || ""); showToast("Copied!"); }}
@@ -827,7 +827,7 @@ export default function ProfilePage() {
                         Copy
                       </button>
                     </div>
-                    <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "10px"}}>Share with schoolmates. They sign up, you earn badges.</div>
+                    <div style={{fontSize: "0.75rem", color: "#444", marginBottom: "10px"}}>Share with schoolmates. They sign up, you earn badges.</div>
                     <div style={{display: "flex", flexDirection: "column", gap: "5px"}}>
                       {[
                         {count: 5,   emoji: "🎓", label: "Campus Connector"},
@@ -841,7 +841,7 @@ export default function ProfilePage() {
                             <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: done ? "#1D9E75" : "#E0E0E0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: "#fff", fontWeight: 700, flexShrink: 0}}>
                               {done ? "✓" : m.count}
                             </div>
-                            <span style={{fontSize: "0.75rem", fontWeight: done ? 700 : 400, color: done ? "#0F6E56" : "#888", textDecoration: done ? "none" : "none"}}>
+                            <span style={{fontSize: "0.75rem", fontWeight: done ? 700 : 400, color: done ? "#0F6E56" : "#555", textDecoration: done ? "none" : "none"}}>
                               {m.emoji} {m.label} — {m.count} referrals
                             </span>
                           </div>
