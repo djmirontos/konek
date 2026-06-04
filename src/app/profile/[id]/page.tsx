@@ -177,10 +177,17 @@ export default function ProfilePage() {
       .in("type", ["feed", "quad"]);
     setPostCount(pCount || 0);
 
-    const { count: cCount } = await supabase
-      .from("comments").select("id", { count: "exact", head: true })
-      .eq("user_id", userId);
-    setCommentCount(cCount || 0);
+    const { data: userPostIds } = await supabase
+      .from("posts").select("id").eq("user_id", userId).eq("is_hidden", false);
+    const pIds = (userPostIds || []).map((p: any) => p.id);
+    if (pIds.length > 0) {
+      const { count: cCount } = await supabase
+        .from("comments").select("id", { count: "exact", head: true })
+        .in("post_id", pIds).neq("user_id", userId);
+      setCommentCount(cCount || 0);
+    } else {
+      setCommentCount(0);
+    }
 
     const { data: userPosts } = await supabase
       .from("posts").select("id").eq("user_id", userId).eq("is_hidden", false);
@@ -199,11 +206,16 @@ export default function ProfilePage() {
       setReactionsReceived(0);
       setReactionsToday(0);
     }
-    const todayStart = new Date(); todayStart.setHours(0,0,0,0);
-    const { count: cToday } = await supabase
-      .from("comments").select("id", { count: "exact", head: true })
-      .eq("user_id", userId).gte("created_at", todayStart.toISOString());
-    setCommentsToday(cToday || 0);
+    const todayStart2 = new Date(); todayStart2.setHours(0,0,0,0);
+    if (pIds.length > 0) {
+      const { count: cToday } = await supabase
+        .from("comments").select("id", { count: "exact", head: true })
+        .in("post_id", pIds).neq("user_id", userId)
+        .gte("created_at", todayStart2.toISOString());
+      setCommentsToday(cToday || 0);
+    } else {
+      setCommentsToday(0);
+    }
   }
 
   async function fetchTabData(tab: string) {
