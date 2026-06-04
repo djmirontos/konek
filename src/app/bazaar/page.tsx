@@ -262,8 +262,6 @@ export default function BazaarPage() {
   }
 
 
-    setUnreadMessages(total);
-  }
 
   return (
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
