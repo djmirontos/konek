@@ -137,6 +137,7 @@ export default function SoapboxPage() {
   const [editContent, setEditContent] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [showComposerSheet, setShowComposerSheet] = useState(false);
+  const [showConfessionSheet, setShowConfessionSheet] = useState(false);
 
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [selectedConfessionMood, setSelectedConfessionMood] = useState<string | null>(null);
@@ -377,7 +378,7 @@ export default function SoapboxPage() {
         mood: selectedConfessionMood,
       });
       if (error) throw error;
-      setConfessionContent(""); setConfessionImage(null); setConfessionImagePreview(""); setSelectedConfessionMood(null);
+      setConfessionContent(""); setConfessionImage(null); setConfessionImagePreview(""); setSelectedConfessionMood(null); setShowConfessionSheet(false);
       showToast("Confession posted anonymously!"); fetchConfessions();
     } catch (err: unknown) {
       setConfessionError(err instanceof Error ? err.message : "Failed to post. Try again.");
@@ -673,70 +674,93 @@ export default function SoapboxPage() {
 
       {activeTab === "confession" && (
         <>
-          <div style={{backgroundColor: "#fff", padding: "12px 16px", borderBottom: "1px solid #F0F0F0"}}>
-            <div style={{backgroundColor: "#E1F5EE", borderRadius: "10px", padding: "10px 12px", marginBottom: "10px", display: "flex", alignItems: "center", gap: "8px"}}>
-              <span style={{fontSize: "1rem"}}>💌</span>
-              <div>
-                <div style={{fontSize: "0.7rem", color: "#0F6E56", fontWeight: 600}}>You are confessing as:</div>
-                <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 700}}>{myConfessionPseudonym}</div>
-              </div>
+          {/* COLLAPSED CONFESSION COMPOSER ROW */}
+          <div style={{backgroundColor: "#fff", padding: "10px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "10px"}}>
+            <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#4A1D6F", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0}}>💌</div>
+            <div onClick={() => setShowConfessionSheet(true)}
+              style={{flex: 1, backgroundColor: "#F7F7F7", borderRadius: "20px", padding: "10px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", userSelect: "none"}}>
+              Want to confess something?
             </div>
-            <div style={{marginBottom: "10px"}}>
-              <div style={{fontSize: "0.72rem", color: "#888", fontWeight: 600, marginBottom: "8px"}}>How are you feeling? <span style={{fontWeight: 400, color: "#bbb"}}>(optional)</span></div>
-              <div style={{display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "6px"}}>
-                {MOODS.map(mood => (
-                  <button key={mood.value} onClick={() => setSelectedConfessionMood(selectedConfessionMood === mood.value ? null : mood.value)}
-                    style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", padding: "8px 4px",
-                      borderRadius: "10px", border: selectedConfessionMood === mood.value ? "1.5px solid #1D9E75" : "1px solid #F0F0F0",
-                      backgroundColor: selectedConfessionMood === mood.value ? mood.bg : "#F7F7F7",
-                      cursor: "pointer", fontFamily: "inherit"}}>
-                    <span style={{fontSize: "1.1rem"}}>{mood.emoji}</span>
-                    <span style={{fontSize: "0.62rem", color: selectedConfessionMood === mood.value ? mood.color : "#888", fontWeight: selectedConfessionMood === mood.value ? 700 : 400, textAlign: "center", lineHeight: 1.2}}>{mood.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-            <textarea placeholder="Want to confess your feelings? Your identity stays anonymous."
-              value={confessionContent} onChange={(e) => setConfessionContent(e.target.value)} rows={3}
-              style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
-            {confessionImagePreview && (
-              <div style={{position: "relative", display: "inline-block", marginTop: "8px"}}>
-                <img src={confessionImagePreview} alt="" style={{width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px"}} />
-                <button onClick={() => { setConfessionImage(null); setConfessionImagePreview(""); }}
-                  style={{position: "absolute", top: "-6px", right: "-6px", backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", fontSize: "0.65rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>✕</button>
-              </div>
-            )}
-            {showConfessionPhotoWarning && (
-              <div style={{backgroundColor: "#FEF2F2", border: "1px solid #EF4444", borderRadius: "8px", padding: "8px 12px", marginTop: "8px", fontSize: "0.75rem", color: "#EF4444", lineHeight: 1.4}}>
-                Photos may reveal your identity. Post with caution.
-                <div style={{display: "flex", gap: "8px", marginTop: "8px"}}>
-                  <button onClick={() => confessionFileInputRef.current?.click()}
-                    style={{backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "8px", padding: "5px 12px", fontSize: "0.72rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit"}}>I Understand, Add Photo</button>
-                  <button onClick={() => setShowConfessionPhotoWarning(false)}
-                    style={{backgroundColor: "#F7F7F7", color: "#888", border: "none", borderRadius: "8px", padding: "5px 12px", fontSize: "0.72rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
-                </div>
-              </div>
-            )}
-            {confessionError && <div style={{color: "#EF4444", fontSize: "0.75rem", marginTop: "6px"}}>{confessionError}</div>}
-            <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px"}}>
-              <button onClick={() => !confessionImage && setShowConfessionPhotoWarning(true)}
-                style={{background: "none", border: "none", cursor: "pointer", padding: "0", opacity: confessionImage ? 0.4 : 1}}>
-                <Image src="/photos.png" alt="photos" width={22} height={22} />
-              </button>
-              <input ref={confessionFileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleConfessionImageSelect} />
-              <div style={{display: "flex", alignItems: "center", gap: "8px"}}>
-                <button onClick={() => setShowConfessionEmoji(!showConfessionEmoji)}
-                  style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.3rem", padding: "4px", opacity: 0.6}}>😊</button>
-                <button onClick={handleConfessionPost} disabled={confessionPosting || !confessionContent.trim()}
-                  style={{backgroundColor: confessionPosting || !confessionContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 20px", fontWeight: 700, fontSize: "0.8rem", cursor: confessionPosting || !confessionContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
-                  {confessionPosting ? "Posting..." : "Confess"}
-                </button>
-              </div>
-            </div>
-            {showConfessionEmoji && (
-              <EmojiPicker onSelect={(emoji) => { setConfessionContent(prev => prev + emoji); setShowConfessionEmoji(false); }} onClose={() => setShowConfessionEmoji(false)} />
-            )}
           </div>
+
+          {/* CONFESSION BOTTOM SHEET */}
+          {showConfessionSheet && (
+            <>
+              <div onClick={() => { setShowConfessionSheet(false); setConfessionContent(""); setSelectedConfessionMood(null); setConfessionImage(null); setConfessionImagePreview(""); setConfessionError(""); }}
+                style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.35)", zIndex: 400}} />
+              <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, maxHeight: "90vh", overflowY: "auto"}}>
+                <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "10px auto 0"}} />
+                <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px 10px"}}>
+                  <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A"}}>New Confession</div>
+                  <button onClick={() => { setShowConfessionSheet(false); setConfessionContent(""); setSelectedConfessionMood(null); setConfessionImage(null); setConfessionImagePreview(""); setConfessionError(""); }}
+                    style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.2rem", color: "#888", padding: "4px", lineHeight: 1}}>✕</button>
+                </div>
+                <div style={{display: "flex", alignItems: "center", gap: "10px", padding: "0 16px 12px"}}>
+                  {currentUser?.avatar_url
+                    ? <img src={currentUser.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                  }
+                  <div>
+                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{currentUser?.full_name}</div>
+                    <div style={{fontSize: "0.72rem", color: "#1D9E75", fontWeight: 500}}>Confessing as {myConfessionPseudonym}</div>
+                  </div>
+                </div>
+                <div style={{padding: "0 16px 12px"}}>
+                  <textarea placeholder="Want to confess your feelings? Your identity stays anonymous."
+                    value={confessionContent} onChange={(e) => setConfessionContent(e.target.value)} rows={4} autoFocus
+                    style={{width: "100%", border: "none", backgroundColor: "transparent", fontSize: "0.95rem", color: "#1A1A1A", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box", lineHeight: 1.6}} />
+                  {confessionImagePreview && (
+                    <div style={{position: "relative", display: "inline-block", marginTop: "4px"}}>
+                      <img src={confessionImagePreview} alt="" style={{width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px"}} />
+                      <button onClick={() => { setConfessionImage(null); setConfessionImagePreview(""); }}
+                        style={{position: "absolute", top: "-6px", right: "-6px", backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", fontSize: "0.65rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>✕</button>
+                    </div>
+                  )}
+                  {confessionError && <div style={{color: "#EF4444", fontSize: "0.75rem", marginTop: "6px"}}>{confessionError}</div>}
+                </div>
+                <div style={{padding: "0 16px 14px"}}>
+                  <div style={{fontSize: "0.72rem", color: "#888", fontWeight: 600, marginBottom: "8px"}}>How are you feeling? <span style={{fontWeight: 400, color: "#bbb"}}>(optional)</span></div>
+                  <div style={{display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "6px"}}>
+                    {MOODS.map(mood => (
+                      <button key={mood.value} onClick={() => setSelectedConfessionMood(selectedConfessionMood === mood.value ? null : mood.value)}
+                        style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", padding: "8px 4px",
+                          borderRadius: "10px",
+                          border: selectedConfessionMood === mood.value ? "1px solid #1a8a4a" : "0.5px solid #F0F0F0",
+                          backgroundColor: selectedConfessionMood === mood.value ? "#EAF3DE" : "#F7F7F7",
+                          cursor: "pointer", fontFamily: "inherit"}}>
+                        <span style={{fontSize: "1.1rem"}}>{mood.emoji}</span>
+                        <span style={{fontSize: "0.62rem", color: selectedConfessionMood === mood.value ? "#3B6D11" : "#aaa", fontWeight: selectedConfessionMood === mood.value ? 500 : 400, textAlign: "center", lineHeight: 1.2}}>{mood.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px 32px", borderTop: "1px solid #F0F0F0"}}>
+                  <div style={{display: "flex", gap: "8px", alignItems: "center"}}>
+                    <button onClick={() => !confessionImage && setShowConfessionPhotoWarning(true)}
+                      style={{background: "none", border: "none", cursor: "pointer", padding: "0", opacity: confessionImage ? 0.4 : 1}}>
+                      <Image src="/photos.png" alt="photos" width={22} height={22} />
+                    </button>
+                    <input ref={confessionFileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleConfessionImageSelect} />
+                  </div>
+                  <button onClick={async () => { await handleConfessionPost(); }} disabled={confessionPosting || !confessionContent.trim()}
+                    style={{backgroundColor: confessionPosting || !confessionContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: confessionPosting || !confessionContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                    {confessionPosting ? "Posting..." : "Confess"}
+                  </button>
+                </div>
+                {showConfessionPhotoWarning && (
+                  <div style={{margin: "0 16px 16px", backgroundColor: "#FEF2F2", border: "1px solid #EF4444", borderRadius: "8px", padding: "8px 12px", fontSize: "0.75rem", color: "#EF4444", lineHeight: 1.4}}>
+                    Photos may reveal your identity. Post with caution.
+                    <div style={{display: "flex", gap: "8px", marginTop: "8px"}}>
+                      <button onClick={() => confessionFileInputRef.current?.click()}
+                        style={{backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "8px", padding: "5px 12px", fontSize: "0.72rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit"}}>I Understand, Add Photo</button>
+                      <button onClick={() => setShowConfessionPhotoWarning(false)}
+                        style={{backgroundColor: "#F7F7F7", color: "#888", border: "none", borderRadius: "8px", padding: "5px 12px", fontSize: "0.72rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
 
           <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "10px 16px"}}>
             <div style={{display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "2px", scrollbarWidth: "none"}}>
