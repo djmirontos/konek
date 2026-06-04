@@ -495,7 +495,7 @@ export default function ProfilePage() {
   }
 
   const school = getSchool(profileUser.school_id);
-  const visibleTabs = hasLiving ? TABS : TABS.filter(t => t !== "Living");
+  const visibleTabs = TABS;
 
   return (
     <>
@@ -514,18 +514,24 @@ export default function ProfilePage() {
 
       <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.back()} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "2px 4px", display: "flex", alignItems: "center", lineHeight: 1}}>&#8249;</button>
-        <span style={{color: "#fff", fontWeight: 700, fontSize: "1rem"}}>{isOwnProfile ? "My Profile" : profileUser.full_name}</span>
+        <span style={{color: "#fff", fontWeight: 700, fontSize: "1rem", flex: 1}}>{isOwnProfile ? "My Profile" : profileUser.full_name}</span>
+        {isOwnProfile && <button onClick={() => router.push("/settings")} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.3rem", padding: "4px", opacity: 0.9}}>⚙️</button>}
       </div>
 
-      <div style={{backgroundColor: "#fff", padding: "24px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center", borderBottom: "1px solid #F0F0F0"}}>
+      <div style={{backgroundColor: "#fff", padding: "20px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center", borderBottom: "1px solid #F0F0F0"}}>
         <div style={{position: "relative", marginBottom: "12px"}}>
           {profileUser.avatar_url
             ? <img src={profileUser.avatar_url} alt="avatar" onClick={() => setViewAvatar({src: profileUser.avatar_original_url || profileUser.avatar_url || '', name: profileUser.full_name})} style={{cursor: "pointer", width: "88px", height: "88px", borderRadius: "50%", objectFit: "cover", border: "3px solid #1D9E75"}} />
             : <div style={{width: "88px", height: "88px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "3px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "2rem"}}>{profileUser.full_name?.charAt(0).toUpperCase()}</div>
           }
+          {isVerified && (
+            <div style={{position: "absolute", bottom: "2px", right: "2px", width: "22px", height: "22px", backgroundColor: "#1D9E75", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center"}}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M20 6L9 17l-5-5"/><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+          )}
           {isOwnProfile && (
             <button onClick={() => setShowAvatarUploader(true)} disabled={uploadingAvatar}
-              style={{position: "absolute", bottom: "0", right: "0", backgroundColor: "#1D9E75", border: "2px solid #fff", borderRadius: "50%", width: "28px", height: "28px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "0.7rem"}}>
+              style={{position: "absolute", bottom: isVerified ? "24px" : "0px", right: "0", backgroundColor: "#1D9E75", border: "2px solid #fff", borderRadius: "50%", width: "28px", height: "28px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "0.7rem"}}>
               {uploadingAvatar ? "⏳" : "📷"}
             </button>
           )}
@@ -538,27 +544,21 @@ export default function ProfilePage() {
           )}
         </div>
 
-        <div style={{fontWeight: 700, fontSize: "1.2rem", color: "#1A1A1A", marginBottom: "4px", display: "flex", alignItems: "center", justifyContent: "center"}}>{profileUser.full_name}{isVerified && <VerifiedBadge size={18} />}
-          {(() => { const tl = getTrustLevel(profileUser.trust_xp || 0); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.68rem",fontWeight:700,padding:"2px 8px",borderRadius:"10px",marginLeft:"6px",verticalAlign:"middle"}}>{tl.emoji} {tl.label}</span> : null; })()}
+        <div style={{fontWeight: 700, fontSize: "1.2rem", color: "#1A1A1A", marginBottom: "2px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", flexWrap: "wrap"}}>
+          {profileUser.full_name}
+          {(() => { const tl = getTrustLevel(profileUser.trust_xp || 0); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.68rem",fontWeight:700,padding:"2px 8px",borderRadius:"10px"}}>{tl.emoji} {tl.label}</span> : null; })()}
         </div>
-        {school && <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600, marginBottom: "4px"}}>{school.abbreviation}</div>}
-        <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "12px"}}>Member since {formatMemberSince(profileUser.created_at)}</div>
-        {profileUser.bio && <div style={{fontSize: "0.85rem", color: "#555", textAlign: "center", marginBottom: "12px", lineHeight: 1.5, maxWidth: "320px"}}>{profileUser.bio}</div>}
-        {(profileUser.course || profileUser.year_level) && canView("course") && (
-          <div style={{fontSize: "0.78rem", color: "#1D9E75", fontWeight: 600, marginBottom: "6px", textAlign: "center"}}>
-            {profileUser.course}{profileUser.course && profileUser.year_level ? " · " : ""}{profileUser.year_level}
-          </div>
-        )}
-        {profileUser.hometown && canView("hometown") && (
-          <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "6px", textAlign: "center"}}>
-            From {profileUser.hometown}
-          </div>
-        )}
-        {profileUser.birthdate && canView("birthdate") && (
-          <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "6px", textAlign: "center"}}>
-            {new Date(profileUser.birthdate).toLocaleDateString("en-PH", {month: "long", day: "numeric", year: "numeric"})}
-          </div>
-        )}
+        {school && <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600, marginBottom: "2px"}}>{school.abbreviation}</div>}
+        {profileUser.bio && <div style={{fontSize: "0.83rem", color: "#555", textAlign: "center", marginBottom: "10px", lineHeight: 1.5, maxWidth: "300px", marginTop: "4px"}}>{profileUser.bio}</div>}
+
+        <div style={{display: "grid", gridTemplateColumns: "1fr 1fr 1fr", width: "100%", margin: "8px 0 14px", backgroundColor: "#F7F7F7", borderRadius: "12px", overflow: "hidden"}}>
+          {[{label: "Posts", value: postCount}, {label: "Comments", value: commentCount}, {label: "Reactions", value: reactionsReceived}].map((stat, i) => (
+            <div key={i} style={{padding: "12px 8px", textAlign: "center", borderRight: i < 2 ? "1px solid #E8E8E8" : "none"}}>
+              <div style={{fontWeight: 700, fontSize: "1.3rem", color: "#1D9E75"}}>{stat.value.toLocaleString()}</div>
+              <div style={{fontSize: "0.68rem", color: "#888", marginTop: "1px"}}>{stat.label}</div>
+            </div>
+          ))}
+        </div>
 
         {isOwnProfile ? (
           <button onClick={() => setShowEditSheet(true)}
@@ -576,65 +576,23 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* INVITE CARD — only on own profile */}
-      {isOwnProfile && profileUser.invite_code && (
-        <div style={{margin: "12px 16px", backgroundColor: "#E1F5EE", borderRadius: "16px", padding: "16px", border: "1px solid #9FE1CB"}}>
-          <div style={{fontSize: "0.72rem", fontWeight: 700, color: "#0F6E56", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "8px"}}>🎁 Your Invite Code</div>
-          <div style={{display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px"}}>
-            <div style={{flex: 1, backgroundColor: "#fff", borderRadius: "10px", padding: "10px 14px", fontWeight: 800, fontSize: "1.2rem", color: "#1D9E75", letterSpacing: "0.08em", fontFamily: "monospace", border: "1.5px dashed #1D9E75"}}>
-              {profileUser.invite_code}
-            </div>
-            <button onClick={() => { navigator.clipboard.writeText(profileUser.invite_code || ""); }}
-              style={{backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "10px", padding: "10px 16px", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
-              Copy
+
+
+
+
+      <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "8px 16px", position: "sticky", top: "48px", zIndex: 90}}>
+        <div style={{display: "flex", backgroundColor: "#F7F7F7", borderRadius: "10px", padding: "3px", gap: "3px"}}>
+          {visibleTabs.map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              style={{flex: 1, padding: "8px 4px", border: "none", borderRadius: "8px",
+                backgroundColor: activeTab === tab ? "#1D9E75" : "transparent",
+                color: activeTab === tab ? "#fff" : "#888",
+                fontWeight: activeTab === tab ? 700 : 500,
+                fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", transition: "all 0.15s"}}>
+              {tab}
             </button>
-          </div>
-          <div style={{fontSize: "0.75rem", color: "#0F6E56", lineHeight: 1.6}}>
-            Share this code with your schoolmates. When they sign up using your code, you earn referral badges!
-          </div>
-          {/* Milestones */}
-          <div style={{marginTop: "12px", display: "flex", flexDirection: "column", gap: "6px"}}>
-            {[
-              {count: 5,   emoji: "🎓", label: "Campus Connector"},
-              {count: 20,  emoji: "🌟", label: "Community Builder"},
-              {count: 50,  emoji: "🚀", label: "Campus Ambassador"},
-              {count: 100, emoji: "👑", label: "Founding Influencer"},
-            ].map(m => {
-              const done = (profileUser.referral_count || 0) >= m.count;
-              return (
-                <div key={m.count} style={{display: "flex", alignItems: "center", gap: "8px", opacity: done ? 1 : 0.5}}>
-                  <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: done ? "#1D9E75" : "#ccc", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: "#fff", fontWeight: 700, flexShrink: 0}}>
-                    {done ? "✓" : m.count}
-                  </div>
-                  <span style={{fontSize: "0.78rem", fontWeight: done ? 700 : 400, color: done ? "#0F6E56" : "#888"}}>
-                    {m.emoji} {m.label} — {m.count} referrals
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-          <div style={{marginTop: "10px", fontSize: "0.82rem", fontWeight: 700, color: "#0F6E56"}}>
-            Total referrals: {profileUser.referral_count || 0}
-          </div>
+          ))}
         </div>
-      )}
-
-      <div style={{backgroundColor: "#fff", display: "flex", borderBottom: "1px solid #F0F0F0", marginBottom: "8px"}}>
-        {[{label: "Posts", value: postCount}, {label: "Comments", value: commentCount}, {label: "Reactions", value: reactionsReceived}].map((stat, i) => (
-          <div key={i} style={{flex: 1, padding: "14px 8px", textAlign: "center", borderRight: i < 2 ? "1px solid #F0F0F0" : "none"}}>
-            <div style={{fontWeight: 700, fontSize: "1.2rem", color: "#1D9E75"}}>{stat.value.toLocaleString()}</div>
-            <div style={{fontSize: "0.7rem", color: "#888", marginTop: "2px"}}>{stat.label}</div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{backgroundColor: "#fff", display: "flex", borderBottom: "1px solid #F0F0F0", position: "sticky", top: "48px", zIndex: 90, overflowX: "auto"}}>
-        {visibleTabs.map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
-            style={{flex: 1, padding: "12px 8px", border: "none", backgroundColor: "#fff", color: activeTab === tab ? "#1D9E75" : "#888", fontWeight: activeTab === tab ? 700 : 500, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", borderBottom: activeTab === tab ? "2px solid #1D9E75" : "2px solid transparent", whiteSpace: "nowrap", minWidth: "60px"}}>
-            {tab}
-          </button>
-        ))}
       </div>
 
       <div style={{flex: 1, paddingBottom: "80px"}}>
@@ -749,214 +707,220 @@ export default function ProfilePage() {
             )}
 
             {activeTab === "About" && (
-              <div style={{padding: "16px"}}>
-                <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", marginBottom: "12px", border: "1px solid #F0F0F0"}}>
-                  <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Info</div>
-                  <div style={{display: "flex", flexDirection: "column", gap: "14px"}}>
+              <div style={{padding: "16px", display: "flex", flexDirection: "column", gap: "12px"}}>
+
+                {/* INFO CARD */}
+                <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", border: "1px solid #F0F0F0"}}>
+                  <div style={{fontWeight: 700, fontSize: "0.72rem", color: "#aaa", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Info</div>
+                  <div style={{display: "flex", flexDirection: "column", gap: "12px"}}>
                     <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                      <span style={{fontSize: "1.1rem"}}>🏫</span>
+                      <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>🏫</div>
                       <div>
-                        <div style={{fontSize: "0.7rem", color: "#aaa", marginBottom: "1px"}}>School</div>
-                        <div style={{fontSize: "0.875rem", fontWeight: 600, color: "#1A1A1A"}}>{school?.name || "Unknown"}</div>
+                        <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>School</div>
+                        <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{school?.name || "Unknown"}</div>
                       </div>
                     </div>
-                    <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                      <span style={{fontSize: "1.1rem"}}>📅</span>
-                      <div>
-                        <div style={{fontSize: "0.7rem", color: "#aaa", marginBottom: "1px"}}>Member Since</div>
-                        <div style={{fontSize: "0.875rem", fontWeight: 600, color: "#1A1A1A"}}>{formatMemberSince(profileUser.created_at)}</div>
-                      </div>
-                    </div>
-                    {profileUser.bio && (
-                      <div style={{display: "flex", alignItems: "flex-start", gap: "12px"}}>
-                        <span style={{fontSize: "1.1rem"}}>💬</span>
+                    {(profileUser.course || profileUser.year_level) && canView("course") && (
+                      <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
+                        <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>📚</div>
                         <div>
-                          <div style={{fontSize: "0.7rem", color: "#aaa", marginBottom: "1px"}}>Bio</div>
-                          <div style={{fontSize: "0.875rem", color: "#1A1A1A", lineHeight: 1.5}}>{profileUser.bio}</div>
+                          <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Course</div>
+                          <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{profileUser.course}{profileUser.course && profileUser.year_level ? " · " : ""}{profileUser.year_level}</div>
+                        </div>
+                      </div>
+                    )}
+                    {profileUser.hometown && canView("hometown") && (
+                      <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
+                        <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>📍</div>
+                        <div>
+                          <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Hometown</div>
+                          <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{profileUser.hometown}</div>
+                        </div>
+                      </div>
+                    )}
+                    {profileUser.birthdate && canView("birthdate") && (
+                      <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
+                        <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>🎂</div>
+                        <div>
+                          <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Birthday</div>
+                          <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{new Date(profileUser.birthdate).toLocaleDateString("en-PH", {month: "long", day: "numeric", year: "numeric"})}</div>
                         </div>
                       </div>
                     )}
                     {profileUser.phone_number && canView("phone") && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                        <span style={{fontSize: "1.1rem"}}>📱</span>
+                        <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>📱</div>
                         <div>
-                          <div style={{fontSize: "0.7rem", color: "#aaa", marginBottom: "1px"}}>Phone</div>
-                          <a href={`tel:${profileUser.phone_number}`} style={{fontSize: "0.875rem", fontWeight: 600, color: "#1D9E75", textDecoration: "none"}}>{profileUser.phone_number}</a>
+                          <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Phone</div>
+                          <a href={"tel:" + profileUser.phone_number} style={{fontSize: "0.85rem", fontWeight: 600, color: "#1D9E75", textDecoration: "none"}}>{profileUser.phone_number}</a>
                         </div>
                       </div>
                     )}
+                    <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
+                      <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>📅</div>
+                      <div>
+                        <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Member since</div>
+                        <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{formatMemberSince(profileUser.created_at)}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", marginBottom: "12px", border: "1px solid #F0F0F0"}}>
-                  {/* VERIFY STUDENT SECTION */}
-                  {isOwnProfile && (
-                    <div style={{marginBottom: "20px"}}>
-                      <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Student Verification</div>
-
-                      {profileUser?.verification_status === "approved" && (
-                        <div style={{display: "flex", alignItems: "center", gap: "10px", backgroundColor: "#E1F5EE", borderRadius: "12px", padding: "14px"}}>
-                          <span style={{fontSize: "1.6rem"}}>✅</span>
+                {/* TRUST LEVEL CARD */}
+                {(() => {
+                  const xp = profileUser.trust_xp || 0;
+                  const tl = getTrustLevel(xp);
+                  const next = getNextLevel(xp);
+                  const prevThreshold = xp >= 1000 ? 1000 : xp >= 500 ? 500 : xp >= 100 ? 100 : 0;
+                  const pct = xp >= 1000 ? 100 : Math.round(((xp - prevThreshold) / (next.threshold - prevThreshold)) * 100);
+                  return (
+                    <div style={{backgroundColor: tl ? tl.bg : "#F1EFE8", borderRadius: "14px", padding: "16px", border: "1px solid " + (tl ? tl.border : "#D3D1C7")}}>
+                      <div style={{fontWeight: 700, fontSize: "0.72rem", color: tl ? tl.color : "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Trust Level</div>
+                      <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px"}}>
+                        <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
+                          <span style={{fontSize: "1.8rem"}}>{tl ? tl.emoji : "🌱"}</span>
                           <div>
-                            <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#0F6E56"}}>Verified Student</div>
-                            <div style={{fontSize: "0.72rem", color: "#1D9E75", marginTop: "2px"}}>Your Student ID has been verified successfully.</div>
+                            <div style={{fontSize: "1rem", fontWeight: 700, color: tl ? tl.color : "#444441"}}>{tl ? tl.label : "Newbie"}</div>
+                            <div style={{fontSize: "0.72rem", color: tl ? tl.color : "#888", opacity: 0.8}}>{xp} XP total</div>
                           </div>
                         </div>
+                        <div style={{backgroundColor: tl ? tl.border : "#D3D1C7", color: tl ? tl.color : "#444441", fontSize: "0.75rem", fontWeight: 700, padding: "4px 12px", borderRadius: "12px"}}>{xp} XP</div>
+                      </div>
+                      {xp < 1000 && (
+                        <>
+                          <div style={{display: "flex", justifyContent: "space-between", marginBottom: "5px"}}>
+                            <span style={{fontSize: "0.7rem", color: tl ? tl.color : "#888", fontWeight: 600}}>{tl ? tl.label : "Newbie"} → {next.label}</span>
+                            <span style={{fontSize: "0.7rem", color: tl ? tl.color : "#888"}}>{xp} / {next.threshold} XP</span>
+                          </div>
+                          <div style={{height: "7px", borderRadius: "4px", backgroundColor: tl ? tl.track : "#D3D1C7", overflow: "hidden", marginBottom: "12px"}}>
+                            <div style={{height: "100%", borderRadius: "4px", backgroundColor: tl ? tl.fill : "#888780", width: pct + "%"}} />
+                          </div>
+                        </>
                       )}
-
-                      {profileUser?.verification_status === "pending" && (
-                        <div style={{display: "flex", alignItems: "center", gap: "10px", backgroundColor: "#FFF8E1", borderRadius: "12px", padding: "14px"}}>
-                          <span style={{fontSize: "1.6rem"}}>⏳</span>
-                          <div>
-                            <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#B45309"}}>Under Review</div>
-                            <div style={{fontSize: "0.72rem", color: "#92400E", marginTop: "2px"}}>We are reviewing your Student ID. Usually takes 1-2 days.</div>
-                          </div>
-                        </div>
-                      )}
-
-                      {profileUser?.verification_status === "rejected" && (
-                        <div style={{backgroundColor: "#FEF2F2", borderRadius: "12px", padding: "14px", marginBottom: "10px"}}>
-                          <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px"}}>
-                            <span style={{fontSize: "1.3rem"}}>⚠️</span>
-                            <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#EF4444"}}>Action Required</div>
-                          </div>
-                          {profileUser.verification_rejection_reason && (
-                            <div style={{fontSize: "0.78rem", color: "#888", marginBottom: "10px", lineHeight: 1.5, backgroundColor: "#fff", borderRadius: "8px", padding: "8px 12px"}}>
-                              Reason: {profileUser.verification_rejection_reason}
-                            </div>
-                          )}
-                          <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "12px"}}>Please upload a clearer photo of your Student ID and resubmit.</div>
-                          <button onClick={() => setShowVerifySheet(true)}
-                            style={{backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", width: "100%"}}>
-                            Upload New ID
-                          </button>
-                        </div>
-                      )}
-
-                      {(profileUser?.verification_status === "unverified" || !profileUser?.verification_status) && (
-                        <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "16px"}}>
-                          <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px"}}>
-                            <span style={{fontSize: "1.3rem"}}>🪪</span>
-                            <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A"}}>Become a Verified Student</div>
-                          </div>
-                          <div style={{display: "flex", flexDirection: "column", gap: "5px", marginBottom: "14px"}}>
-                            {["Verified badge beside your name", "More trust in Bazaar listings", "More credibility across Konek"].map(benefit => (
-                              <div key={benefit} style={{display: "flex", alignItems: "center", gap: "8px", fontSize: "0.78rem", color: "#555"}}>
-                                <span style={{color: "#1D9E75", fontWeight: 700}}>✓</span> {benefit}
-                              </div>
-                            ))}
-                          </div>
-                          <button onClick={() => setShowVerifySheet(true)}
-                            style={{backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "8px", padding: "11px 20px", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", width: "100%"}}>
-                            Verify Student ID
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Trust Level</div>
-                  {(() => {
-                    const xp = profileUser.trust_xp || 0;
-                    const tl = getTrustLevel(xp);
-                    const next = getNextLevel(xp);
-                    const prevThreshold = xp >= 1000 ? 1000 : xp >= 500 ? 500 : xp >= 100 ? 100 : 0;
-                    const pct = xp >= 1000 ? 100 : Math.round(((xp - prevThreshold) / (next.threshold - prevThreshold)) * 100);
-                    return (
-                      <div style={{backgroundColor: tl ? tl.bg : "#F1EFE8", borderRadius: "12px", padding: "14px", border: "1px solid " + (tl ? tl.border : "#D3D1C7")}}>
-                        <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px"}}>
-                          <div style={{display: "flex", alignItems: "center", gap: "8px"}}>
-                            <span style={{fontSize: "1.6rem"}}>{tl ? tl.emoji : "🌱"}</span>
-                            <div>
-                              <div style={{fontSize: "0.88rem", fontWeight: 700, color: tl ? tl.color : "#444441"}}>{tl ? tl.label : "Newbie"}</div>
-                              <div style={{fontSize: "0.7rem", color: tl ? tl.color : "#888", opacity: 0.8}}>{xp} XP total</div>
-                            </div>
-                          </div>
-                          <div style={{backgroundColor: tl ? tl.border : "#D3D1C7", color: tl ? tl.color : "#444441", fontSize: "0.72rem", fontWeight: 700, padding: "3px 10px", borderRadius: "10px"}}>{xp} XP</div>
-                        </div>
-                        {xp < 1000 && (
-                          <>
-                            <div style={{display: "flex", justifyContent: "space-between", marginBottom: "4px"}}>
-                              <span style={{fontSize: "0.68rem", color: tl ? tl.color : "#888", fontWeight: 600}}>{tl ? tl.label : "Newbie"} → {next.label}</span>
-                              <span style={{fontSize: "0.68rem", color: tl ? tl.color : "#888"}}>{xp} / {next.threshold} XP</span>
-                            </div>
-                            <div style={{height: "6px", borderRadius: "3px", backgroundColor: tl ? tl.track : "#D3D1C7", overflow: "hidden"}}>
-                              <div style={{height: "100%", borderRadius: "3px", backgroundColor: tl ? tl.fill : "#888780", width: pct + "%"}} />
-                            </div>
-                          </>
-                        )}
-                        {xp >= 1000 && <div style={{fontSize: "0.75rem", color: "#633806", fontWeight: 600, textAlign: "center", marginTop: "4px"}}>Maximum level reached!</div>}
-                        <div style={{marginTop: "10px", borderTop: "1px solid " + (tl ? tl.border : "#D3D1C7"), paddingTop: "10px"}}>
-                          <div style={{fontSize: "0.68rem", color: tl ? tl.color : "#888", fontWeight: 600, marginBottom: "6px"}}>How to earn XP</div>
-                          <div style={{display: "flex", gap: "5px", flexWrap: "wrap"}}>
-                            {[["Post","5"],["Comment","3"],["Reaction received","2"],["Upvote received","3"]].map(([act, pts]) => (
-                              <span key={act} style={{fontSize: "0.65rem", padding: "2px 7px", borderRadius: "8px", backgroundColor: tl ? tl.border : "#D3D1C7", color: tl ? tl.color : "#444441", fontWeight: 600}}>+{pts} {act}</span>
-                            ))}
-                          </div>
+                      {xp >= 1000 && <div style={{fontSize: "0.78rem", color: "#633806", fontWeight: 600, textAlign: "center", marginBottom: "12px"}}>Maximum level reached! 🎉</div>}
+                      <div style={{borderTop: "1px solid " + (tl ? tl.border : "#D3D1C7"), paddingTop: "10px"}}>
+                        <div style={{fontSize: "0.7rem", color: tl ? tl.color : "#888", fontWeight: 600, marginBottom: "7px"}}>How to earn XP</div>
+                        <div style={{display: "flex", gap: "5px", flexWrap: "wrap"}}>
+                          {[["Post","5"],["Comment","3"],["Reaction received","2"],["Upvote received","3"]].map(([act, pts]) => (
+                            <span key={act} style={{fontSize: "0.68rem", padding: "3px 8px", borderRadius: "8px", backgroundColor: tl ? tl.border : "#D3D1C7", color: tl ? tl.color : "#444441", fontWeight: 600}}>+{pts} {act}</span>
+                          ))}
                         </div>
                       </div>
-                    );
-                  })()}
-                </div>
+                    </div>
+                  );
+                })()}
 
-                {isOwnProfile && (
-                <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", marginBottom: "12px", border: "1px solid #F0F0F0"}}>
-                  <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.05em"}}>Privacy Settings</div>
-                  {[
-                    { field: "phone", label: "Phone Number" },
-                    { field: "email", label: "Email" },
-                    { field: "birthdate", label: "Birthday" },
-                    { field: "course", label: "Course & Year" },
-                    { field: "hometown", label: "Hometown" },
-                  ].map(item => (
-                    <div key={item.field} style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px"}}>
-                      <span style={{fontSize: "0.82rem", color: "#1A1A1A", fontWeight: 500}}>{item.label}</span>
-                      <select
-                        value={privacySettings[item.field] || "public"}
-                        onChange={e => handleSavePrivacy(item.field, e.target.value)}
-                        disabled={savingPrivacy}
-                        style={{fontSize: "0.75rem", fontWeight: 600, color: "#1D9E75", border: "1px solid #E0E0E0", borderRadius: "8px", padding: "4px 8px", backgroundColor: "#F7F7F7", cursor: "pointer", fontFamily: "inherit", outline: "none"}}>
-                        <option value="public">Public</option>
-                        <option value="school_only">School Only</option>
-                        <option value="private">Private</option>
-                      </select>
+                {/* INVITE CARD — own profile only */}
+                {isOwnProfile && profileUser.invite_code && (
+                  <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", border: "1px solid #F0F0F0"}}>
+                    <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px"}}>
+                      <span style={{fontSize: "1rem"}}>🎁</span>
+                      <span style={{fontWeight: 700, fontSize: "0.88rem", color: "#1A1A1A"}}>Your Invite Code</span>
+                      <span style={{marginLeft: "auto", fontSize: "0.75rem", color: "#1D9E75", fontWeight: 700}}>{profileUser.referral_count || 0} referrals</span>
                     </div>
-                  ))}
-                  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", marginTop: "8px", paddingTop: "12px", borderTop: "1px solid #F0F0F0"}}>
-                    <div>
-                      <div style={{fontSize: "0.82rem", color: "#1A1A1A", fontWeight: 500}}>Show Online Status</div>
-                      <div style={{fontSize: "0.68rem", color: "#AAA", marginTop: "1px"}}>Let classmates see when you are online</div>
+                    <div style={{display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px"}}>
+                      <div style={{flex: 1, backgroundColor: "#E1F5EE", borderRadius: "10px", padding: "10px 14px", fontWeight: 800, fontSize: "1.1rem", color: "#1D9E75", letterSpacing: "0.08em", fontFamily: "monospace", border: "1.5px dashed #1D9E75"}}>
+                        {profileUser.invite_code}
+                      </div>
+                      <button onClick={() => { navigator.clipboard.writeText(profileUser.invite_code || ""); showToast("Copied!"); }}
+                        style={{backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "10px", padding: "10px 16px", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                        Copy
+                      </button>
                     </div>
-                    <button
-                      onClick={async () => {
-                        if (!currentUser) return;
-                        const newVal = !(profileUser?.show_online_status !== false);
-                        await supabase.from("users").update({ show_online_status: newVal }).eq("id", currentUser.id);
-                        setProfileUser(prev => prev ? { ...prev, show_online_status: newVal } : prev);
-                      }}
-                      style={{width: "44px", height: "24px", borderRadius: "12px", border: "none", cursor: "pointer", backgroundColor: profileUser?.show_online_status !== false ? "#1D9E75" : "#E0E0E0", position: "relative", flexShrink: 0, transition: "background-color 0.2s"}}>
-                      <div style={{position: "absolute", top: "2px", width: "20px", height: "20px", borderRadius: "50%", backgroundColor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.2)", transition: "left 0.2s", left: profileUser?.show_online_status !== false ? "22px" : "2px"}} />
-                    </button>
+                    <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "10px"}}>Share with schoolmates. They sign up, you earn badges.</div>
+                    <div style={{display: "flex", flexDirection: "column", gap: "5px"}}>
+                      {[
+                        {count: 5,   emoji: "🎓", label: "Campus Connector"},
+                        {count: 20,  emoji: "🌟", label: "Community Builder"},
+                        {count: 50,  emoji: "🚀", label: "Campus Ambassador"},
+                        {count: 100, emoji: "👑", label: "Founding Influencer"},
+                      ].map(m => {
+                        const done = (profileUser.referral_count || 0) >= m.count;
+                        return (
+                          <div key={m.count} style={{display: "flex", alignItems: "center", gap: "8px", opacity: done ? 1 : 0.5}}>
+                            <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: done ? "#1D9E75" : "#E0E0E0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: "#fff", fontWeight: 700, flexShrink: 0}}>
+                              {done ? "✓" : m.count}
+                            </div>
+                            <span style={{fontSize: "0.75rem", fontWeight: done ? 700 : 400, color: done ? "#0F6E56" : "#888", textDecoration: done ? "none" : "none"}}>
+                              {m.emoji} {m.label} — {m.count} referrals
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div style={{fontSize: "0.68rem", color: "#AAA", marginTop: "4px"}}>Public = everyone · School Only = same school · Private = only you</div>
-                </div>
                 )}
 
+                {/* STUDENT VERIFICATION — own profile only */}
                 {isOwnProfile && (
-                  <>
-                    <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "8px 0 16px"}} />
+                  <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", border: "1px solid #F0F0F0"}}>
+                    <div style={{fontWeight: 700, fontSize: "0.72rem", color: "#aaa", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Student Verification</div>
+                    {profileUser?.verification_status === "approved" && (
+                      <div style={{display: "flex", alignItems: "center", gap: "10px", backgroundColor: "#E1F5EE", borderRadius: "12px", padding: "14px"}}>
+                        <span style={{fontSize: "1.6rem"}}>✅</span>
+                        <div>
+                          <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#0F6E56"}}>Verified Student</div>
+                          <div style={{fontSize: "0.72rem", color: "#1D9E75", marginTop: "2px"}}>Your Student ID has been verified successfully.</div>
+                        </div>
+                      </div>
+                    )}
+                    {profileUser?.verification_status === "pending" && (
+                      <div style={{display: "flex", alignItems: "center", gap: "10px", backgroundColor: "#FFF8E1", borderRadius: "12px", padding: "14px"}}>
+                        <span style={{fontSize: "1.6rem"}}>⏳</span>
+                        <div>
+                          <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#B45309"}}>Under Review</div>
+                          <div style={{fontSize: "0.72rem", color: "#92400E", marginTop: "2px"}}>We are reviewing your Student ID. Usually takes 1-2 days.</div>
+                        </div>
+                      </div>
+                    )}
+                    {profileUser?.verification_status === "rejected" && (
+                      <div style={{backgroundColor: "#FEF2F2", borderRadius: "12px", padding: "14px"}}>
+                        <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px"}}>
+                          <span style={{fontSize: "1.3rem"}}>⚠️</span>
+                          <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#EF4444"}}>Action Required</div>
+                        </div>
+                        {profileUser.verification_rejection_reason && (
+                          <div style={{fontSize: "0.78rem", color: "#888", marginBottom: "10px", lineHeight: 1.5, backgroundColor: "#fff", borderRadius: "8px", padding: "8px 12px"}}>
+                            Reason: {profileUser.verification_rejection_reason}
+                          </div>
+                        )}
+                        <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "12px"}}>Please upload a clearer photo of your Student ID and resubmit.</div>
+                        <button onClick={() => setShowVerifySheet(true)} style={{backgroundColor: "#EF4444", color: "#fff", border: "none", borderRadius: "8px", padding: "10px 20px", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", width: "100%"}}>Upload New ID</button>
+                      </div>
+                    )}
+                    {(profileUser?.verification_status === "unverified" || !profileUser?.verification_status) && (
+                      <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "16px"}}>
+                        <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px"}}>
+                          <span style={{fontSize: "1.3rem"}}>🪪</span>
+                          <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A"}}>Become a Verified Student</div>
+                        </div>
+                        <div style={{display: "flex", flexDirection: "column", gap: "5px", marginBottom: "14px"}}>
+                          {["Verified badge beside your name", "More trust in Bazaar listings", "More credibility across Konek"].map(benefit => (
+                            <div key={benefit} style={{display: "flex", alignItems: "center", gap: "8px", fontSize: "0.78rem", color: "#555"}}>
+                              <span style={{color: "#1D9E75", fontWeight: 700}}>✓</span> {benefit}
+                            </div>
+                          ))}
+                        </div>
+                        <button onClick={() => setShowVerifySheet(true)} style={{backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "8px", padding: "11px 20px", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", width: "100%"}}>Verify Student ID</button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* ADMIN + LOGOUT — own profile only */}
+                {isOwnProfile && (
+                  <div style={{display: "flex", flexDirection: "column", gap: "10px", paddingBottom: "8px"}}>
                     {(currentUser?.role === "admin" || currentUser?.role === "moderator") && (
-                      <button onClick={() => router.push("/admin")}
-                        style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #1D9E75", backgroundColor: "#E1F5EE", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", marginBottom: "10px"}}>
+                      <button onClick={() => router.push("/admin")} style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #1D9E75", backgroundColor: "#E1F5EE", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
                         🛡️ Admin Panel
                       </button>
                     )}
-                    <button onClick={() => setShowLogoutConfirm(true)}
-                      style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #EF4444", backgroundColor: "#FEF2F2", color: "#EF4444", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
+                    <button onClick={() => setShowLogoutConfirm(true)} style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #EF4444", backgroundColor: "#FEF2F2", color: "#EF4444", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
                       🚪 Log Out
                     </button>
-                  </>
+                  </div>
                 )}
+
               </div>
             )}
           </>
