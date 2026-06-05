@@ -27,7 +27,7 @@ export default function Home() {
       {/* Top Section */}
       <div style={{padding: "56px 28px 28px", textAlign: "center", position: "relative", zIndex: 1}}>
         <div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px"}}>
-          <Image src="/klasmeyt.png" alt="Klasmeyt" width={160} height={89} priority style={{filter: "brightness(0) invert(1)"}} />
+          <Image src="/klasmeytbgblack.svg" alt="Klasmeyt" width={200} height={56} priority style={{filter: "brightness(0) invert(1)"}} />
         </div>
         <p style={{fontSize: "1rem", color: "rgba(255,255,255,0.9)", fontWeight: 500, margin: 0, letterSpacing: "0.01em"}}>
           Your Campus. Your Community.

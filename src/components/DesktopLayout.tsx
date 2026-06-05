@@ -62,7 +62,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
           display: "flex",
           alignItems: "center",
         }}>
-          <Image src="/klasmeyt.png" alt="Klasmeyt" width={90} height={32} priority />
+          <Image src="/klasmeytbgblack.svg" alt="Klasmeyt" width={130} height={36} priority />
         </div>
 
         {/* Nav Links */}
