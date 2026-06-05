@@ -25,7 +25,7 @@ export default function Home() {
       <div style={{position: "absolute", top: "120px", left: "-60px", width: "180px", height: "180px", borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.04)", pointerEvents: "none"}} />
 
       {/* Top Section */}
-      <div style={{padding: "56px 28px 28px", textAlign: "center", position: "relative", zIndex: 1}}>
+      <div style={{padding: "40px 28px 20px", textAlign: "center", position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center"}}>
         <div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px"}}>
           <Image src="/whitebg.svg" alt="Klasmeyt" width={200} height={56} priority style={{filter: "brightness(0) invert(1)"}} />
         </div>

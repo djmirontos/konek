@@ -226,8 +226,8 @@ export default function SignupPage() {
     <div style={{minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {/* HEADER */}
-      <div style={{backgroundColor: "#1D9E75", padding: "24px 24px 20px", textAlign: "center"}}>
-        <Link href="/"><Image src="/whitebg.svg" alt="Klasmeyt" width={160} height={44} priority /></Link>
+      <div style={{backgroundColor: "#1D9E75", padding: "24px 24px 16px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
+        <Link href="/"><Image src="/whitebg.svg" alt="Klasmeyt" width={200} height={56} priority style={{filter: "brightness(0) invert(1)"}} /></Link>
         <p style={{color: "#fff", fontWeight: 700, fontSize: "1rem", marginTop: "8px", marginBottom: "2px"}}>Create your account</p>
         <p style={{fontSize: "0.78rem", color: "rgba(255,255,255,0.8)", margin: 0}}>Your campus. Your community.</p>
       </div>

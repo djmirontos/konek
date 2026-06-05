@@ -51,11 +51,11 @@ export default function LoginPage() {
     <div style={{minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {/* Header */}
-      <div style={{backgroundColor: "#1D9E75", padding: "32px 24px 24px", textAlign: "center"}}>
+      <div style={{backgroundColor: "#1D9E75", padding: "28px 24px 18px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
         <Link href="/">
           <Image src="/whitebg.svg" alt="Klasmeyt" width={280} height={66} priority style={{filter: "brightness(0) invert(1)"}} />
         </Link>
-        <p style={{color: "#fff", fontWeight: 600, fontSize: "1rem", marginTop: "8px"}}>Welcome back!</p>
+        <p style={{color: "#fff", fontWeight: 600, fontSize: "1rem", marginTop: "4px"}}>Welcome back!</p>
         <p style={{fontSize: "0.8rem", color: "rgba(255,255,255,0.8)", marginTop: "2px"}}>Log in to your account</p>
       </div>
 
