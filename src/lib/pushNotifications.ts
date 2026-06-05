@@ -1,4 +1,4 @@
-// Push notification utilities for Konek
+// Push notification utilities for Klasmeyt
 
 export async function registerServiceWorker() {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {

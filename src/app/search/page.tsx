@@ -308,7 +308,7 @@ export default function SearchPage() {
             value={query}
             onChange={e => handleQueryChange(e.target.value)}
             onKeyDown={e => e.key === "Enter" && handleSubmit()}
-            placeholder="Search Konek..."
+            placeholder="Search Klasmeyt..."
             style={{flex: 1, background: "none", border: "none", outline: "none", color: "#fff", fontSize: "0.9rem", fontFamily: "inherit"}}
           />
           {query.length > 0 && (
@@ -363,7 +363,7 @@ export default function SearchPage() {
       {query.length === 0 && recentSearches.length === 0 && (
         <div style={{textAlign: "center", padding: "60px 24px"}}>
           <div style={{fontSize: "3rem", marginBottom: "12px"}}>🔍</div>
-          <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "6px"}}>Search Konek</div>
+          <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "6px"}}>Search Klasmeyt</div>
           <div style={{fontSize: "0.82rem", color: "#888"}}>Find students, posts, listings, rooms, and more</div>
         </div>
       )}

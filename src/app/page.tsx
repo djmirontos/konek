@@ -27,7 +27,7 @@ export default function Home() {
       {/* Top Section */}
       <div style={{padding: "56px 28px 28px", textAlign: "center", position: "relative", zIndex: 1}}>
         <div style={{display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px"}}>
-          <Image src="/konek.svg" alt="Konek" width={160} height={89} priority style={{filter: "brightness(0) invert(1)"}} />
+          <Image src="/klasmeyt.png" alt="Klasmeyt" width={160} height={89} priority style={{filter: "brightness(0) invert(1)"}} />
         </div>
         <p style={{fontSize: "1rem", color: "rgba(255,255,255,0.9)", fontWeight: 500, margin: 0, letterSpacing: "0.01em"}}>
           Your Campus. Your Community.
@@ -55,7 +55,7 @@ export default function Home() {
             Everything your campus needs
           </div>
           <div style={{fontSize: "0.8rem", color: "#888"}}>
-            Join thousands of students already on Konek
+            Join thousands of students already on Klasmeyt
           </div>
         </div>
 
@@ -95,7 +95,7 @@ export default function Home() {
             Log In
           </Link>
           <p style={{textAlign: "center", fontSize: "0.68rem", color: "#BBB", margin: "4px 0 0", lineHeight: 1.5}}>
-            By continuing, you agree to Konek's Terms of Service and Privacy Policy
+            By continuing, you agree to Klasmeyt's Terms of Service and Privacy Policy
           </p>
         </div>
       </div>

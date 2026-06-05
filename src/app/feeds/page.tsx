@@ -689,7 +689,7 @@ export default function FeedsPage() {
               }
               <button onClick={() => setShowFeedsComposer(true)}
                 style={{flex: 1, textAlign: "left", backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", fontFamily: "inherit"}}>
-                What's happening, {currentUser?.full_name?.split(" ")[0] || "ka-Konek"}?
+                Hey {currentUser?.full_name?.split(" ")[0] || "Klasmeyt"}, what's on your mind?
               </button>
               <button onClick={() => fileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "4px", flexShrink: 0}} title="Add photos">
                 <Image src="/photos.png" alt="photos" width={22} height={22} />
@@ -718,7 +718,7 @@ export default function FeedsPage() {
                   </div>
                   <textarea
                     autoFocus
-                    placeholder={`What's happening, ${currentUser?.full_name?.split(" ")[0] || "ka-Konek"}?`}
+                    placeholder={`Hey ${currentUser?.full_name?.split(" ")[0] || "Klasmeyt"}, what's on your mind?`}
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
                     rows={4}
@@ -835,7 +835,7 @@ export default function FeedsPage() {
                       <Image src="/comment.png" alt="comment" width={20} height={20} style={{opacity: 0.5}} />
                       {(post.commentCount || 0) > 0 && <span style={{fontSize: "0.78rem", color: "#888", fontWeight: 600}}>{post.commentCount}</span>}
                     </button>
-                    <button onClick={async () => { const result = await shareContent("Konek", post.content?.slice(0, 80) || "Check this out on Konek!", "/feeds/" + post.id); if (result === "copied") showToast("Link copied!"); }} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 2px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
+                    <button onClick={async () => { const result = await shareContent("Klasmeyt", post.content?.slice(0, 80) || "Check this out on Klasmeyt!", "/feeds/" + post.id); if (result === "copied") showToast("Link copied!"); }} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 2px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
                       <Image src="/share.png" alt="share" width={20} height={20} style={{opacity: 0.5}} />
                     </button>
                   </div>
@@ -1034,7 +1034,7 @@ export default function FeedsPage() {
                         <Image src="/comment.png" alt="comment" width={16} height={16} />
                         <span style={{fontSize: "0.8rem", color: "#888", fontWeight: 600}}>{post.commentCount || 0}</span>
                       </button>
-                      <button onClick={async () => { const result = await shareContent("Konek Quad", post.content?.slice(0, 80) || "Check this out on Konek!", "/quad/" + post.id); if (result === "copied") showToast("Link copied!"); }} style={{background: "none", border: "1px solid #F0F0F0", borderRadius: "20px", cursor: "pointer", padding: "5px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
+                      <button onClick={async () => { const result = await shareContent("Klasmeyt Quad", post.content?.slice(0, 80) || "Check this out on Klasmeyt!", "/quad/" + post.id); if (result === "copied") showToast("Link copied!"); }} style={{background: "none", border: "1px solid #F0F0F0", borderRadius: "20px", cursor: "pointer", padding: "5px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
                         <Image src="/share.png" alt="share" width={16} height={16} />
                       </button>
                     </div>

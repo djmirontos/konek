@@ -353,7 +353,7 @@ export default function SettingsPage() {
           <div onClick={() => setShowLogoutConfirm(false)}
             style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
           <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "24px 16px 40px"}}>
-            <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "8px", textAlign: "center"}}>Log out of Konek?</div>
+            <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "8px", textAlign: "center"}}>Log out of Klasmeyt?</div>
             <div style={{fontSize: "0.85rem", color: "#888", textAlign: "center", marginBottom: "20px"}}>You'll need to log in again to access your account.</div>
             <div style={{display: "flex", gap: "10px"}}>
               <button onClick={() => setShowLogoutConfirm(false)}

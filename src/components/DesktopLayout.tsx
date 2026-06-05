@@ -62,7 +62,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
           display: "flex",
           alignItems: "center",
         }}>
-          <Image src="/konek.svg" alt="Konek" width={90} height={32} priority />
+          <Image src="/klasmeyt.png" alt="Klasmeyt" width={90} height={32} priority />
         </div>
 
         {/* Nav Links */}
@@ -98,7 +98,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
         {/* Bottom tagline */}
         <div style={{marginTop: "auto", padding: "16px", borderTop: "1px solid #F0F0F0"}}>
           <div style={{fontSize: "0.72rem", color: "#aaa", lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-            <span style={{fontWeight: 700, color: "#1D9E75"}}>Konek</span> — Your Campus. Your Community.
+            <span style={{fontWeight: 700, color: "#1D9E75"}}>Klasmeyt</span> — Your Campus. Your Community.
             
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
             textTransform: "uppercase",
             marginBottom: "10px",
             fontFamily: "'Plus Jakarta Sans', sans-serif",
-          }}>About Konek</div>
+          }}>About Klasmeyt</div>
           <div style={{fontSize: "0.82rem", color: "#1A1A1A", lineHeight: 1.7, fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
             A safe, campus-only space for Tangub City students. Buy, sell, hang out, and connect with your community.
           </div>
@@ -176,7 +176,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
         {/* Footer */}
         <div style={{marginTop: "auto", padding: "8px 0", borderTop: "1px solid #F0F0F0"}}>
           <div style={{fontSize: "0.68rem", color: "#aaa", lineHeight: 1.8, fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-            © 2026 Konek
+            © 2026 Klasmeyt
           </div>
         </div>
       </div>

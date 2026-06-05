@@ -227,7 +227,7 @@ export default function SignupPage() {
 
       {/* HEADER */}
       <div style={{backgroundColor: "#1D9E75", padding: "24px 24px 20px", textAlign: "center"}}>
-        <Link href="/"><Image src="/konek.svg" alt="Konek" width={120} height={66} priority /></Link>
+        <Link href="/"><Image src="/klasmeyt.png" alt="Klasmeyt" width={120} height={66} priority /></Link>
         <p style={{color: "#fff", fontWeight: 700, fontSize: "1rem", marginTop: "8px", marginBottom: "2px"}}>Create your account</p>
         <p style={{fontSize: "0.78rem", color: "rgba(255,255,255,0.8)", margin: 0}}>Your campus. Your community.</p>
       </div>
@@ -425,12 +425,12 @@ export default function SignupPage() {
               </button>
               <button onClick={handleSignup} disabled={loading}
                 style={{flex: 2, backgroundColor: loading ? "#ccc" : "#1D9E75", color: "#fff", padding: "13px", borderRadius: "10px", fontWeight: 700, fontSize: "0.9rem", border: "none", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
-                {loading ? "Creating account..." : "Join Konek 🎉"}
+                {loading ? "Creating account..." : "Join Klasmeyt 🎉"}
               </button>
             </div>
 
             <p style={{textAlign: "center", fontSize: "0.72rem", color: "#888", marginTop: "4px"}}>
-              By joining, you agree to keep Konek safe and respectful for everyone.
+              By joining, you agree to keep Klasmeyt safe and respectful for everyone.
             </p>
           </>
         )}
@@ -465,7 +465,7 @@ export default function SignupPage() {
             ) : (
               <>
                 <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "4px"}}>Request Your School</div>
-                <div style={{fontSize: "0.8rem", color: "#888", marginBottom: "16px"}}>We'll add it to Konek as soon as possible.</div>
+                <div style={{fontSize: "0.8rem", color: "#888", marginBottom: "16px"}}>We'll add it to Klasmeyt as soon as possible.</div>
 
                 <div style={{display: "flex", flexDirection: "column", gap: "12px"}}>
                   <div>

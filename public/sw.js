@@ -1,4 +1,4 @@
-// Konek Service Worker - Push Notifications
+// Klasmeyt Service Worker - Push Notifications
 self.addEventListener('push', function(event) {
   if (!event.data) return;
   
@@ -22,7 +22,7 @@ self.addEventListener('push', function(event) {
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Konek', options)
+    self.registration.showNotification(data.title || 'Klasmeyt', options)
   );
 });
 

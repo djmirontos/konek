@@ -925,7 +925,7 @@ export default function ProfilePage() {
                           <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A"}}>Become a Verified Student</div>
                         </div>
                         <div style={{display: "flex", flexDirection: "column", gap: "5px", marginBottom: "14px"}}>
-                          {["Verified badge beside your name", "More trust in Bazaar listings", "More credibility across Konek"].map(benefit => (
+                          {["Verified badge beside your name", "More trust in Bazaar listings", "More credibility across Klasmeyt"].map(benefit => (
                             <div key={benefit} style={{display: "flex", alignItems: "center", gap: "8px", fontSize: "0.78rem", color: "#555"}}>
                               <span style={{color: "#1D9E75", fontWeight: 700}}>✓</span> {benefit}
                             </div>
@@ -1049,7 +1049,7 @@ export default function ProfilePage() {
             <div style={{fontSize: "0.8rem", color: "#888", marginBottom: "16px", lineHeight: 1.5}}>Upload a clear photo of your Student ID. Your information is kept private and only used for verification.</div>
 
             <div style={{backgroundColor: "#E1F5EE", borderRadius: "10px", padding: "10px 14px", marginBottom: "16px"}}>
-              {["Verified badge beside your name", "More trust in Bazaar listings", "More credibility across Konek"].map(b => (
+              {["Verified badge beside your name", "More trust in Bazaar listings", "More credibility across Klasmeyt"].map(b => (
                 <div key={b} style={{display: "flex", alignItems: "center", gap: "8px", fontSize: "0.75rem", color: "#0F6E56", marginBottom: "3px"}}>
                   <span style={{fontWeight: 700}}>✓</span> {b}
                 </div>
@@ -1095,7 +1095,7 @@ export default function ProfilePage() {
             </div>
 
             <div style={{backgroundColor: "#FFF8E1", borderRadius: "10px", padding: "10px 14px", marginBottom: "16px", fontSize: "0.74rem", color: "#92400E", lineHeight: 1.5}}>
-              Your Student ID is private and only visible to Konek admins for verification purposes.
+              Your Student ID is private and only visible to Klasmeyt admins for verification purposes.
             </div>
 
             <div style={{display: "flex", gap: "10px"}}>

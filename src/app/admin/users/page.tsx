@@ -79,7 +79,7 @@ export default function AdminUsersPage() {
     setActing(userId);
     await supabase.from("notifications").insert({
       recipient_id: userId, sender_id: currentUser?.id, type: "system",
-      message: "⚠️ Your account has received a warning from the Konek moderation team. Please review our community guidelines.", is_read: false,
+      message: "⚠️ Your account has received a warning from the Klasmeyt moderation team. Please review our community guidelines.", is_read: false,
     });
     showToast("Warning sent to user.");
     setActing(null);
