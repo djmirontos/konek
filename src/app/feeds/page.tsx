@@ -823,7 +823,7 @@ export default function FeedsPage() {
                 <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
                 <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 12px"}}>
                   {/* LEFT: Like + Comment + Share */}
-                  <div style={{display: "flex", alignItems: "center", gap: "4px"}}>
+                  <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
                     <ReactionButton
                       postId={post.id}
                       userReaction={post.userReaction || null}
@@ -831,11 +831,11 @@ export default function FeedsPage() {
                       reactions={FEED_REACTIONS}
                       onReact={handleReactNew}
                     />
-                    <button onClick={() => router.push("/feeds/" + post.id)} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
+                    <button onClick={() => router.push("/feeds/" + post.id)} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 2px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
                       <Image src="/comment.png" alt="comment" width={20} height={20} style={{opacity: 0.5}} />
                       {(post.commentCount || 0) > 0 && <span style={{fontSize: "0.78rem", color: "#888", fontWeight: 600}}>{post.commentCount}</span>}
                     </button>
-                    <button onClick={async () => { const result = await shareContent("Konek", post.content?.slice(0, 80) || "Check this out on Konek!", "/feeds/" + post.id); if (result === "copied") showToast("Link copied!"); }} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
+                    <button onClick={async () => { const result = await shareContent("Konek", post.content?.slice(0, 80) || "Check this out on Konek!", "/feeds/" + post.id); if (result === "copied") showToast("Link copied!"); }} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 2px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
                       <Image src="/share.png" alt="share" width={20} height={20} style={{opacity: 0.5}} />
                     </button>
                   </div>
