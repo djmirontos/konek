@@ -210,7 +210,6 @@ export default function BazaarPage() {
     setSelectedImages(combined);
     setImagePreviews(prev => { prev.forEach(url => URL.revokeObjectURL(url)); return combined.map(f => URL.createObjectURL(f)); });
   }
-  }
 
   function removeImage(index: number) {
     const imgs = selectedImages.filter((_, i) => i !== index);
