@@ -41,7 +41,7 @@ export default function AppHeader({
   return (
     <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100, transform: show ? "translateY(0)" : "translateY(-100%)", transition: "transform 0.25s ease"}}>
       <div style={{display: "flex", flexDirection: "column"}}>
-        <Image src="/klasmeytbgblack.svg" alt="Klasmeyt" width={110} height={30} priority />
+        <Image src="/whitebg.svg" alt="Klasmeyt" width={110} height={30} priority />
         {pageName && <span style={{color: "rgba(255,255,255,0.85)", fontSize: "0.65rem", fontWeight: 600, letterSpacing: "0.05em", marginTop: "2px"}}>{pageName}</span>}
       </div>
       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>

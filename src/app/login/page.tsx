@@ -53,10 +53,7 @@ export default function LoginPage() {
       {/* Header */}
       <div style={{backgroundColor: "#1D9E75", padding: "32px 24px 24px", textAlign: "center"}}>
         <Link href="/">
-          <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "0px"}}>
-            <Image src="/klasmeytlogoblack.svg" alt="Klasmeyt" width={140} height={140} priority style={{marginBottom: "-12px"}} />
-            <Image src="/klasmeytbgblack.svg" alt="Klasmeyt" width={220} height={62} priority />
-          </div>
+          <Image src="/whitebg.svg" alt="Klasmeyt" width={280} height={66} priority style={{filter: "brightness(0) invert(1)"}} />
         </Link>
         <p style={{color: "#fff", fontWeight: 600, fontSize: "1rem", marginTop: "8px"}}>Welcome back!</p>
         <p style={{fontSize: "0.8rem", color: "rgba(255,255,255,0.8)", marginTop: "2px"}}>Log in to your account</p>
