@@ -51,11 +51,11 @@ export default function LoginPage() {
     <div style={{minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {/* Header */}
-      <div style={{backgroundColor: "#1D9E75", padding: "48px 24px 32px", textAlign: "center"}}>
+      <div style={{backgroundColor: "#1D9E75", padding: "32px 24px 24px", textAlign: "center"}}>
         <Link href="/">
-          <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "12px"}}>
-            <Image src="/klasmeytlogoblack.svg" alt="Klasmeyt" width={110} height={110} priority />
-            <Image src="/klasmeytbgblack.svg" alt="Klasmeyt" width={200} height={56} priority />
+          <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "0px"}}>
+            <Image src="/klasmeytlogoblack.svg" alt="Klasmeyt" width={140} height={140} priority style={{marginBottom: "-12px"}} />
+            <Image src="/klasmeytbgblack.svg" alt="Klasmeyt" width={220} height={62} priority />
           </div>
         </Link>
         <p style={{color: "#fff", fontWeight: 600, fontSize: "1rem", marginTop: "8px"}}>Welcome back!</p>
