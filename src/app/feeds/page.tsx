@@ -226,7 +226,6 @@ export default function FeedsPage() {
       .subscribe();
     return () => { supabase.removeChannel(qotdChannel); supabase.removeChannel(feedsChannel); };
   }, [currentUser]);
-  }, [currentUser]);
 
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
