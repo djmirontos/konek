@@ -251,17 +251,20 @@ export default function FeedsPage() {
   }
 
   async function submitAnswer() {
+    if (answerInput.trim().length === 0 || todayQuestion === null || currentUser === null) return;
     setSubmittingAnswer(true);
     const { error } = await supabase.from("question_answers").insert({
       question_id: todayQuestion.id,
       user_id: currentUser.id,
       answer: answerInput.trim()
     });
+    if (error === null) {
       setMyAnswer(answerInput.trim());
       setAnswerInput("");
       setShowAnswerSheet(false);
       await supabase.from("users").update({ trust_xp: (currentUser.trust_xp || 0) + 5 }).eq("id", currentUser.id);
       fetchTodayQuestion(currentUser.school_id);
+      showToast("+5 XP earned for answering");
     }
     setSubmittingAnswer(false);
   }
