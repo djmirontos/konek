@@ -44,7 +44,7 @@ export default function Home() {
       }}>
 
         {/* Heading */}
-        <div style={{marginBottom: "10px", textAlign: "center"}}>
+        <div style={{marginBottom: "14px", textAlign: "center"}}>
           <h1 style={{
             fontWeight: 700, fontSize: "1.1rem", color: "#0F2E27",
             margin: "0 0 4px", fontFamily: "var(--font-poppins), sans-serif",
@@ -62,7 +62,7 @@ export default function Home() {
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: "6px",
-          marginBottom: "10px"
+          marginBottom: "14px"
         }}>
           {features.map((f, i) => (
             <div key={i} style={{
