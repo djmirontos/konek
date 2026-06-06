@@ -228,8 +228,8 @@ export default function SignupPage() {
       {/* HEADER */}
       <div style={{background: "transparent", padding: "40px 24px 16px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
         <Link href="/"><Image src="/whitebg.svg" alt="Klasmeyt" width={200} height={56} priority style={{filter: "brightness(0) invert(1)"}} /></Link>
-        <p style={{color: "#fff", fontWeight: 700, fontSize: "1rem", marginTop: "8px", marginBottom: "2px"}}>Create your account</p>
-        <p style={{fontSize: "0.78rem", color: "rgba(255,255,255,0.8)", margin: 0}}>Your campus. Your community.</p>
+        <p style={{color: "#0F2E27", fontWeight: 800, fontSize: "1.2rem", marginTop: "8px", marginBottom: "2px", textShadow: "0 1px 2px rgba(255,255,255,0.3)"}}>Create your account</p>
+        <p style={{fontSize: "0.82rem", color: "#2BB39A", fontWeight: 700, margin: 0}}>Your campus. Your community.</p>
       </div>
 
       {/* STEP INDICATOR */}

@@ -55,8 +55,8 @@ export default function LoginPage() {
         <Link href="/">
           <Image src="/whitebg.svg" alt="Klasmeyt" width={280} height={66} priority style={{filter: "brightness(0) invert(1)"}} />
         </Link>
-        <p style={{color: "#fff", fontWeight: 600, fontSize: "1rem", marginTop: "4px"}}>Welcome back!</p>
-        <p style={{fontSize: "0.8rem", color: "rgba(255,255,255,0.8)", marginTop: "2px"}}>Log in to your account</p>
+        <p style={{color: "#0F2E27", fontWeight: 800, fontSize: "1.2rem", marginTop: "4px", textShadow: "0 1px 2px rgba(255,255,255,0.3)"}}>Welcome back!</p>
+        <p style={{fontSize: "0.85rem", color: "#2BB39A", fontWeight: 700, marginTop: "2px"}}>Log in to your account</p>
       </div>
 
       {/* Form */}
