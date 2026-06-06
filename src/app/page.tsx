@@ -86,7 +86,7 @@ export default function Home() {
             fontFamily: "var(--font-poppins), sans-serif",
             boxShadow: "0 4px 16px rgba(43,179,154,0.3)"
           }}>
-            Get Started It\u2019s Free
+            Get Started Its Free
           </Link>
           <Link href="/login" style={{
             display: "block", width: "100%",
