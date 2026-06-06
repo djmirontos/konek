@@ -48,10 +48,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{minHeight: "100vh", background: "url(/bg.png) center center / cover no-repeat", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", position: "relative"}}>
+    <div style={{height: "100vh", background: "url(/bg.png) center center / cover no-repeat", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", position: "relative", overflow: "hidden", boxSizing: "border-box"}}>
 
       {/* Header */}
-      <div style={{background: "transparent", padding: "48px 24px 24px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
+      <div style={{background: "transparent", padding: "32px 24px 16px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
         <Link href="/">
           <Image src="/whitebg.svg" alt="Klasmeyt" width={280} height={66} priority style={{filter: "brightness(0) invert(1)"}} />
         </Link>

@@ -14,7 +14,7 @@ const features = [
 export default function Home() {
   return (
     <div style={{
-      minHeight: "100vh",
+      height: "100vh",
       backgroundImage: "url('/bg.png')",
       backgroundSize: "cover",
       backgroundPosition: "center",
@@ -22,11 +22,11 @@ export default function Home() {
       display: "flex", flexDirection: "column",
       maxWidth: "480px", margin: "0 auto",
       fontFamily: "var(--font-inter), sans-serif",
-      position: "relative", overflow: "hidden"
+      position: "relative", overflow: "hidden", boxSizing: "border-box"
     }}>
 
       {/* Logo */}
-      <div style={{padding: "44px 28px 16px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
+      <div style={{padding: "32px 28px 12px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
         <Image src="/whitebg.svg" alt="Klasmeyt" width={180} height={50} priority style={{filter: "brightness(0) invert(1)"}} />
       </div>
 
@@ -37,12 +37,12 @@ export default function Home() {
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
         borderRadius: "24px 24px 0 0",
-        padding: "28px 20px 0",
+        padding: "20px 20px 0",
         boxShadow: "0 -4px 30px rgba(0,0,0,0.06)",
         display: "flex", flexDirection: "column"
       }}>
         {/* Heading */}
-        <div style={{marginBottom: "20px", textAlign: "center"}}>
+        <div style={{marginBottom: "12px", textAlign: "center"}}>
           <h1 style={{
             fontWeight: 700, fontSize: "1.35rem", color: "#0F2E27",
             margin: "0 0 8px", fontFamily: "var(--font-poppins), sans-serif",
@@ -59,13 +59,13 @@ export default function Home() {
         <div style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "10px",
-          marginBottom: "24px"
+          gap: "8px",
+          marginBottom: "12px"
         }}>
           {features.map((f, i) => (
             <div key={i} style={{
               backgroundColor: "#fff", borderRadius: "16px", border: "1px solid #CBF7E5",
-              padding: "18px 12px 14px", display: "flex", flexDirection: "column",
+              padding: "12px 10px 10px", display: "flex", flexDirection: "column",
               alignItems: "center", gap: "6px",
               boxShadow: "0 2px 8px rgba(43,179,154,0.06)"
             }}>
