@@ -147,6 +147,7 @@ export default function FeedsPage() {
   });
 
   function toggleQuestionCollapsed() {
+    const next = !questionCollapsed;
     setQuestionCollapsed(next);
     if (typeof window !== "undefined") {
       localStorage.setItem("qotd_collapsed", next ? "true" : "false");
