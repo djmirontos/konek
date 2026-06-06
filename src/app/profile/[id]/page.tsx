@@ -489,22 +489,7 @@ export default function ProfilePage() {
     setUnreadMessages(total);
   }
 
-  return (
-      <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-        <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
-        <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px"}}>
-          <div style={{width: "28px", height: "28px", borderRadius: "50%", background: "rgba(255,255,255,0.3)"}} />
-          <div style={{height: "16px", width: "100px", borderRadius: "8px", background: "rgba(255,255,255,0.3)"}} />
-        </div>
-        <div style={{backgroundColor: "#fff", padding: "24px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px"}}>
-          <div style={{width: "88px", height: "88px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
-          <div style={{height: "16px", width: "140px", borderRadius: "8px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
-          <div style={{height: "12px", width: "80px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
-        </div>
-        <BottomNav active="/feeds" unreadMessages={unreadMessages} />
-      </div>
-    );
-  }
+
 
   if (!profileUser) {
     return (
