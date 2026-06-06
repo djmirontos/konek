@@ -201,17 +201,15 @@ export default function FeedsPage() {
       .subscribe();
     return () => { supabase.removeChannel(msgChannel); };
   }, [currentUser]);
-
   useEffect(() => {
     if (!currentUser) return;
-    const channel = supabase
-      .channel("qotd-answers")
+    const qotdChannel = supabase
+      .channel("qotd-" + currentUser.id)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "question_answers" },
         () => { if (currentUser) fetchTodayQuestion(currentUser.school_id); })
       .subscribe();
-
-    supabase
-      .channel("feeds-realtime")
+    const feedsChannel = supabase
+      .channel("feeds-rt-" + currentUser.id)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "posts", filter: `school_id=eq.${currentUser.school_id}` },
         (payload) => {
           if (payload.new.user_id !== currentUser.id && payload.new.type === "feed" && !payload.new.is_hidden) {
@@ -226,7 +224,8 @@ export default function FeedsPage() {
         () => { fetchUnreadCount(currentUser); }
       )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => { supabase.removeChannel(qotdChannel); supabase.removeChannel(feedsChannel); };
+  }, [currentUser]);
   }, [currentUser]);
 
   async function initPage() {
