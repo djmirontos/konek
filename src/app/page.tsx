@@ -48,10 +48,10 @@ export default function Home() {
             margin: "0 0 8px", fontFamily: "var(--font-poppins), sans-serif",
             lineHeight: 1.3
           }}>
-            A cleaner, simpler campus hub.
+            Your Campus, your community.
           </h1>
           <p style={{fontSize: "0.82rem", color: "#666", margin: 0, lineHeight: 1.5}}>
-            All your features, beautifully arranged for effortless focus.
+            Join and become a klasmeyt to everyone.
           </p>
         </div>
 
