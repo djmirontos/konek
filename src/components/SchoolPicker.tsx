@@ -21,7 +21,7 @@ export default function SchoolPicker({ schools, currentUser, selectedSchool, onS
 
   return (
     <>
-      <div style={{position: "fixed", top: "60px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", zIndex: 200, boxShadow: "0 4px 20px rgba(0,0,0,0.15)", borderRadius: "0 0 16px 16px", overflow: "hidden"}}>
+      <div style={{position: "fixed", top: "60px", left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", zIndex: 500, boxShadow: "0 4px 20px rgba(0,0,0,0.15)", borderRadius: "0 0 16px 16px", overflow: "hidden", maxHeight: "60vh", overflowY: "auto", WebkitOverflowScrolling: "touch"}}>
         {options.map(option => (
           <button key={option.id} onClick={() => { onSelect(option.id); onClose(); }}
             style={{width: "100%", padding: "12px 16px", background: selectedSchool === option.id ? "#E1F5EE" : "#fff", border: "none", borderBottom: "1px solid #F0F0F0", cursor: "pointer", textAlign: "left", fontFamily: "inherit"}}>
@@ -30,7 +30,7 @@ export default function SchoolPicker({ schools, currentUser, selectedSchool, onS
           </button>
         ))}
       </div>
-      <div onClick={onClose} style={{position: "fixed", inset: 0, zIndex: 150}} />
+      <div onClick={onClose} style={{position: "fixed", inset: 0, zIndex: 499}} />
     </>
   );
 }
