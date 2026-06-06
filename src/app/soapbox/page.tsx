@@ -349,7 +349,7 @@ export default function SoapboxPage() {
       const scored = thisWeek.map((p: any) => ({
         ...p,
         score: (p.reactionCounts.laban * 4) + (p.reactionCounts.love * 3) + (p.commentCount * 5),
-      })).sort((a, b) => b.score - a.score).slice(0, 3);
+      })).sort((a: any, b: any) => b.score - a.score).slice(0, 3);
       setTopConfessions(scored);
     }
     setConfessionLoading(false);
