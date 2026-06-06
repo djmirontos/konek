@@ -223,10 +223,10 @@ export default function SignupPage() {
   };
 
   return (
-    <div style={{minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", background: "url(/bg.png) center center / cover no-repeat", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", position: "relative"}}>
 
       {/* HEADER */}
-      <div style={{backgroundColor: "#1D9E75", padding: "24px 24px 16px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
+      <div style={{background: "transparent", padding: "40px 24px 16px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
         <Link href="/"><Image src="/whitebg.svg" alt="Klasmeyt" width={200} height={56} priority style={{filter: "brightness(0) invert(1)"}} /></Link>
         <p style={{color: "#fff", fontWeight: 700, fontSize: "1rem", marginTop: "8px", marginBottom: "2px"}}>Create your account</p>
         <p style={{fontSize: "0.78rem", color: "rgba(255,255,255,0.8)", margin: 0}}>Your campus. Your community.</p>
@@ -234,8 +234,8 @@ export default function SignupPage() {
 
       {/* STEP INDICATOR */}
       <div style={{display: "flex", alignItems: "center", padding: "16px 24px 0", gap: "8px"}}>
-        <div style={{flex: 1, height: "3px", borderRadius: "2px", backgroundColor: "#1D9E75"}}></div>
-        <div style={{flex: 1, height: "3px", borderRadius: "2px", backgroundColor: step === 2 ? "#1D9E75" : "#F0F0F0"}}></div>
+        <div style={{flex: 1, height: "3px", borderRadius: "2px", backgroundColor: "#2BB39A"}}></div>
+        <div style={{flex: 1, height: "3px", borderRadius: "2px", backgroundColor: step === 2 ? "#2BB39A" : "#F0F0F0"}}></div>
         <span style={{fontSize: "0.7rem", color: "#888", fontWeight: 600, whiteSpace: "nowrap"}}>Step {step} of 2</span>
       </div>
 
@@ -279,7 +279,7 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label style={labelStyle}>Email <span style={{color: "#1D9E75", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional — for future password recovery)</span></label>
+              <label style={labelStyle}>Email <span style={{color: "#2BB39A", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional — for future password recovery)</span></label>
               <input type="email" placeholder="juan@email.com (optional)" value={email}
                 onChange={e => { setEmail(e.target.value); setError(""); }}
                 style={inputStyle} />
@@ -299,27 +299,27 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label style={labelStyle}>Birthday <span style={{color: "#1D9E75", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional)</span></label>
+              <label style={labelStyle}>Birthday <span style={{color: "#2BB39A", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional)</span></label>
               <input type="date" value={birthdate}
                 onChange={e => { setBirthdate(e.target.value); setError(""); }}
                 style={inputStyle} max={new Date().toISOString().split("T")[0]} />
             </div>
 
             <div>
-              <label style={labelStyle}>Invite Code <span style={{color: "#1D9E75", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional — if a schoolmate invited you)</span></label>
+              <label style={labelStyle}>Invite Code <span style={{color: "#2BB39A", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional — if a schoolmate invited you)</span></label>
               <input type="text" placeholder="e.g. DARYL27" value={inviteCode}
                 onChange={e => { setInviteCode(e.target.value.toUpperCase()); setError(""); }}
                 style={inputStyle} maxLength={12} />
             </div>
 
             <button onClick={handleNext}
-              style={{width: "100%", backgroundColor: "#1D9E75", color: "#fff", padding: "13px", borderRadius: "10px", fontWeight: 700, fontSize: "0.9rem", border: "none", cursor: "pointer", fontFamily: "inherit", marginTop: "6px"}}>
+              style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", padding: "13px", borderRadius: "10px", fontWeight: 700, fontSize: "0.9rem", border: "none", cursor: "pointer", fontFamily: "inherit", marginTop: "6px"}}>
               Next →
             </button>
 
             <p style={{textAlign: "center", fontSize: "0.75rem", color: "#888"}}>
               Already have an account?{" "}
-              <Link href="/login" style={{color: "#1D9E75", fontWeight: 700, textDecoration: "none"}}>Log in</Link>
+              <Link href="/login" style={{color: "#2BB39A", fontWeight: 700, textDecoration: "none"}}>Log in</Link>
             </p>
           </>
         )}
@@ -360,7 +360,7 @@ export default function SignupPage() {
                   <div style={{borderTop: "2px solid #F0F0F0", backgroundColor: "#F7F7F7"}}>
                     <div style={{padding: "8px 16px 4px", fontSize: "0.65rem", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.05em"}}>Can't find your school?</div>
                     <div onClick={() => { setShowRequestModal(true); setShowSchoolList(false); }}
-                      style={{padding: "10px 16px", cursor: "pointer", fontSize: "0.82rem", color: "#1D9E75", fontWeight: 700, display: "flex", alignItems: "center", gap: "8px"}}>
+                      style={{padding: "10px 16px", cursor: "pointer", fontSize: "0.82rem", color: "#2BB39A", fontWeight: 700, display: "flex", alignItems: "center", gap: "8px"}}>
                       <span>📋</span> Request Your School
                     </div>
                     <div onClick={() => selectFallback("other")}
@@ -381,17 +381,17 @@ export default function SignupPage() {
                 <span style={{fontSize: "1.2rem"}}>✅</span>
                 <div>
                   <div style={{fontSize: "0.82rem", fontWeight: 700, color: "#0F6E56"}}>{selectedSchool.name}</div>
-                  <div style={{fontSize: "0.7rem", color: "#1D9E75"}}>{selectedSchool.abbreviation}</div>
+                  <div style={{fontSize: "0.7rem", color: "#2BB39A"}}>{selectedSchool.abbreviation}</div>
                 </div>
               </div>
             )}
 
             {/* AVATAR */}
             <div>
-              <label style={labelStyle}>Profile Photo <span style={{color: "#1D9E75", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional)</span></label>
+              <label style={labelStyle}>Profile Photo <span style={{color: "#2BB39A", fontWeight: 400, textTransform: "none", fontSize: "0.68rem"}}>(Optional)</span></label>
               <div style={{display: "flex", alignItems: "center", gap: "16px", marginTop: "4px"}}>
                 <div onClick={() => setShowAvatarUploader(true)}
-                  style={{width: "72px", height: "72px", borderRadius: "50%", backgroundColor: "#F0F0F0", overflow: "hidden", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem", cursor: "pointer", border: "2px dashed #1D9E75", position: "relative"}}>
+                  style={{width: "72px", height: "72px", borderRadius: "50%", backgroundColor: "#F0F0F0", overflow: "hidden", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem", cursor: "pointer", border: "2px dashed #2BB39A", position: "relative"}}>
                   {avatarPreview ? (
                     <img src={avatarPreview} alt="avatar" style={{width: "100%", height: "100%", objectFit: "cover"}} />
                   ) : "👤"}
@@ -424,7 +424,7 @@ export default function SignupPage() {
                 ← Back
               </button>
               <button onClick={handleSignup} disabled={loading}
-                style={{flex: 2, backgroundColor: loading ? "#ccc" : "#1D9E75", color: "#fff", padding: "13px", borderRadius: "10px", fontWeight: 700, fontSize: "0.9rem", border: "none", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                style={{flex: 2, backgroundColor: loading ? "#ccc" : "#2BB39A", color: "#fff", padding: "13px", borderRadius: "10px", fontWeight: 700, fontSize: "0.9rem", border: "none", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                 {loading ? "Creating account..." : "Join Klasmeyt 🎉"}
               </button>
             </div>
@@ -457,7 +457,7 @@ export default function SignupPage() {
                     🏫 Other School
                   </button>
                   <button onClick={() => { selectFallback("guest"); setShowRequestModal(false); setRequestSuccess(false); }}
-                    style={{flex: 1, padding: "11px", borderRadius: "10px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>
+                    style={{flex: 1, padding: "11px", borderRadius: "10px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>
                     🌐 Guest Community
                   </button>
                 </div>
@@ -506,7 +506,7 @@ export default function SignupPage() {
                     Cancel
                   </button>
                   <button onClick={handleRequestSchool} disabled={requestSubmitting}
-                    style={{flex: 2, padding: "12px", borderRadius: "10px", border: "none", backgroundColor: requestSubmitting ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: requestSubmitting ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                    style={{flex: 2, padding: "12px", borderRadius: "10px", border: "none", backgroundColor: requestSubmitting ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: requestSubmitting ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                     {requestSubmitting ? "Submitting..." : "Submit Request"}
                   </button>
                 </div>

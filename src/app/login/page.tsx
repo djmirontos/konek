@@ -48,10 +48,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", background: "url(/bg.png) center center / cover no-repeat", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", position: "relative"}}>
 
       {/* Header */}
-      <div style={{backgroundColor: "#1D9E75", padding: "28px 24px 18px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
+      <div style={{background: "transparent", padding: "48px 24px 24px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center"}}>
         <Link href="/">
           <Image src="/whitebg.svg" alt="Klasmeyt" width={280} height={66} priority style={{filter: "brightness(0) invert(1)"}} />
         </Link>
@@ -102,7 +102,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          style={{width: "100%", backgroundColor: loading ? "#888" : "#1D9E75", color: "#fff", padding: "13px", borderRadius: "10px", fontWeight: 700, fontSize: "0.875rem", border: "none", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit"}}
+          style={{width: "100%", backgroundColor: loading ? "#888" : "#2BB39A", color: "#fff", padding: "13px", borderRadius: "10px", fontWeight: 700, fontSize: "0.875rem", border: "none", cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit"}}
         >
           {loading ? "Logging in..." : "Log in"}
         </button>
@@ -115,16 +115,16 @@ export default function LoginPage() {
 
         <Link
           href="/signup"
-          style={{display: "block", width: "100%", backgroundColor: "transparent", color: "#1D9E75", textAlign: "center", padding: "13px", borderRadius: "10px", fontWeight: 600, fontSize: "0.875rem", border: "1.5px solid #1D9E75", textDecoration: "none"}}
+          style={{display: "block", width: "100%", backgroundColor: "transparent", color: "#2BB39A", textAlign: "center", padding: "13px", borderRadius: "10px", fontWeight: 600, fontSize: "0.875rem", border: "1.5px solid #2BB39A", textDecoration: "none"}}
         >
           Create new account
         </Link>
 
         <p style={{textAlign: "center", fontSize: "0.7rem", color: "#aaa", paddingBottom: "16px"}}>
           By logging in, you agree to our{" "}
-          <span style={{color: "#1D9E75", fontWeight: 600}}>Terms of Use</span>
+          <span style={{color: "#2BB39A", fontWeight: 600}}>Terms of Use</span>
           {" "}and{" "}
-          <span style={{color: "#1D9E75", fontWeight: 600}}>Privacy Policy</span>
+          <span style={{color: "#2BB39A", fontWeight: 600}}>Privacy Policy</span>
         </p>
 
       </form>

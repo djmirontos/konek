@@ -208,10 +208,13 @@ export default function NotificationsPage() {
 
       {/* Page Header */}
       <div style={{backgroundColor: "#fff", padding: "14px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: "56px", zIndex: 90}}>
-        <span style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A"}}>Notifications</span>
+        <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
+          <button onClick={() => router.push("/feeds")} style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.3rem", color: "#555", lineHeight: 1, padding: "2px 4px"}}>✕</button>
+          <span style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A"}}>Notifications</span>
+        </div>
         {unreadCount > 0 && (
           <button onClick={markAllAsRead} disabled={markingAll}
-            style={{background: "none", border: "none", cursor: "pointer", color: "#1D9E75", fontSize: "0.8rem", fontWeight: 600, fontFamily: "inherit", opacity: markingAll ? 0.5 : 1}}>
+            style={{background: "none", border: "none", cursor: "pointer", color: "#2BB39A", fontSize: "0.8rem", fontWeight: 600, fontFamily: "inherit", opacity: markingAll ? 0.5 : 1}}>
             {markingAll ? "Marking..." : "Mark all as read"}
           </button>
         )}
@@ -261,7 +264,7 @@ export default function NotificationsPage() {
                       ) : notif.sender.avatar_url ? (
                         <img src={notif.sender.avatar_url} alt="" style={{width: "46px", height: "46px", borderRadius: "50%", objectFit: "cover"}} />
                       ) : (
-                        <div style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem"}}>
+                        <div style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.1rem"}}>
                           {notif.sender.full_name?.charAt(0).toUpperCase()}
                         </div>
                       )}
@@ -276,12 +279,12 @@ export default function NotificationsPage() {
                     {/* Message + Time */}
                     <div style={{flex: 1, minWidth: 0}}>
                       <div style={{fontSize: "0.85rem", color: "#1A1A1A", lineHeight: 1.4, fontWeight: notif.is_read ? 400 : 600}}>{notif.message}</div>
-                      <div style={{fontSize: "0.72rem", color: notif.is_read ? "#888" : "#1D9E75", marginTop: "3px", fontWeight: notif.is_read ? 400 : 600}}>{formatTime(notif.created_at)}</div>
+                      <div style={{fontSize: "0.72rem", color: notif.is_read ? "#888" : "#2BB39A", marginTop: "3px", fontWeight: notif.is_read ? 400 : 600}}>{formatTime(notif.created_at)}</div>
                     </div>
 
                     {/* Unread dot */}
                     {!notif.is_read && (
-                      <div style={{width: "9px", height: "9px", borderRadius: "50%", backgroundColor: "#1D9E75", flexShrink: 0}} />
+                      <div style={{width: "9px", height: "9px", borderRadius: "50%", backgroundColor: "#2BB39A", flexShrink: 0}} />
                     )}
                   </div>
                 ))}
