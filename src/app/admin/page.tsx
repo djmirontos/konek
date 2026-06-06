@@ -137,6 +137,7 @@ export default function AdminPage() {
     { label: "Content", icon: "📋", route: "/admin/content", badge: null, desc: "Moderate posts" },
     { label: "School Requests", icon: "🏫", route: "/admin/schools", badge: stats?.pendingSchoolRequests, desc: "Approve new schools" },
     { label: "Retention", icon: "📊", route: "/admin/retention", badge: null, desc: "Analytics & active users" },
+    { label: "Question of the Day", icon: "💬", route: "/admin/question", badge: null, desc: "Set daily question per school" },
   ];
 
   if (loading) return (

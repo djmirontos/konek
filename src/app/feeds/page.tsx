@@ -135,6 +135,12 @@ export default function FeedsPage() {
   const [quadLoaded, setQuadLoaded] = useState(false);
   const [showFeedsComposer, setShowFeedsComposer] = useState(false);
   const [showQuadComposer, setShowQuadComposer] = useState(false);
+  const [todayQuestion, setTodayQuestion] = useState<{id:string;question:string;asked_date:string;school_id:string} | null>(null);
+  const [questionAnswers, setQuestionAnswers] = useState<{id:string;answer:string;user_id:string;created_at:string;users:{full_name:string;avatar_url:string|null}}[]>([]);
+  const [myAnswer, setMyAnswer] = useState<string | null>(null);
+  const [showAnswerSheet, setShowAnswerSheet] = useState(false);
+  const [answerInput, setAnswerInput] = useState("");
+  const [submittingAnswer, setSubmittingAnswer] = useState(false);
 
   useEffect(() => {
     initPage();
@@ -213,8 +219,50 @@ export default function FeedsPage() {
     if (schoolData) setSchools(schoolData);
     fetchUnreadCount(userData);
     if (userData) fetchUnreadMessages(userData.id);
+    if (userData) fetchTodayQuestion(userData.school_id);
     const { data: badges } = await supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student");
     if (badges) setVerifiedUsers(new Set(badges.map((b: {user_id: string}) => b.user_id)));
+  }
+
+  async function fetchTodayQuestion(schoolId: string) {
+    const today = new Date().toISOString().split("T")[0];
+    const { data: qData } = await supabase
+      .from("daily_questions")
+      .select("id, question, asked_date, school_id")
+      .eq("school_id", schoolId)
+      .eq("asked_date", today)
+      .single();
+    if (qData) {
+      setTodayQuestion(qData);
+      const { data: aData } = await supabase
+        .from("question_answers")
+        .select("id, answer, user_id, created_at, users(full_name, avatar_url)")
+        .eq("question_id", qData.id)
+        .order("created_at", { ascending: true });
+      if (aData) {
+        setQuestionAnswers(aData as any);
+        const mine = aData.find((a: any) => a.user_id === (await supabase.auth.getUser()).data.user?.id);
+        if (mine) setMyAnswer(mine.answer);
+      }
+    } else {
+      setTodayQuestion(null);
+    }
+  }
+
+  async function submitAnswer() {
+    setSubmittingAnswer(true);
+    const { error } = await supabase.from("question_answers").insert({
+      question_id: todayQuestion.id,
+      user_id: currentUser.id,
+      answer: answerInput.trim()
+    });
+      setMyAnswer(answerInput.trim());
+      setAnswerInput("");
+      setShowAnswerSheet(false);
+      await supabase.from("users").update({ trust_xp: (currentUser.trust_xp || 0) + 5 }).eq("id", currentUser.id);
+      fetchTodayQuestion(currentUser.school_id);
+    }
+    setSubmittingAnswer(false);
   }
 
   async function fetchUnreadCount(user: User | null) {
@@ -697,6 +745,75 @@ export default function FeedsPage() {
               <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" multiple style={{display: "none"}} onChange={(e) => { handleImageSelect(e); setShowFeedsComposer(true); }} />
             </div>
           </div>
+
+          {/* Question of the Day Card */}
+          {todayQuestion && selectedSchool !== "all" && (
+            <div style={{margin: "10px 12px 0", backgroundColor: "#fff", borderRadius: "16px", border: "1.5px solid #CBF7E5", overflow: "hidden", boxShadow: "0 2px 8px rgba(43,179,154,0.08)"}}>
+              <div style={{backgroundColor: "#2BB39A", padding: "10px 14px", display: "flex", alignItems: "center", gap: "8px"}}>
+                <span style={{fontSize: "1.1rem"}}>💬</span>
+                <span style={{color: "#fff", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.05em", textTransform: "uppercase"}}>Question of the Day</span>
+              </div>
+              <div style={{padding: "12px 14px"}}>
+                <p style={{margin: "0 0 10px", fontWeight: 700, fontSize: "0.92rem", color: "#0F2E27", lineHeight: 1.4}}>{todayQuestion.question}</p>
+                {myAnswer ? (
+                  <div style={{backgroundColor: "#E8F8F5", borderRadius: "10px", padding: "10px 12px", marginBottom: "8px"}}>
+                    <div style={{fontSize: "0.7rem", color: "#2BB39A", fontWeight: 700, marginBottom: "3px"}}>Your answer</div>
+                    <div style={{fontSize: "0.85rem", color: "#1a1a1a"}}>{myAnswer}</div>
+                  </div>
+                ) : (
+                  <button onClick={() => setShowAnswerSheet(true)} style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "10px", padding: "10px", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit", marginBottom: "8px"}}>
+                    Answer this question
+                  </button>
+                )}
+                {questionAnswers.length > 0 && (
+                  <div style={{borderTop: "1px solid #F0F0F0", paddingTop: "8px"}}>
+                    <div style={{fontSize: "0.7rem", color: "#888", fontWeight: 600, marginBottom: "6px"}}>{questionAnswers.length} answer{questionAnswers.length !== 1 ? "s" : ""}</div>
+                    {questionAnswers.slice(0, 3).map((a: any) => (
+                      <div key={a.id} style={{display: "flex", gap: "8px", alignItems: "flex-start", marginBottom: "6px"}}>
+                        {a.users?.avatar_url
+                          ? <img src={a.users.avatar_url} alt="" style={{width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                          : <div style={{width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.65rem", fontWeight: 700, color: "#2BB39A", flexShrink: 0}}>{a.users?.full_name?.charAt(0).toUpperCase()}</div>
+                        }
+                        <div style={{backgroundColor: "#F7F7F7", borderRadius: "10px", padding: "6px 10px", flex: 1}}>
+                          <div style={{fontSize: "0.68rem", fontWeight: 700, color: "#1a1a1a", marginBottom: "2px"}}>{a.users?.full_name}</div>
+                          <div style={{fontSize: "0.78rem", color: "#444"}}>{a.answer}</div>
+                        </div>
+                      </div>
+                    ))}
+                    {questionAnswers.length > 3 && (
+                      <div style={{fontSize: "0.72rem", color: "#2BB39A", fontWeight: 600, textAlign: "center", paddingTop: "4px"}}>+{questionAnswers.length - 3} more answers</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Answer Sheet Modal */}
+          {showAnswerSheet && (
+            <>
+              <div onClick={() => setShowAnswerSheet(false)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+              <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px,100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 401, padding: "20px 16px", paddingBottom: "calc(20px + env(safe-area-inset-bottom))"}}>
+                <div style={{width: "36px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "0 auto 16px"}} />
+                <div style={{fontSize: "0.72rem", color: "#2BB39A", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "6px"}}>Question of the Day</div>
+                <p style={{margin: "0 0 14px", fontWeight: 700, fontSize: "0.92rem", color: "#0F2E27", lineHeight: 1.4}}>{todayQuestion?.question}</p>
+                <textarea
+                  value={answerInput}
+                  onChange={e => setAnswerInput(e.target.value)}
+                  placeholder="Share your answer..."
+                  rows={4}
+                  style={{width: "100%", border: "1px solid #E0E0E0", borderRadius: "12px", padding: "12px", fontSize: "0.9rem", fontFamily: "inherit", resize: "none", outline: "none", boxSizing: "border-box", color: "#1a1a1a"}}
+                  autoFocus
+                />
+                <button
+                  onClick={submitAnswer}
+                  disabled={submittingAnswer || answerInput.trim().length === 0}
+                  style={{width: "100%", marginTop: "10px", backgroundColor: submittingAnswer || answerInput.trim().length === 0 ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "12px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: submittingAnswer || answerInput.trim().length === 0 ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                  {submittingAnswer ? "Submitting..." : "Submit Answer +5 XP"}
+                </button>
+              </div>
+            </>
+          )}
 
           {/* Feeds Composer Modal */}
           {showFeedsComposer && (
