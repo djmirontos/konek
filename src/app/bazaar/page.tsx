@@ -130,7 +130,7 @@ export default function BazaarPage() {
       }
       const { error } = await supabase.from("listings").insert({
         user_id: currentUser.id,
-        school_id: currentUser.school_id,
+        school_id: (selectedSchool === "all" || selectedSchool === "own") ? currentUser.school_id : selectedSchool,
         title: title.trim(),
         description: description.trim(),
         price: parseFloat(price),

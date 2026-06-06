@@ -121,7 +121,7 @@ export default function LivingPage() {
       const slots = availableSlots ? parseInt(availableSlots) : null;
       const { error } = await supabase.from("boarding_houses").insert({
         user_id: currentUser.id,
-        school_id: currentUser.school_id,
+        school_id: (selectedSchool === "all" || selectedSchool === "own") ? currentUser.school_id : selectedSchool,
         post_type: postType,
         name: title.trim(),
         description: description.trim() || null,

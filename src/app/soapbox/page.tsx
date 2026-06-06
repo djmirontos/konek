@@ -255,7 +255,7 @@ export default function SoapboxPage() {
       }
       const pseudonym = generatePseudonym(currentUser.id, postSeed);
       const { error } = await supabase.from("posts").insert({
-        user_id: currentUser.id, school_id: currentUser.school_id, type: "soapbox",
+        user_id: currentUser.id, school_id: (selectedSchool === "all" || selectedSchool === "own") ? currentUser.school_id : selectedSchool, type: "soapbox",
         content: postContent.trim(), tag: null,
         images: imageUrl ? [imageUrl] : null, is_anonymous: true, pseudonym,
         is_flagged: false, is_hidden: false, is_under_review: false,
@@ -370,7 +370,7 @@ export default function SoapboxPage() {
       }
       const pseudonym = generatePseudonym(currentUser.id, confessionSeed);
       const { error } = await supabase.from("posts").insert({
-        user_id: currentUser.id, school_id: currentUser.school_id, type: "confession",
+        user_id: currentUser.id, school_id: (selectedSchool === "all" || selectedSchool === "own") ? currentUser.school_id : selectedSchool, type: "confession",
         content: confessionContent.trim(), tag: null,
         images: imageUrl ? [imageUrl] : null, is_anonymous: true, pseudonym,
         is_flagged: false, is_hidden: false, is_under_review: false,
