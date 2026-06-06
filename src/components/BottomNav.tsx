@@ -3,11 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 
 const NAV_ITEMS = [
-  { href: "/feeds", icon: "/feed.png", label: "Feeds" },
-  { href: "/soapbox", icon: "/soapbox.png", label: "Shout Out" },
-  { href: "/messages", icon: "/chat.png", label: "Messages" },
-  { href: "/bazaar", icon: "/bazaar.png", label: "Bazaar" },
-  { href: "/living", icon: "/living.png", label: "Living" },
+  { href: "/feeds", icon: "/icon/home.png", label: "Home" },
+  { href: "/soapbox", icon: "/icon/feeds_black.png", label: "Shout Out" },
+  { href: "/messages", icon: "/icon/chat_black.png", label: "Messages" },
+  { href: "/bazaar", icon: "/icon/cart_black.png", label: "Bazaar" },
+  { href: "/living", icon: "/icon/living.png", label: "Living" },
 ];
 
 export default function BottomNav({ active, unreadMessages = 0, show = true }: { active: string; unreadMessages?: number; show?: boolean }) {
@@ -31,7 +31,7 @@ export default function BottomNav({ active, unreadMessages = 0, show = true }: {
                 </div>
               )}
             </div>
-            <span style={{fontSize: "0.62rem", color: isActive ? "#1D9E75" : "#888", fontWeight: isActive ? 700 : 400}}>{item.label}</span>
+            <span style={{fontSize: "0.62rem", color: isActive ? "#2BB39A" : "#888", fontWeight: isActive ? 700 : 400}}>{item.label}</span>
           </Link>
         );
       })}
