@@ -5,7 +5,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase";
 
 type School = { id: string; name: string; abbreviation: string; };
-type User = { id: string; full_name: string; avatar_url: string | null; school_id: string; role: string; };
+type User = { id: string; full_name: string; avatar_url: string | null; school_id: string; role: string; course?: string | null; year_level?: string | null; };
 
 type Props = {
   currentUser: User | null;
@@ -97,13 +97,19 @@ export default function AppHeader({
         {/* Close button */}
         <button onClick={() => setMenuOpen(false)} style={{position: "absolute", top: "16px", right: "16px", background: "none", border: "none", cursor: "pointer", fontSize: "1.4rem", color: "#fff", lineHeight: 1}}>✕</button>
 
-        {/* Avatar + Name */}
-        <div style={{backgroundColor: "#2BB39A", padding: "48px 24px 24px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "12px"}}>
+        {/* Avatar + Name + School + Course */}
+        <div style={{backgroundColor: "#2BB39A", padding: "48px 24px 24px", display: "flex", flexDirection: "row", alignItems: "center", gap: "14px"}}>
           {currentUser?.avatar_url
-            ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "64px", height: "64px", borderRadius: "50%", objectFit: "cover", border: "3px solid #fff"}} />
-            : <div style={{width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#0F6E56", border: "3px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: "1.5rem"}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+            ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "64px", height: "64px", borderRadius: "50%", objectFit: "cover", border: "3px solid #fff", flexShrink: 0}} />
+            : <div style={{width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#0F6E56", border: "3px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: "1.5rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
           }
-          <span style={{color: "#fff", fontWeight: 700, fontSize: "1rem", lineHeight: 1.3}}>{currentUser?.full_name || "User"}</span>
+          <div style={{display: "flex", flexDirection: "column", gap: "3px", minWidth: 0}}>
+            <span style={{color: "#fff", fontWeight: 700, fontSize: "0.95rem", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>{currentUser?.full_name || "User"}</span>
+            {(() => { const s = schools.find(s => s.id === currentUser?.school_id); return s ? <span style={{color: "rgba(255,255,255,0.85)", fontSize: "0.72rem", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>{s.name}</span> : null; })()}
+            {(currentUser?.year_level || currentUser?.course) && (
+              <span style={{color: "rgba(255,255,255,0.75)", fontSize: "0.7rem", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>{[currentUser?.year_level, currentUser?.course].filter(Boolean).join(" • ")}</span>
+            )}
+          </div>
         </div>
 
         {/* Menu Items */}

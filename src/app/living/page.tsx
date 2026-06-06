@@ -256,7 +256,7 @@ export default function LivingPage() {
       <AppHeader
         currentUser={currentUser}
         schools={schools}
-        pageName="LIVING"
+        
         selectedSchool={selectedSchool}
         unreadCount={unreadCount}
         onSchoolPickerToggle={() => setShowSchoolPicker(!showSchoolPicker)}
@@ -271,7 +271,7 @@ export default function LivingPage() {
         <div style={{display: "flex", gap: "8px", paddingLeft: "12px", overflowX: "auto", scrollbarWidth: "none"}}>
           {["All", "Room for Rent", "Looking"].map(tab => (
             <button key={tab} onClick={() => setFilterType(tab)}
-              style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: filterType === tab ? "#1D9E75" : "#F7F7F7", color: filterType === tab ? "#fff" : "#888", fontWeight: filterType === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0}}>
+              style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: filterType === tab ? "#2BB39A" : "#F7F7F7", color: filterType === tab ? "#fff" : "#888", fontWeight: filterType === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0}}>
               {tab === "All" ? "🏘️ All" : tab === "Room for Rent" ? "🏠 Room for Rent" : "🔍 Looking"}
             </button>
           ))}
@@ -281,7 +281,7 @@ export default function LivingPage() {
       {/* Post Button */}
       <div style={{padding: "12px 16px", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0"}}>
         <button onClick={() => setShowComposer(true)}
-          style={{width: "100%", backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "12px", padding: "12px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
+          style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "12px", padding: "12px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
           + Post a Listing
         </button>
       </div>
@@ -327,7 +327,7 @@ export default function LivingPage() {
                     <span style={{backgroundColor: "#F59E0B", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "3px 8px", borderRadius: "10px"}}>LOOKING</span>
                   )}
                   {post.post_type === "listing" && !post.is_fully_booked && (
-                    <span style={{backgroundColor: "#1D9E75", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "3px 8px", borderRadius: "10px"}}>FOR RENT</span>
+                    <span style={{backgroundColor: "#2BB39A", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "3px 8px", borderRadius: "10px"}}>FOR RENT</span>
                   )}
                 </div>
 
@@ -353,7 +353,7 @@ export default function LivingPage() {
                   <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A", marginBottom: "4px"}}>{post.name}</div>
 
                   {post.price_per_month && (
-                    <div style={{fontWeight: 700, fontSize: "1rem", color: "#1D9E75", marginBottom: "4px"}}>
+                    <div style={{fontWeight: 700, fontSize: "1rem", color: "#2BB39A", marginBottom: "4px"}}>
                       ₱{post.price_per_month.toLocaleString("en-PH")}/mo
                       {post.is_negotiable && <span style={{fontSize: "0.7rem", color: "#888", fontWeight: 400, marginLeft: "6px"}}>Negotiable</span>}
                     </div>
@@ -366,7 +366,7 @@ export default function LivingPage() {
                   )}
 
                   {post.available_slots !== null && !post.is_fully_booked && (
-                    <div style={{fontSize: "0.75rem", color: "#1D9E75", fontWeight: 600, marginBottom: "6px"}}>
+                    <div style={{fontSize: "0.75rem", color: "#2BB39A", fontWeight: 600, marginBottom: "6px"}}>
                       {post.available_slots} slot{post.available_slots !== 1 ? "s" : ""} available
                     </div>
                   )}
@@ -386,7 +386,7 @@ export default function LivingPage() {
                     <div style={{display: "flex", alignItems: "center", gap: "5px"}}>
                       {post.users?.avatar_url
                         ? <img src={post.users.avatar_url} alt="" style={{width: "18px", height: "18px", borderRadius: "50%", objectFit: "cover"}} />
-                        : <div style={{width: "18px", height: "18px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.55rem", color: "#1D9E75", fontWeight: 700}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+                        : <div style={{width: "18px", height: "18px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.55rem", color: "#2BB39A", fontWeight: 700}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                       }
                       <span style={{fontSize: "0.72rem", color: "#888"}}>{post.users?.full_name}</span>
                     </div>
@@ -420,7 +420,7 @@ export default function LivingPage() {
                 <div style={{fontSize: "0.75rem", color: "#888", fontWeight: 600, marginBottom: "8px"}}>Post Type</div>
                 <div style={{display: "flex", gap: "8px"}}>
                   <button onClick={() => setPostType("listing")}
-                    style={{flex: 1, padding: "12px", borderRadius: "12px", border: "2px solid " + (postType === "listing" ? "#1D9E75" : "#F0F0F0"), backgroundColor: postType === "listing" ? "#E1F5EE" : "#fff", color: postType === "listing" ? "#1D9E75" : "#888", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", textAlign: "center"}}>
+                    style={{flex: 1, padding: "12px", borderRadius: "12px", border: "2px solid " + (postType === "listing" ? "#2BB39A" : "#F0F0F0"), backgroundColor: postType === "listing" ? "#E1F5EE" : "#fff", color: postType === "listing" ? "#2BB39A" : "#888", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", textAlign: "center"}}>
                     🏠 Room for Rent
                   </button>
                   <button onClick={() => setPostType("looking")}
@@ -443,7 +443,7 @@ export default function LivingPage() {
                 <input placeholder={postType === "listing" ? "Price/month (₱) optional" : "Budget/month (₱) optional"} value={price} onChange={e => setPrice(e.target.value)} type="number"
                   style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}} />
                 <button onClick={() => setIsNegotiable(!isNegotiable)}
-                  style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (isNegotiable ? "#1D9E75" : "#F0F0F0"), backgroundColor: isNegotiable ? "#E1F5EE" : "#F7F7F7", color: isNegotiable ? "#1D9E75" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                  style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (isNegotiable ? "#2BB39A" : "#F0F0F0"), backgroundColor: isNegotiable ? "#E1F5EE" : "#F7F7F7", color: isNegotiable ? "#2BB39A" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
                   {isNegotiable ? "✓ Nego" : "Nego?"}
                 </button>
               </div>
@@ -469,7 +469,7 @@ export default function LivingPage() {
                     <div style={{display: "flex", gap: "6px", flexWrap: "wrap"}}>
                       {AMENITIES.map(a => (
                         <button key={a} onClick={() => toggleAmenity(a)}
-                          style={{padding: "5px 10px", borderRadius: "20px", border: "1px solid " + (selectedAmenities.includes(a) ? "#1D9E75" : "#F0F0F0"), backgroundColor: selectedAmenities.includes(a) ? "#E1F5EE" : "#fff", color: selectedAmenities.includes(a) ? "#1D9E75" : "#888", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
+                          style={{padding: "5px 10px", borderRadius: "20px", border: "1px solid " + (selectedAmenities.includes(a) ? "#2BB39A" : "#F0F0F0"), backgroundColor: selectedAmenities.includes(a) ? "#E1F5EE" : "#fff", color: selectedAmenities.includes(a) ? "#2BB39A" : "#888", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
                           {a}
                         </button>
                       ))}
@@ -501,7 +501,7 @@ export default function LivingPage() {
               {postError && <div style={{color: "#EF4444", fontSize: "0.75rem"}}>{postError}</div>}
 
               <button onClick={handlePost} disabled={posting}
-                style={{backgroundColor: posting ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "12px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: posting ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                style={{backgroundColor: posting ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "12px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: posting ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                 {posting ? "Posting..." : "Post Listing"}
               </button>
             </div>

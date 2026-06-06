@@ -459,7 +459,7 @@ export default function SoapboxPage() {
       )}
 
       <AppHeader
-        currentUser={currentUser} schools={schools} pageName="SHOUT OUT"
+        currentUser={currentUser} schools={schools} 
         selectedSchool={selectedSchool} unreadCount={unreadCount}
         onSchoolPickerToggle={() => setShowSchoolPicker(!showSchoolPicker)}
       />
@@ -469,14 +469,14 @@ export default function SoapboxPage() {
       <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", display: "flex"}}>
         <button onClick={() => setActiveTab("soapbox")}
           style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer",
-            color: activeTab === "soapbox" ? "#1D9E75" : "#888",
-            borderBottom: activeTab === "soapbox" ? "2px solid #1D9E75" : "2px solid transparent"}}>
+            color: activeTab === "soapbox" ? "#2BB39A" : "#888",
+            borderBottom: activeTab === "soapbox" ? "2px solid #2BB39A" : "2px solid transparent"}}>
           📣 Shout Out
         </button>
         <button onClick={() => setActiveTab("confession")}
           style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer",
-            color: activeTab === "confession" ? "#1D9E75" : "#888",
-            borderBottom: activeTab === "confession" ? "2px solid #1D9E75" : "2px solid transparent"}}>
+            color: activeTab === "confession" ? "#2BB39A" : "#888",
+            borderBottom: activeTab === "confession" ? "2px solid #2BB39A" : "2px solid transparent"}}>
           💌 Confession Board
         </button>
       </div>
@@ -510,11 +510,11 @@ export default function SoapboxPage() {
                 <div style={{display: "flex", alignItems: "center", gap: "10px", padding: "0 16px 12px"}}>
                   {currentUser?.avatar_url
                     ? <img src={currentUser.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div>
                     <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{currentUser?.full_name}</div>
-                    <div style={{fontSize: "0.72rem", color: "#1D9E75", fontWeight: 500}}>Posting as {myPseudonym}</div>
+                    <div style={{fontSize: "0.72rem", color: "#2BB39A", fontWeight: 500}}>Posting as {myPseudonym}</div>
                   </div>
                 </div>
                 {/* Text area */}
@@ -558,7 +558,7 @@ export default function SoapboxPage() {
                     <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleImageSelect} />
                   </div>
                   <button onClick={async () => { await handlePost(); if (!postError) setShowComposerSheet(false); }} disabled={posting || !postContent.trim()}
-                    style={{backgroundColor: posting || !postContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: posting || !postContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                    style={{backgroundColor: posting || !postContent.trim() ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: posting || !postContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                     {posting ? "Posting..." : "Post"}
                   </button>
                 </div>
@@ -580,7 +580,7 @@ export default function SoapboxPage() {
           <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "10px 16px"}}>
             <div style={{display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "2px", scrollbarWidth: "none"}}>
               <button onClick={() => setMoodFilter(null)}
-                style={{flexShrink: 0, padding: "5px 14px", borderRadius: "20px", border: "1px solid " + (moodFilter === null ? "#1D9E75" : "#F0F0F0"),
+                style={{flexShrink: 0, padding: "5px 14px", borderRadius: "20px", border: "1px solid " + (moodFilter === null ? "#2BB39A" : "#F0F0F0"),
                   backgroundColor: moodFilter === null ? "#E1F5EE" : "#F7F7F7", color: moodFilter === null ? "#0F6E56" : "#888",
                   fontWeight: moodFilter === null ? 700 : 400, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
                 All
@@ -647,9 +647,9 @@ export default function SoapboxPage() {
                   <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
                   <div style={{display: "flex", padding: "6px 12px", alignItems: "center", gap: "8px"}}>
                     <button onClick={() => handleVote(post.id, "upvote")}
-                      style={{background: post.userVote === "upvote" ? "#E1F5EE" : "none", border: "1px solid " + (post.userVote === "upvote" ? "#1D9E75" : "#F0F0F0"), borderRadius: "20px", cursor: "pointer", padding: "5px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
-                      <span style={{fontSize: "0.9rem", color: post.userVote === "upvote" ? "#1D9E75" : "#888"}}>▲</span>
-                      <span style={{fontSize: "0.8rem", fontWeight: 700, color: post.userVote === "upvote" ? "#1D9E75" : "#888"}}>{post.upvotes}</span>
+                      style={{background: post.userVote === "upvote" ? "#E1F5EE" : "none", border: "1px solid " + (post.userVote === "upvote" ? "#2BB39A" : "#F0F0F0"), borderRadius: "20px", cursor: "pointer", padding: "5px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
+                      <span style={{fontSize: "0.9rem", color: post.userVote === "upvote" ? "#2BB39A" : "#888"}}>▲</span>
+                      <span style={{fontSize: "0.8rem", fontWeight: 700, color: post.userVote === "upvote" ? "#2BB39A" : "#888"}}>{post.upvotes}</span>
                     </button>
                     <button onClick={() => handleVote(post.id, "downvote")}
                       style={{background: post.userVote === "downvote" ? "#FEF2F2" : "none", border: "1px solid " + (post.userVote === "downvote" ? "#EF4444" : "#F0F0F0"), borderRadius: "20px", cursor: "pointer", padding: "5px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
@@ -698,11 +698,11 @@ export default function SoapboxPage() {
                 <div style={{display: "flex", alignItems: "center", gap: "10px", padding: "0 16px 12px"}}>
                   {currentUser?.avatar_url
                     ? <img src={currentUser.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div>
                     <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{currentUser?.full_name}</div>
-                    <div style={{fontSize: "0.72rem", color: "#1D9E75", fontWeight: 500}}>Confessing as {myConfessionPseudonym}</div>
+                    <div style={{fontSize: "0.72rem", color: "#2BB39A", fontWeight: 500}}>Confessing as {myConfessionPseudonym}</div>
                   </div>
                 </div>
                 <div style={{padding: "0 16px 12px"}}>
@@ -743,7 +743,7 @@ export default function SoapboxPage() {
                     <input ref={confessionFileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleConfessionImageSelect} />
                   </div>
                   <button onClick={async () => { await handleConfessionPost(); }} disabled={confessionPosting || !confessionContent.trim()}
-                    style={{backgroundColor: confessionPosting || !confessionContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: confessionPosting || !confessionContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                    style={{backgroundColor: confessionPosting || !confessionContent.trim() ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: confessionPosting || !confessionContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                     {confessionPosting ? "Posting..." : "Confess"}
                   </button>
                 </div>
@@ -765,7 +765,7 @@ export default function SoapboxPage() {
           <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "10px 16px"}}>
             <div style={{display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "2px", scrollbarWidth: "none"}}>
               <button onClick={() => setConfessionMoodFilter(null)}
-                style={{flexShrink: 0, padding: "5px 14px", borderRadius: "20px", border: "1px solid " + (confessionMoodFilter === null ? "#1D9E75" : "#F0F0F0"),
+                style={{flexShrink: 0, padding: "5px 14px", borderRadius: "20px", border: "1px solid " + (confessionMoodFilter === null ? "#2BB39A" : "#F0F0F0"),
                   backgroundColor: confessionMoodFilter === null ? "#E1F5EE" : "#F7F7F7", color: confessionMoodFilter === null ? "#0F6E56" : "#888",
                   fontWeight: confessionMoodFilter === null ? 700 : 400, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
                 All
@@ -902,7 +902,7 @@ export default function SoapboxPage() {
               style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             <div style={{display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end"}}>
               <button onClick={() => setEditingPost(null)} style={{padding: "9px 20px", borderRadius: "20px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
-              <button onClick={() => handleEditPost(editingPost)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+              <button onClick={() => handleEditPost(editingPost)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
             </div>
           </div>
         </>
@@ -942,7 +942,7 @@ export default function SoapboxPage() {
               style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             <div style={{display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end"}}>
               <button onClick={() => setEditingConfession(null)} style={{padding: "9px 20px", borderRadius: "20px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
-              <button onClick={() => handleEditConfession(editingConfession)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+              <button onClick={() => handleEditConfession(editingConfession)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
             </div>
           </div>
         </>

@@ -273,7 +273,7 @@ export default function BazaarPage() {
       <AppHeader
         currentUser={currentUser}
         schools={schools}
-        pageName="BAZAAR"
+        
         selectedSchool={selectedSchool}
         unreadCount={unreadCount}
         onSchoolPickerToggle={() => setShowSchoolPicker(!showSchoolPicker)}
@@ -288,7 +288,7 @@ export default function BazaarPage() {
         <div style={{display: "flex", gap: "8px", paddingLeft: "12px", overflowX: "auto", scrollbarWidth: "none"}}>
           {["All", ...CATEGORIES].map(cat => (
             <button key={cat} onClick={() => setFilterCategory(cat)}
-              style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: filterCategory === cat ? "#1D9E75" : "#F7F7F7", color: filterCategory === cat ? "#fff" : "#888", fontWeight: filterCategory === cat ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0}}>
+              style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: filterCategory === cat ? "#2BB39A" : "#F7F7F7", color: filterCategory === cat ? "#fff" : "#888", fontWeight: filterCategory === cat ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0}}>
               {cat === "All" ? "🛒 All" : CATEGORY_ICONS[cat] + " " + cat}
             </button>
           ))}
@@ -298,7 +298,7 @@ export default function BazaarPage() {
       {/* Sell Button */}
       <div style={{padding: "12px 16px", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0"}}>
         <button onClick={() => setShowComposer(true)}
-          style={{width: "100%", backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "12px", padding: "12px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
+          style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "12px", padding: "12px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
           + Post a Listing
         </button>
       </div>
@@ -398,13 +398,13 @@ export default function BazaarPage() {
                 <input placeholder="Price (₱) *" value={price} onChange={e => setPrice(e.target.value)} type="number"
                   style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}} />
                 <button onClick={() => setIsNegotiable(!isNegotiable)}
-                  style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (isNegotiable ? "#1D9E75" : "#F0F0F0"), backgroundColor: isNegotiable ? "#E1F5EE" : "#F7F7F7", color: isNegotiable ? "#1D9E75" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                  style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (isNegotiable ? "#2BB39A" : "#F0F0F0"), backgroundColor: isNegotiable ? "#E1F5EE" : "#F7F7F7", color: isNegotiable ? "#2BB39A" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
                   {isNegotiable ? "✓ Nego" : "Nego?"}
                 </button>
               </div>
               <div style={{display: "flex", gap: "8px", alignItems: "center"}}>
                 <button onClick={() => setIsRental(!isRental)}
-                  style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (isRental ? "#1D9E75" : "#F0F0F0"), backgroundColor: isRental ? "#E1F5EE" : "#F7F7F7", color: isRental ? "#1D9E75" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                  style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (isRental ? "#2BB39A" : "#F0F0F0"), backgroundColor: isRental ? "#E1F5EE" : "#F7F7F7", color: isRental ? "#2BB39A" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
                   {isRental ? "✓ For Rent" : "For Rent?"}
                 </button>
                 {isRental && (
@@ -417,7 +417,7 @@ export default function BazaarPage() {
                 <div style={{display: "flex", gap: "6px", flexWrap: "wrap"}}>
                   {CATEGORIES.map(cat => (
                     <button key={cat} onClick={() => setCategory(category === cat ? "" : cat)}
-                      style={{padding: "5px 10px", borderRadius: "20px", border: "1px solid " + (category === cat ? "#1D9E75" : "#F0F0F0"), backgroundColor: category === cat ? "#E1F5EE" : "#fff", color: category === cat ? "#1D9E75" : "#888", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
+                      style={{padding: "5px 10px", borderRadius: "20px", border: "1px solid " + (category === cat ? "#2BB39A" : "#F0F0F0"), backgroundColor: category === cat ? "#E1F5EE" : "#fff", color: category === cat ? "#2BB39A" : "#888", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
                       {CATEGORY_ICONS[cat]} {cat}
                     </button>
                   ))}
@@ -428,7 +428,7 @@ export default function BazaarPage() {
                 <div style={{display: "flex", gap: "6px", flexWrap: "wrap"}}>
                   {CONDITIONS.map(cond => (
                     <button key={cond} onClick={() => setCondition(condition === cond ? "" : cond)}
-                      style={{padding: "5px 10px", borderRadius: "20px", border: "1px solid " + (condition === cond ? "#1D9E75" : "#F0F0F0"), backgroundColor: condition === cond ? "#E1F5EE" : "#fff", color: condition === cond ? "#1D9E75" : "#888", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
+                      style={{padding: "5px 10px", borderRadius: "20px", border: "1px solid " + (condition === cond ? "#2BB39A" : "#F0F0F0"), backgroundColor: condition === cond ? "#E1F5EE" : "#fff", color: condition === cond ? "#2BB39A" : "#888", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>
                       {cond}
                     </button>
                   ))}
@@ -454,7 +454,7 @@ export default function BazaarPage() {
               </div>
               {postError && <div style={{color: "#EF4444", fontSize: "0.75rem"}}>{postError}</div>}
               <button onClick={handlePost} disabled={posting}
-                style={{backgroundColor: posting ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "12px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: posting ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                style={{backgroundColor: posting ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "12px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: posting ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                 {posting ? "Posting..." : "Post Listing"}
               </button>
             </div>
@@ -470,7 +470,7 @@ export default function BazaarPage() {
             <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "10px auto 16px"}}></div>
             {!listings.find(l => l.id === showMenu)?.is_sold && (
               <button onClick={() => handleMarkSold(showMenu)}
-                style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#1D9E75"}}>
+                style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "12px", color: "#2BB39A"}}>
                 ✅ Mark as Sold
               </button>
             )}

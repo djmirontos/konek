@@ -182,7 +182,7 @@ export default function MessagesPage() {
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {/* HEADER */}
-      <div style={{backgroundColor: "#1D9E75", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between"}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between"}}>
         <button onClick={() => router.push('/feeds')} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", width: "36px"}}>‹</button>
         <div style={{fontWeight: 800, fontSize: "1.1rem", color: "#fff", letterSpacing: "0.05em"}}>MESSAGES</div>
         <div style={{width: "36px"}}></div>
@@ -191,11 +191,11 @@ export default function MessagesPage() {
       {/* TABS */}
       <div style={{backgroundColor: "#fff", display: "flex", borderBottom: "1px solid #F0F0F0"}}>
         <button onClick={() => setActiveTab("chats")}
-          style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", color: activeTab === "chats" ? "#1D9E75" : "#888", borderBottom: activeTab === "chats" ? "2px solid #1D9E75" : "2px solid transparent"}}>
-          Chats {chats.length > 0 && <span style={{backgroundColor: "#1D9E75", color: "#fff", borderRadius: "10px", padding: "1px 7px", fontSize: "0.65rem", marginLeft: "4px"}}>{chats.length}</span>}
+          style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", color: activeTab === "chats" ? "#2BB39A" : "#888", borderBottom: activeTab === "chats" ? "2px solid #2BB39A" : "2px solid transparent"}}>
+          Chats {chats.length > 0 && <span style={{backgroundColor: "#2BB39A", color: "#fff", borderRadius: "10px", padding: "1px 7px", fontSize: "0.65rem", marginLeft: "4px"}}>{chats.length}</span>}
         </button>
         <button onClick={() => setActiveTab("requests")}
-          style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", color: activeTab === "requests" ? "#1D9E75" : "#888", borderBottom: activeTab === "requests" ? "2px solid #1D9E75" : "2px solid transparent"}}>
+          style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", color: activeTab === "requests" ? "#2BB39A" : "#888", borderBottom: activeTab === "requests" ? "2px solid #2BB39A" : "2px solid transparent"}}>
           Requests {requests.length > 0 && <span style={{backgroundColor: "#EF4444", color: "#fff", borderRadius: "10px", padding: "1px 7px", fontSize: "0.65rem", marginLeft: "4px"}}>{requests.length}</span>}
         </button>
       </div>
@@ -213,7 +213,7 @@ export default function MessagesPage() {
                 <div style={{position: "relative"}}>
                   {user.avatar_url
                     ? <img src={user.avatar_url} alt="" style={{width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}} />
-                    : <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}}>{user.full_name?.charAt(0).toUpperCase()}</div>
+                    : <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}}>{user.full_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div style={{position: "absolute", bottom: "1px", right: "1px", width: "12px", height: "12px", backgroundColor: "#22C55E", borderRadius: "50%", border: "2px solid #fff"}} />
                 </div>
@@ -332,7 +332,7 @@ export default function MessagesPage() {
                     Decline
                   </button>
                   <button onClick={() => handleAcceptRequest(conv.id)}
-                    style={{flex: 2, padding: "10px", borderRadius: "10px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit"}}>
+                    style={{flex: 2, padding: "10px", borderRadius: "10px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit"}}>
                     Accept
                   </button>
                 </div>
