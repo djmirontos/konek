@@ -219,33 +219,21 @@ export default function SoapboxPage() {
   async function fetchPosts() {
     if (!currentUser) return;
     setLoading(true);
-    let query = supabase
-      .from("posts")
-      .select("id, user_id, content, tag, images, created_at, school_id, pseudonym, upvotes, downvotes, edited_at, mood")
-      .eq("type", "soapbox")
-      .eq("is_hidden", false)
-      .order("upvotes", { ascending: false })
-      .limit(30);
-    if (selectedSchool === "own") query = query.eq("school_id", currentUser.school_id);
-    else if (selectedSchool !== "all") query = query.eq("school_id", selectedSchool);
-    const { data } = await query;
+    const schoolId = selectedSchool === "all" ? null : selectedSchool === "own" ? currentUser.school_id : selectedSchool;
+    const { data, error } = await supabase.rpc("get_soapbox_posts", {
+      p_school_id: schoolId,
+      p_user_id: currentUser.id,
+      p_limit: 30,
+      p_offset: 0
+    });
     if (data) {
-      const postIds = data.map((p: any) => p.id);
-      const [
-        { data: allVotes },
-        { data: allCommentCounts }
-      ] = await Promise.all([
-        supabase.from("reactions").select("post_id, type").in("post_id", postIds).eq("user_id", currentUser.id),
-        supabase.from("comments").select("post_id").in("post_id", postIds)
-      ]);
-      const voteMap: Record<string, "upvote" | "downvote"> = {};
-      (allVotes || []).forEach((v: any) => { voteMap[v.post_id] = v.type; });
-      const commentMap: Record<string, number> = {};
-      (allCommentCounts || []).forEach((c: any) => { commentMap[c.post_id] = (commentMap[c.post_id] || 0) + 1; });
-      const enriched = data.map((post: any) => ({
-        ...post,
-        userVote: voteMap[post.id] || null,
-        commentCount: commentMap[post.id] || 0
+      const enriched = data.map((row: any) => ({
+        id: row.id, user_id: row.user_id, content: row.content,
+        tag: row.tag, images: row.images, created_at: row.created_at,
+        edited_at: row.edited_at, school_id: row.school_id,
+        pseudonym: row.pseudonym, upvotes: row.upvotes, downvotes: row.downvotes,
+        mood: row.mood, commentCount: Number(row.comment_count),
+        userVote: row.user_vote || null
       }));
       setPosts(enriched);
     }
@@ -333,37 +321,28 @@ export default function SoapboxPage() {
   async function fetchConfessions() {
     if (!currentUser) return;
     setConfessionLoading(true);
-    let query = supabase
-      .from("posts")
-      .select("id, user_id, content, images, created_at, school_id, pseudonym, edited_at, mood")
-      .eq("type", "confession")
-      .eq("is_hidden", false)
-      .order("created_at", { ascending: false })
-      .limit(30);
-    if (selectedSchool === "own") query = query.eq("school_id", currentUser.school_id);
-    else if (selectedSchool !== "all") query = query.eq("school_id", selectedSchool);
-    const { data } = await query;
+    const schoolId = selectedSchool === "all" ? null : selectedSchool === "own" ? currentUser.school_id : selectedSchool;
+    const { data } = await supabase.rpc("get_confession_posts", {
+      p_school_id: schoolId,
+      p_user_id: currentUser.id,
+      p_limit: 30,
+      p_offset: 0
+    });
     if (data) {
-      const postIds = data.map((p: any) => p.id);
-      const [
-        { data: allReactions },
-        { data: allComments }
-      ] = await Promise.all([
-        supabase.from("reactions").select("post_id, type, user_id").in("post_id", postIds),
-        supabase.from("comments").select("post_id").in("post_id", postIds)
-      ]);
-      const commentMap: Record<string, number> = {};
-      (allComments || []).forEach((c: any) => { commentMap[c.post_id] = (commentMap[c.post_id] || 0) + 1; });
-      const enriched = data.map((post: any) => {
-        const postReactions = (allReactions || []).filter((r: any) => r.post_id === post.id);
-        const counts = { love: 0, sad: 0, haha: 0, laban: 0 };
-        let userReaction: string | null = null;
-        postReactions.forEach((r: any) => {
-          if (r.type in counts) counts[r.type as keyof typeof counts]++;
-          if (r.user_id === currentUser.id) userReaction = r.type;
-        });
-        return { ...post, reactionCounts: counts, userReaction, commentCount: commentMap[post.id] || 0 };
-      });
+      const enriched = data.map((row: any) => ({
+        id: row.id, user_id: row.user_id, content: row.content,
+        images: row.images, created_at: row.created_at,
+        edited_at: row.edited_at, school_id: row.school_id,
+        pseudonym: row.pseudonym, mood: row.mood,
+        commentCount: Number(row.comment_count),
+        reactionCounts: {
+          love: Number(row.love_count),
+          sad: Number(row.sad_count),
+          haha: Number(row.haha_count),
+          laban: Number(row.laban_count)
+        },
+        userReaction: row.user_reaction || null
+      }));
       setConfessions(enriched);
       const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const thisWeek = enriched.filter(p => p.created_at >= oneWeekAgo);
@@ -622,9 +601,21 @@ export default function SoapboxPage() {
 
           <div style={{flex: 1, paddingBottom: "80px"}}>
             {loading ? (
-              <div style={{textAlign: "center", padding: "48px 16px", color: "#888"}}>
-                <div style={{fontSize: "2rem", marginBottom: "8px"}}>⏳</div>
-                <div style={{fontSize: "0.85rem"}}>Loading posts...</div>
+              <div>
+                <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
+                {[1,2,3].map(i => (
+                  <div key={i} style={{backgroundColor: "#fff", marginBottom: "8px", padding: "14px 16px"}}>
+                    <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "10px"}}>
+                      <div style={{width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
+                      <div style={{flex: 1}}>
+                        <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "6px", width: "40%"}} />
+                        <div style={{height: "10px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "25%"}} />
+                      </div>
+                    </div>
+                    <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "6px"}} />
+                    <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "75%"}} />
+                  </div>
+                ))}
               </div>
             ) : filteredPosts.length === 0 ? (
               <div style={{textAlign: "center", padding: "48px 16px"}}>
@@ -662,7 +653,7 @@ export default function SoapboxPage() {
                   <div style={{padding: "0 16px 10px", fontSize: "0.9rem", color: "#1A1A1A", lineHeight: 1.5}}>{post.content}</div>
                   {post.images && post.images.length > 0 && (
                     <div style={{marginBottom: "8px"}}>
-                      <img src={post.images[0]} alt="" style={{width: "100%", maxHeight: "300px", objectFit: "cover"}} />
+                      <img src={post.images[0]} alt="" loading="lazy" style={{width: "100%", maxHeight: "300px", objectFit: "cover"}} />
                     </div>
                   )}
                   <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
@@ -831,9 +822,21 @@ export default function SoapboxPage() {
               </div>
             )}
             {confessionLoading ? (
-              <div style={{textAlign: "center", padding: "48px 16px", color: "#888"}}>
-                <div style={{fontSize: "2rem", marginBottom: "8px"}}>⏳</div>
-                <div style={{fontSize: "0.85rem"}}>Loading confessions...</div>
+              <div>
+                <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
+                {[1,2,3].map(i => (
+                  <div key={i} style={{backgroundColor: "#fff", marginBottom: "8px", padding: "14px 16px"}}>
+                    <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "10px"}}>
+                      <div style={{width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
+                      <div style={{flex: 1}}>
+                        <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "6px", width: "40%"}} />
+                        <div style={{height: "10px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "25%"}} />
+                      </div>
+                    </div>
+                    <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "6px"}} />
+                    <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "75%"}} />
+                  </div>
+                ))}
               </div>
             ) : filteredConfessions.length === 0 ? (
               <div style={{textAlign: "center", padding: "48px 16px"}}>
