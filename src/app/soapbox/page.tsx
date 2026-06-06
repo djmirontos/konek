@@ -345,8 +345,8 @@ export default function SoapboxPage() {
       }));
       setConfessions(enriched);
       const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const thisWeek = enriched.filter(p => p.created_at >= oneWeekAgo);
-      const scored = thisWeek.map(p => ({
+      const thisWeek = enriched.filter((p: any) => p.created_at >= oneWeekAgo);
+      const scored = thisWeek.map((p: any) => ({
         ...p,
         score: (p.reactionCounts.laban * 4) + (p.reactionCounts.love * 3) + (p.commentCount * 5),
       })).sort((a, b) => b.score - a.score).slice(0, 3);
