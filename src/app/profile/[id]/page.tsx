@@ -160,62 +160,52 @@ export default function ProfilePage() {
       setEditHometown(profileData.hometown || "");
     }
 
-    await fetchStats(targetId);
-
-    const { count: livingCount } = await supabase
-      .from("boarding_houses").select("id", { count: "exact", head: true })
-      .eq("user_id", targetId).eq("is_hidden", false);
-    setHasLiving((livingCount || 0) > 0);
-
+    // Show profile immediately, load stats in background
     setLoading(false);
+    if (targetId) fetchStats(targetId);
   }
 
   async function fetchStats(userId: string) {
-    const { count: pCount } = await supabase
-      .from("posts").select("id", { count: "exact", head: true })
-      .eq("user_id", userId).eq("is_hidden", false)
-      .in("type", ["feed", "quad"]);
-    setPostCount(pCount || 0);
+    const todayStart = new Date(); todayStart.setHours(0,0,0,0);
 
     const { data: userPostIds } = await supabase
       .from("posts").select("id").eq("user_id", userId).eq("is_hidden", false);
     const pIds = (userPostIds || []).map((p: any) => p.id);
-    if (pIds.length > 0) {
-      const { count: cCount } = await supabase
-        .from("comments").select("id", { count: "exact", head: true })
-        .in("post_id", pIds).neq("user_id", userId);
-      setCommentCount(cCount || 0);
-    } else {
-      setCommentCount(0);
-    }
 
-    const { data: userPosts } = await supabase
-      .from("posts").select("id").eq("user_id", userId).eq("is_hidden", false);
-    if (userPosts && userPosts.length > 0) {
-      const postIds = userPosts.map((p: any) => p.id);
-      const { count: rCount } = await supabase
-        .from("reactions").select("id", { count: "exact", head: true })
-        .in("post_id", postIds);
-      setReactionsReceived(rCount || 0);
-      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
-      const { count: rToday } = await supabase
-        .from("reactions").select("id", { count: "exact", head: true })
-        .in("post_id", postIds).gte("created_at", todayStart.toISOString());
-      setReactionsToday(rToday || 0);
-    } else {
-      setReactionsReceived(0);
-      setReactionsToday(0);
-    }
-    const todayStart2 = new Date(); todayStart2.setHours(0,0,0,0);
-    if (pIds.length > 0) {
-      const { count: cToday } = await supabase
-        .from("comments").select("id", { count: "exact", head: true })
-        .in("post_id", pIds).neq("user_id", userId)
-        .gte("created_at", todayStart2.toISOString());
-      setCommentsToday(cToday || 0);
-    } else {
-      setCommentsToday(0);
-    }
+    const [
+      { count: pCount },
+      cCountResult,
+      rCountResult,
+      rTodayResult,
+      cTodayResult
+    ] = await Promise.all([
+      supabase.from("posts").select("id", { count: "exact", head: true })
+        .eq("user_id", userId).eq("is_hidden", false).in("type", ["feed", "quad"]),
+      pIds.length > 0
+        ? supabase.from("comments").select("id", { count: "exact", head: true })
+            .in("post_id", pIds).neq("user_id", userId)
+        : Promise.resolve({ count: 0 }),
+      pIds.length > 0
+        ? supabase.from("reactions").select("id", { count: "exact", head: true })
+            .in("post_id", pIds)
+        : Promise.resolve({ count: 0 }),
+      pIds.length > 0
+        ? supabase.from("reactions").select("id", { count: "exact", head: true })
+            .in("post_id", pIds).gte("created_at", todayStart.toISOString())
+        : Promise.resolve({ count: 0 }),
+      pIds.length > 0
+        ? supabase.from("comments").select("id", { count: "exact", head: true })
+            .in("post_id", pIds).neq("user_id", userId)
+            .gte("created_at", todayStart.toISOString())
+        : Promise.resolve({ count: 0 })
+    ]);
+
+    setPostCount(pCount || 0);
+    setCommentCount(cCountResult.count || 0);
+    setReactionsReceived(rCountResult.count || 0);
+    setReactionsToday(rTodayResult.count || 0);
+    setCommentsToday(cTodayResult.count || 0);
+  }
   }
 
   async function fetchTabData(tab: string) {
