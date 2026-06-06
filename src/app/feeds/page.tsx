@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
+import { logError, flushErrorQueue } from "@/lib/errorLogger";
+import ErrorBanner, { getFriendlyMessage } from "@/components/ErrorBanner";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PhotoViewer from "@/components/PhotoViewer";
@@ -88,6 +90,7 @@ export default function FeedsPage() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [toast, setToast] = useState("");
+  const [appError, setAppError] = useState<{message: string} | null>(null);
   const [viewAvatar, setViewAvatar] = useState<{src:string;name:string}|null>(null);
   const [avatarMenu, setAvatarMenu] = useState<{id:string;full_name:string;avatar_url:string|null;school?:string|null}|null>(null);
   const [showPostEmoji, setShowPostEmoji] = useState(false);
@@ -157,6 +160,7 @@ export default function FeedsPage() {
   const [submittingAnswer, setSubmittingAnswer] = useState(false);
 
   useEffect(() => {
+    flushErrorQueue();
     initPage();
     return () => { if (longPressTimer.current) clearTimeout(longPressTimer.current); };
   }, []);
@@ -605,6 +609,10 @@ export default function FeedsPage() {
 
   function startLongPress(postId: string) { longPressTimer.current = setTimeout(() => { setShowReactionPicker(postId); }, 500); }
   function cancelLongPress() { if (longPressTimer.current) clearTimeout(longPressTimer.current); }
+
+  function showError(type?: string) {
+    setAppError({ message: getFriendlyMessage(type) });
+  }
 
   function showToast(msg: string) { setToast(msg); setTimeout(() => setToast(""), 3000); }
 
@@ -1206,6 +1214,7 @@ export default function FeedsPage() {
           posterAvatar={viewAvatar.src}
         />
       )}
+      {appError && <ErrorBanner message={appError.message} onClose={() => setAppError(null)} />}
       <BottomNav active="/feeds" unreadMessages={unreadMessages} show={showNav} />
 
       {toast && (
