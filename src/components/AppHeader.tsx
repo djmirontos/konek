@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase";
 
 type School = { id: string; name: string; abbreviation: string; };
 type User = { id: string; full_name: string; avatar_url: string | null; school_id: string; role: string; };
@@ -25,7 +25,7 @@ export default function AppHeader({
   onSchoolPickerToggle, onNotificationsToggle, onAvatarClick, show = true, showSearch = true
 }: Props) {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
