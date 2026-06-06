@@ -27,7 +27,7 @@ const HELP_TAGS = ["#need-help", "#lost-item", "#review-session", "#need-a-ride"
 const HANGOUT_TAG_SET = new Set(HANGOUT_TAGS);
 
 type School = { id: string; name: string; abbreviation: string; };
-type User = { id: string; full_name: string; avatar_url: string | null; school_id: string; role: string; };
+type User = { id: string; full_name: string; avatar_url: string | null; school_id: string; role: string; trust_xp?: number; };
 type Post = {
   id: string; user_id: string; content: string; tag: string | null;
   images: string[] | null; created_at: string; school_id: string;
