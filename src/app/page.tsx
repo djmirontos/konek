@@ -62,19 +62,18 @@ export default function Home() {
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: "6px",
-          marginBottom: "10px",
-          flex: 1
+          marginBottom: "10px"
         }}>
           {features.map((f, i) => (
             <div key={i} style={{
               backgroundColor: "#fff", borderRadius: "12px", border: "1px solid #CBF7E5",
-              padding: "10px 8px 8px", display: "flex", flexDirection: "column",
-              alignItems: "center", gap: "4px",
+              padding: "8px 6px", display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center", gap: "3px",
               boxShadow: "0 2px 8px rgba(43,179,154,0.06)"
             }}>
               <Image src={f.icon} alt={f.title} width={26} height={26} />
               <span style={{fontSize: "0.7rem", fontWeight: 700, color: "#0F2E27", textAlign: "center", fontFamily: "var(--font-poppins), sans-serif"}}>{f.title}</span>
-              <span style={{fontSize: "0.6rem", color: "#888", textAlign: "center", lineHeight: 1.3}}>{f.desc}</span>
+              <span style={{fontSize: "0.58rem", color: "#888", textAlign: "center", lineHeight: 1.2}}>{f.desc}</span>
             </div>
           ))}
         </div>
