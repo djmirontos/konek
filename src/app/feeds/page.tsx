@@ -139,6 +139,19 @@ export default function FeedsPage() {
   const [questionAnswers, setQuestionAnswers] = useState<{id:string;answer:string;user_id:string;created_at:string;users:{full_name:string;avatar_url:string|null}}[]>([]);
   const [myAnswer, setMyAnswer] = useState<string | null>(null);
   const [showAnswerSheet, setShowAnswerSheet] = useState(false);
+  const [questionCollapsed, setQuestionCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("qotd_collapsed") === "true";
+    }
+    return false;
+  });
+
+  function toggleQuestionCollapsed() {
+    setQuestionCollapsed(next);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("qotd_collapsed", next ? "true" : "false");
+    }
+  }
   const [answerInput, setAnswerInput] = useState("");
   const [submittingAnswer, setSubmittingAnswer] = useState(false);
 
@@ -753,11 +766,12 @@ export default function FeedsPage() {
           {/* Question of the Day Card */}
           {todayQuestion && selectedSchool !== "all" && (
             <div style={{margin: "10px 12px 0", backgroundColor: "#fff", borderRadius: "16px", border: "1.5px solid #CBF7E5", overflow: "hidden", boxShadow: "0 2px 8px rgba(43,179,154,0.08)"}}>
-              <div style={{backgroundColor: "#2BB39A", padding: "10px 14px", display: "flex", alignItems: "center", gap: "8px"}}>
-                <span style={{fontSize: "1.1rem"}}>💬</span>
-                <span style={{color: "#fff", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.05em", textTransform: "uppercase"}}>Question of the Day</span>
+              <div onClick={toggleQuestionCollapsed} style={{backgroundColor: "#2BB39A", padding: "10px 14px", display: "flex", alignItems: "center", gap: "8px", cursor: "pointer"}}>
+                <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: "0.85rem", color: "#fff", flexShrink: 0}}>?</div>
+                <span style={{color: "#fff", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.05em", textTransform: "uppercase", flex: 1}}>Question of the Day</span>
+                <span style={{color: "rgba(255,255,255,0.85)", fontSize: "0.75rem", display: "inline-block", transform: questionCollapsed ? "rotate(-90deg)" : "rotate(0deg)"}}>▾</span>
               </div>
-              <div style={{padding: "12px 14px"}}>
+              {questionCollapsed === false && <div style={{padding: "12px 14px"}}>
                 <p style={{margin: "0 0 10px", fontWeight: 700, fontSize: "0.92rem", color: "#0F2E27", lineHeight: 1.4}}>{todayQuestion.question}</p>
                 {myAnswer ? (
                   <div style={{backgroundColor: "#E8F8F5", borderRadius: "10px", padding: "10px 12px", marginBottom: "8px"}}>
@@ -789,7 +803,7 @@ export default function FeedsPage() {
                     )}
                   </div>
                 )}
-              </div>
+              </div>}
             </div>
           )}
 
