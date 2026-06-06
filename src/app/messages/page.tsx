@@ -115,20 +115,42 @@ export default function MessagesPage() {
 
     if (!data) return;
 
-    const enriched = await Promise.all(data.map(async (conv) => {
-      const otherId = conv.participant_1 === user.id ? conv.participant_2 : conv.participant_1;
-      const { data: otherUser } = await supabase.from("users").select("id, full_name, avatar_url, school_id, role").eq("id", otherId).single();
-      const { count } = await supabase.from("messages")
-        .select("id", { count: "exact", head: true })
-        .eq("conversation_id", conv.id)
-        .eq("is_seen", false)
-        .neq("sender_id", user.id);
-      return { ...conv, otherUser: otherUser || undefined, unreadCount: count || 0 };
-    }));
+    // Get all other participant IDs and conv IDs
+    const otherIds = data.map((conv: any) =>
+      conv.participant_1 === user.id ? conv.participant_2 : conv.participant_1
+    );
+    const convIds = data.map((conv: any) => conv.id);
 
-    const accepted = enriched.filter(c => c.status === "accepted");
-    const pending = enriched.filter(c => c.status === "pending" && c.initiated_by !== user.id);
-    const sentPending = enriched.filter(c => c.status === "pending" && c.initiated_by === user.id);
+    // Fetch all users and unread counts in parallel - 2 queries instead of 2N
+    const [
+      { data: otherUsers },
+      { data: unreadMessages }
+    ] = await Promise.all([
+      supabase.from("users").select("id, full_name, avatar_url, school_id, role").in("id", otherIds),
+      supabase.from("messages").select("conversation_id").in("conversation_id", convIds)
+        .eq("is_seen", false).neq("sender_id", user.id)
+    ]);
+
+    // Build lookup maps
+    const userMap: Record<string, any> = {};
+    (otherUsers || []).forEach((u: any) => { userMap[u.id] = u; });
+    const unreadMap: Record<string, number> = {};
+    (unreadMessages || []).forEach((m: any) => {
+      unreadMap[m.conversation_id] = (unreadMap[m.conversation_id] || 0) + 1;
+    });
+
+    const enriched = data.map((conv: any) => {
+      const otherId = conv.participant_1 === user.id ? conv.participant_2 : conv.participant_1;
+      return {
+        ...conv,
+        otherUser: userMap[otherId] || undefined,
+        unreadCount: unreadMap[conv.id] || 0
+      };
+    });
+
+    const accepted = enriched.filter((c: any) => c.status === "accepted");
+    const pending = enriched.filter((c: any) => c.status === "pending" && c.initiated_by !== user.id);
+    const sentPending = enriched.filter((c: any) => c.status === "pending" && c.initiated_by === user.id);
     setChats(accepted);
     setRequests(pending);
     setSent(sentPending);
@@ -234,9 +256,18 @@ export default function MessagesPage() {
 
       <div style={{flex: 1, paddingBottom: "80px"}}>
         {loading ? (
-          <div style={{textAlign: "center", padding: "48px 16px", color: "#888"}}>
-            <div style={{fontSize: "2rem", marginBottom: "8px"}}>⏳</div>
-            <div style={{fontSize: "0.85rem"}}>Loading messages...</div>
+          <div>
+            <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
+            {[1,2,3,4,5].map(i => (
+              <div key={i} style={{display: "flex", gap: "12px", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #F0F0F0"}}>
+                <div style={{width: "48px", height: "48px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
+                <div style={{flex: 1}}>
+                  <div style={{height: "13px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "8px", width: "50%"}} />
+                  <div style={{height: "11px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "75%"}} />
+                </div>
+                <div style={{width: "40px", height: "10px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
+              </div>
+            ))}
           </div>
         ) : activeTab === "chats" ? (
           sent.length === 0 && chats.length === 0 ? (
