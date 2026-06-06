@@ -70,11 +70,17 @@ export default function MessagesPage() {
     const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (userData) {
       setCurrentUser(userData);
+      // Run conversations first to show content ASAP
       await fetchConversations(userData);
-      await fetchOnlineUsers(userData);
-      await updateLastSeen(userData.id);
+      setLoading(false);
+      // Run these in parallel in background - non-blocking
+      Promise.all([
+        fetchOnlineUsers(userData),
+        updateLastSeen(userData.id)
+      ]);
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function updateLastSeen(userId: string) {
@@ -109,9 +115,10 @@ export default function MessagesPage() {
   async function fetchConversations(user: User) {
     const { data } = await supabase
       .from("conversations")
-      .select("*")
+      .select("id, participant_1, participant_2, status, initiated_by, last_message_at, last_message")
       .or("participant_1.eq." + user.id + ",participant_2.eq." + user.id)
-      .order("last_message_at", { ascending: false });
+      .order("last_message_at", { ascending: false })
+      .limit(50);
 
     if (!data) return;
 
