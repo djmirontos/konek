@@ -241,7 +241,8 @@ export default function FeedsPage() {
         .order("created_at", { ascending: true });
       if (aData) {
         setQuestionAnswers(aData as any);
-        const mine = aData.find((a: any) => a.user_id === (await supabase.auth.getUser()).data.user?.id);
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        const mine = aData.find((a: any) => a.user_id === authUser?.id);
         if (mine) setMyAnswer(mine.answer);
       }
     } else {
