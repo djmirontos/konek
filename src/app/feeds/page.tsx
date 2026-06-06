@@ -395,7 +395,7 @@ export default function FeedsPage() {
         }
       }
       const { error } = await supabase.from("posts").insert({
-        user_id: currentUser.id, school_id: currentUser.school_id, type: "feed",
+        user_id: currentUser.id, school_id: (selectedSchool === "all" || selectedSchool === "own") ? currentUser.school_id : selectedSchool, type: "feed",
         content: postContent.trim(), tag: selectedTag || null,
         images: imageUrls.length > 0 ? imageUrls : null,
         is_anonymous: false, is_flagged: false, is_hidden: false, is_under_review: false,
@@ -425,7 +425,7 @@ export default function FeedsPage() {
       }
       const expiresAt = new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString();
       const { error } = await supabase.from("posts").insert({
-        user_id: currentUser.id, school_id: currentUser.school_id, type: "quad",
+        user_id: currentUser.id, school_id: (selectedSchool === "all" || selectedSchool === "own") ? currentUser.school_id : selectedSchool, type: "quad",
         content: quadContent.trim(), tag: quadTag,
         images: imageUrl ? [imageUrl] : null,
         location: quadLocation.trim() || null,
