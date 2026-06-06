@@ -49,24 +49,24 @@ export default function AppHeader({
       {/* Main Header */}
       <div style={{backgroundColor: "#2BB39A", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100, transform: show ? "translateY(0)" : "translateY(-100%)", transition: "transform 0.25s ease"}}>
 
-        {/* Left: Hamburger + Logo */}
+        {/* Left: Hamburger + Logo + School */}
         <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
           <button onClick={() => setMenuOpen(true)} style={{background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex", flexDirection: "column", justifyContent: "center", gap: "5px"}}>
             <div style={{width: "22px", height: "2px", backgroundColor: "#fff", borderRadius: "2px"}} />
             <div style={{width: "22px", height: "2px", backgroundColor: "#fff", borderRadius: "2px"}} />
             <div style={{width: "22px", height: "2px", backgroundColor: "#fff", borderRadius: "2px"}} />
           </button>
-          <div style={{display: "flex", flexDirection: "column"}}>
+          <div style={{display: "flex", flexDirection: "column", gap: "1px"}}>
             <Image src="/whitebg.svg" alt="Klasmeyt" width={110} height={30} priority />
-            {pageName && <span style={{color: "rgba(255,255,255,0.85)", fontSize: "0.65rem", fontWeight: 600, letterSpacing: "0.05em", marginTop: "2px"}}>{pageName}</span>}
+            <button onClick={onSchoolPickerToggle} style={{background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: "3px", fontFamily: "inherit"}}>
+              <span style={{color: "rgba(255,255,255,0.8)", fontSize: "0.65rem", fontWeight: 500, letterSpacing: "0.01em"}}>📍 {getSchoolLabel()}</span>
+              <span style={{color: "rgba(255,255,255,0.7)", fontSize: "0.55rem"}}>▾</span>
+            </button>
           </div>
         </div>
 
-        {/* Right: School Picker + Search + Notifications */}
+        {/* Right: Search + Notifications */}
         <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-          <button onClick={onSchoolPickerToggle} style={{backgroundColor: "rgba(255,255,255,0.2)", border: "none", borderRadius: "20px", padding: "6px 12px", color: "#fff", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", fontFamily: "inherit"}}>
-            📍 {getSchoolLabel()} ▾
-          </button>
           {showSearch && (
             <button onClick={() => router.push("/search")} style={{background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex", alignItems: "center", justifyContent: "center"}}>
               <Image src="/icon/search_black.png" alt="search" width={22} height={22} style={{filter: "brightness(0) invert(1)"}} />
