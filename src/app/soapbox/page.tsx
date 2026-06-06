@@ -230,10 +230,22 @@ export default function SoapboxPage() {
     else if (selectedSchool !== "all") query = query.eq("school_id", selectedSchool);
     const { data } = await query;
     if (data) {
-      const enriched = await Promise.all(data.map(async (post) => {
-        const { data: myVote } = await supabase.from("reactions").select("type").eq("post_id", post.id).eq("user_id", currentUser.id).single();
-        const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", post.id);
-        return { ...post, userVote: myVote ? (myVote.type as "upvote" | "downvote") : null, commentCount: count || 0 };
+      const postIds = data.map((p: any) => p.id);
+      const [
+        { data: allVotes },
+        { data: allCommentCounts }
+      ] = await Promise.all([
+        supabase.from("reactions").select("post_id, type").in("post_id", postIds).eq("user_id", currentUser.id),
+        supabase.from("comments").select("post_id").in("post_id", postIds)
+      ]);
+      const voteMap: Record<string, "upvote" | "downvote"> = {};
+      (allVotes || []).forEach((v: any) => { voteMap[v.post_id] = v.type; });
+      const commentMap: Record<string, number> = {};
+      (allCommentCounts || []).forEach((c: any) => { commentMap[c.post_id] = (commentMap[c.post_id] || 0) + 1; });
+      const enriched = data.map((post: any) => ({
+        ...post,
+        userVote: voteMap[post.id] || null,
+        commentCount: commentMap[post.id] || 0
       }));
       setPosts(enriched);
     }
@@ -332,17 +344,26 @@ export default function SoapboxPage() {
     else if (selectedSchool !== "all") query = query.eq("school_id", selectedSchool);
     const { data } = await query;
     if (data) {
-      const enriched = await Promise.all(data.map(async (post) => {
-        const { data: allReactions } = await supabase.from("reactions").select("type, user_id").eq("post_id", post.id);
+      const postIds = data.map((p: any) => p.id);
+      const [
+        { data: allReactions },
+        { data: allComments }
+      ] = await Promise.all([
+        supabase.from("reactions").select("post_id, type, user_id").in("post_id", postIds),
+        supabase.from("comments").select("post_id").in("post_id", postIds)
+      ]);
+      const commentMap: Record<string, number> = {};
+      (allComments || []).forEach((c: any) => { commentMap[c.post_id] = (commentMap[c.post_id] || 0) + 1; });
+      const enriched = data.map((post: any) => {
+        const postReactions = (allReactions || []).filter((r: any) => r.post_id === post.id);
         const counts = { love: 0, sad: 0, haha: 0, laban: 0 };
         let userReaction: string | null = null;
-        (allReactions || []).forEach((r) => {
+        postReactions.forEach((r: any) => {
           if (r.type in counts) counts[r.type as keyof typeof counts]++;
           if (r.user_id === currentUser.id) userReaction = r.type;
         });
-        const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", post.id);
-        return { ...post, reactionCounts: counts, userReaction, commentCount: count || 0 };
-      }));
+        return { ...post, reactionCounts: counts, userReaction, commentCount: commentMap[post.id] || 0 };
+      });
       setConfessions(enriched);
       const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const thisWeek = enriched.filter(p => p.created_at >= oneWeekAgo);
