@@ -39,10 +39,10 @@ export default function Home() {
             margin: "0 0 8px", fontFamily: "var(--font-poppins), sans-serif",
             lineHeight: 1.3
           }}>
-            Your campus, your community.
+            A cleaner, simpler campus hub.
           </h1>
           <p style={{fontSize: "0.82rem", color: "#666", margin: 0, lineHeight: 1.5}}>
-            Join and become a klasmeyt to everyone.
+            All your features, beautifully arranged for effortless focus.
           </p>
         </div>
 
@@ -54,13 +54,13 @@ export default function Home() {
           gap: "10px",
           marginBottom: "24px"
         }}>
-          {/* Row 1: Campus Feeds */}
+          {/* Campus Feeds */}
           <div style={{backgroundColor: "#fff", borderRadius: "16px", border: "1px solid #CBF7E5", padding: "16px 8px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 2px 8px rgba(43,179,154,0.06)"}}>
-            <span style={{fontSize: "2rem"}}>{"\\ud83d\\udcf0"}</span>
-            <span style={{fontSize: "0.72rem", fontWeight: 600, color: "#0F2E27", textAlign: "center", lineHeight: 1.3, fontFamily: "var(--font-poppins), sans-serif"}}>Campus{" "}Feeds</span>
+            <span style={{fontSize: "2rem"}}>📰</span>
+            <span style={{fontSize: "0.72rem", fontWeight: 600, color: "#0F2E27", textAlign: "center", lineHeight: 1.3, fontFamily: "var(--font-poppins), sans-serif"}}>Campus Feeds</span>
           </div>
 
-          {/* Center: Mini App Preview - spans 2 rows */}
+          {/* Center: Mini App Preview */}
           <div style={{
             gridRow: "1 / 3",
             backgroundColor: "#fff", borderRadius: "16px", border: "1px solid #CBF7E5",
@@ -84,34 +84,34 @@ export default function Home() {
               <div style={{height: "5px", backgroundColor: "#E0F5EE", borderRadius: "3px", marginBottom: "4px", width: "80%"}} />
               <div style={{height: "5px", backgroundColor: "#E0F5EE", borderRadius: "3px", marginBottom: "10px", width: "60%"}} />
               <div style={{display: "flex", gap: "10px", alignItems: "center"}}>
-                <span style={{fontSize: "0.65rem"}}>{"\\u2764\\ufe0f"}</span>
-                <span style={{fontSize: "0.65rem"}}>{"\\ud83d\\udcac"}</span>
-                <span style={{fontSize: "0.65rem"}}>{"\\ud83d\\udd17"}</span>
+                <span style={{fontSize: "0.65rem"}}>❤️</span>
+                <span style={{fontSize: "0.65rem"}}>💬</span>
+                <span style={{fontSize: "0.65rem"}}>🔗</span>
               </div>
             </div>
           </div>
 
-          {/* Row 1: Shout Out */}
+          {/* Shout Out */}
           <div style={{backgroundColor: "#fff", borderRadius: "16px", border: "1px solid #CBF7E5", padding: "16px 8px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 2px 8px rgba(43,179,154,0.06)"}}>
-            <span style={{fontSize: "2rem"}}>{"\\ud83d\\udce2"}</span>
+            <span style={{fontSize: "2rem"}}>📢</span>
             <span style={{fontSize: "0.72rem", fontWeight: 600, color: "#0F2E27", textAlign: "center", lineHeight: 1.3, fontFamily: "var(--font-poppins), sans-serif"}}>Shout Out</span>
           </div>
 
-          {/* Row 2: Bazaar */}
+          {/* Bazaar */}
           <div style={{backgroundColor: "#fff", borderRadius: "16px", border: "1px solid #CBF7E5", padding: "16px 8px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 2px 8px rgba(43,179,154,0.06)"}}>
-            <span style={{fontSize: "2rem"}}>{"\\ud83d\\uded2"}</span>
+            <span style={{fontSize: "2rem"}}>🛒</span>
             <span style={{fontSize: "0.72rem", fontWeight: 600, color: "#0F2E27", textAlign: "center", lineHeight: 1.3, fontFamily: "var(--font-poppins), sans-serif"}}>Bazaar</span>
           </div>
 
-          {/* Row 2: Living */}
+          {/* Living */}
           <div style={{backgroundColor: "#fff", borderRadius: "16px", border: "1px solid #CBF7E5", padding: "16px 8px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 2px 8px rgba(43,179,154,0.06)"}}>
-            <span style={{fontSize: "2rem"}}>{"\\ud83c\\udfe0"}</span>
+            <span style={{fontSize: "2rem"}}>🏠</span>
             <span style={{fontSize: "0.72rem", fontWeight: 600, color: "#0F2E27", textAlign: "center", lineHeight: 1.3, fontFamily: "var(--font-poppins), sans-serif"}}>Living</span>
           </div>
 
-          {/* Row 2: Messages */}
+          {/* Messages */}
           <div style={{backgroundColor: "#fff", borderRadius: "16px", border: "1px solid #CBF7E5", padding: "16px 8px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 2px 8px rgba(43,179,154,0.06)"}}>
-            <span style={{fontSize: "2rem"}}>{"\\ud83d\\udcac"}</span>
+            <span style={{fontSize: "2rem"}}>💬</span>
             <span style={{fontSize: "0.72rem", fontWeight: 600, color: "#0F2E27", textAlign: "center", lineHeight: 1.3, fontFamily: "var(--font-poppins), sans-serif"}}>Messages</span>
           </div>
         </div>
@@ -126,7 +126,7 @@ export default function Home() {
             fontFamily: "var(--font-poppins), sans-serif",
             boxShadow: "0 4px 16px rgba(43,179,154,0.3)"
           }}>
-            Get Started {"\u2014"} It{"'"}s Free
+            Get Started — It's Free
           </Link>
           <Link href="/login" style={{
             display: "block", width: "100%",
@@ -140,7 +140,7 @@ export default function Home() {
             Log In
           </Link>
           <p style={{textAlign: "center", fontSize: "0.68rem", color: "#999", margin: "4px 0 0", lineHeight: 1.5}}>
-            By continuing, you agree to Klasmeyt{"'"}s Terms of Service and Privacy Policy
+            By continuing, you agree to Klasmeyt's Terms of Service and Privacy Policy
           </p>
         </div>
       </div>
