@@ -201,6 +201,12 @@ export default function FeedsPage() {
   useEffect(() => {
     if (!currentUser) return;
     const channel = supabase
+      .channel("qotd-answers")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "question_answers" },
+        () => { if (currentUser) fetchTodayQuestion(currentUser.school_id); })
+      .subscribe();
+
+    supabase
       .channel("feeds-realtime")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "posts", filter: `school_id=eq.${currentUser.school_id}` },
         (payload) => {
@@ -774,34 +780,34 @@ export default function FeedsPage() {
               </div>
               {questionCollapsed === false && <div style={{padding: "12px 14px"}}>
                 <p style={{margin: "0 0 10px", fontWeight: 700, fontSize: "0.92rem", color: "#0F2E27", lineHeight: 1.4}}>{todayQuestion.question}</p>
-                {myAnswer ? (
-                  <div style={{backgroundColor: "#E8F8F5", borderRadius: "10px", padding: "10px 12px", marginBottom: "8px"}}>
-                    <div style={{fontSize: "0.7rem", color: "#2BB39A", fontWeight: 700, marginBottom: "3px"}}>Your answer</div>
-                    <div style={{fontSize: "0.85rem", color: "#1a1a1a"}}>{myAnswer}</div>
-                  </div>
-                ) : (
+                {myAnswer === null && (
                   <button onClick={() => setShowAnswerSheet(true)} style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "10px", padding: "10px", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit", marginBottom: "8px"}}>
                     Answer this question
                   </button>
                 )}
                 {questionAnswers.length > 0 && (
                   <div style={{borderTop: "1px solid #F0F0F0", paddingTop: "8px"}}>
-                    <div style={{fontSize: "0.7rem", color: "#888", fontWeight: 600, marginBottom: "6px"}}>{questionAnswers.length} answer{questionAnswers.length !== 1 ? "s" : ""}</div>
-                    {questionAnswers.slice(0, 3).map((a: any) => (
-                      <div key={a.id} style={{display: "flex", gap: "8px", alignItems: "flex-start", marginBottom: "6px"}}>
-                        {a.users?.avatar_url
-                          ? <img src={a.users.avatar_url} alt="" style={{width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                          : <div style={{width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.65rem", fontWeight: 700, color: "#2BB39A", flexShrink: 0}}>{a.users?.full_name?.charAt(0).toUpperCase()}</div>
-                        }
-                        <div style={{backgroundColor: "#F7F7F7", borderRadius: "10px", padding: "6px 10px", flex: 1}}>
-                          <div style={{fontSize: "0.68rem", fontWeight: 700, color: "#1a1a1a", marginBottom: "2px"}}>{a.users?.full_name}</div>
-                          <div style={{fontSize: "0.78rem", color: "#444"}}>{a.answer}</div>
-                        </div>
-                      </div>
-                    ))}
-                    {questionAnswers.length > 3 && (
-                      <div style={{fontSize: "0.72rem", color: "#2BB39A", fontWeight: 600, textAlign: "center", paddingTop: "4px"}}>+{questionAnswers.length - 3} more answers</div>
-                    )}
+                    <div style={{fontSize: "0.7rem", color: "#888", fontWeight: 600, marginBottom: "8px"}}>{questionAnswers.length} answer{questionAnswers.length !== 1 ? "s" : ""}</div>
+                    <div style={{display: "flex", flexDirection: "column", gap: "6px"}}>
+                      {questionAnswers.map((a: any) => {
+                        const isMe = a.user_id === currentUser?.id;
+                        return (
+                          <div key={a.id} style={{display: "flex", gap: "8px", alignItems: "flex-start"}}>
+                            {a.users?.avatar_url
+                              ? <img src={a.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: isMe ? "2px solid #2BB39A" : "none"}} />
+                              : <div style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.65rem", fontWeight: 700, color: "#2BB39A", flexShrink: 0, border: isMe ? "2px solid #2BB39A" : "none"}}>{a.users?.full_name?.charAt(0).toUpperCase()}</div>
+                            }
+                            <div style={{backgroundColor: isMe ? "#E8F8F5" : "#F7F7F7", borderRadius: "10px", padding: "7px 10px", flex: 1, border: isMe ? "1px solid #CBF7E5" : "none"}}>
+                              <div style={{display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px"}}>
+                                <span style={{fontSize: "0.68rem", fontWeight: 700, color: "#1a1a1a"}}>{a.users?.full_name}</span>
+                                {isMe && <span style={{fontSize: "0.58rem", backgroundColor: "#2BB39A", color: "#fff", borderRadius: "6px", padding: "1px 5px", fontWeight: 700}}>You</span>}
+                              </div>
+                              <div style={{fontSize: "0.78rem", color: "#444", lineHeight: 1.4}}>{a.answer}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>}
