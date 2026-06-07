@@ -632,7 +632,7 @@ export default function SoapboxPage() {
               return (
                 <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0"}}>
                   <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
-                    <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#1A1A1A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0}}>🎭</div>
+                    <img src="/icon/anonymous.png" alt="anonymous" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
                     <div style={{flex: 1}}>
                       <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{post.pseudonym}</div>
                       <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
@@ -853,7 +853,7 @@ export default function SoapboxPage() {
               return (
                 <div key={confession.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0"}}>
                   <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
-                    <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#4A1D6F", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0}}>💌</div>
+                    <img src="/icon/confess.png" alt="confession" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
                     <div style={{flex: 1}}>
                       <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{confession.pseudonym}</div>
                       <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
