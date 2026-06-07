@@ -152,8 +152,8 @@ export default function SettingsPage() {
         borderBottom: "1px solid #F8F8F8", cursor: onClick ? "pointer" : "default",
         backgroundColor: "#fff"}}>
       <div style={{width: "34px", height: "34px", borderRadius: "9px", backgroundColor: iconBg,
-        display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", flexShrink: 0}}>
-        {icon}
+        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
+        <img src={icon} alt="" style={{width: "20px", height: "20px", objectFit: "contain"}} />
       </div>
       <div style={{flex: 1, minWidth: 0}}>
         <div style={{fontSize: "0.875rem", fontWeight: 600, color: danger ? "#EF4444" : "#1A1A1A"}}>{title}</div>
@@ -184,16 +184,16 @@ export default function SettingsPage() {
         {/* ACCOUNT */}
         <SectionLabel text="Account" />
         <Card>
-          <Row icon="✏️" iconBg="#EAF3DE" title="Edit profile" subtitle="Name, bio, course, hometown"
+          <Row icon="/icon/edit_black.png" iconBg="#EAF3DE" title="Edit profile" subtitle="Name, bio, course, hometown"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => router.push("/profile/" + currentUser?.id + "?edit=true")} />
-          <Row icon="📱" iconBg="#EAF3DE" title="Phone number" subtitle={currentUser?.phone_number || "Not set"}
+          <Row icon="/icon/phone_black.png" iconBg="#EAF3DE" title="Phone number" subtitle={currentUser?.phone_number || "Not set"}
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => router.push("/profile/" + currentUser?.id + "?edit=true")} />
-          <Row icon="🔒" iconBg="#EAF3DE" title="Change password"
+          <Row icon="/icon/password_black.png" iconBg="#EAF3DE" title="Change password"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => setShowChangePassword(true)} />
-          <Row icon="🪪" iconBg="#E6F1FB" title="Student verification" subtitle={getVerificationLabel()}
+          <Row icon="/icon/verify_black.png" iconBg="#E6F1FB" title="Student verification" subtitle={getVerificationLabel()}
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => router.push("/profile/" + currentUser?.id + "?verify=true")} />
         </Card>
@@ -203,7 +203,9 @@ export default function SettingsPage() {
         <Card>
           <div style={{padding: "13px 14px", borderBottom: "1px solid #F8F8F8"}}>
             <div style={{display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px"}}>
-              <div style={{width: "34px", height: "34px", borderRadius: "9px", backgroundColor: "#EEEDFE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", flexShrink: 0}}>👁️</div>
+              <div style={{width: "34px", height: "34px", borderRadius: "9px", backgroundColor: "#EEEDFE", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
+                <img src="/icon/visibility_black.png" alt="" style={{width: "20px", height: "20px", objectFit: "contain"}} />
+              </div>
               <div style={{flex: 1}}>
                 <div style={{fontSize: "0.875rem", fontWeight: 600, color: "#1A1A1A"}}>Profile visibility</div>
                 <div style={{fontSize: "0.72rem", color: "#aaa"}}>Who can see your info</div>
@@ -211,13 +213,16 @@ export default function SettingsPage() {
             </div>
             <div style={{display: "flex", flexDirection: "column", gap: "10px", paddingLeft: "46px"}}>
               {[
-                { field: "phone", label: "Phone Number" },
-                { field: "birthdate", label: "Birthday" },
-                { field: "course", label: "Course & Year" },
-                { field: "hometown", label: "Hometown" },
+                { field: "phone", label: "Phone Number", icon: "/icon/phone_black.png" },
+                { field: "birthdate", label: "Birthday", icon: "/icon/birthday_black.png" },
+                { field: "course", label: "Course & Year", icon: "/icon/course_black.png" },
+                { field: "hometown", label: "Hometown", icon: "/icon/living_black.png" },
               ].map(item => (
                 <div key={item.field} style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                  <span style={{fontSize: "0.8rem", color: "#555"}}>{item.label}</span>
+                  <div style={{display: "flex", alignItems: "center", gap: "6px"}}>
+                    <img src={item.icon} alt="" style={{width: "16px", height: "16px", objectFit: "contain", opacity: 0.6}} />
+                    <span style={{fontSize: "0.8rem", color: "#555"}}>{item.label}</span>
+                  </div>
                   <select value={privacySettings[item.field] || "public"}
                     onChange={e => handleSavePrivacy(item.field, e.target.value)}
                     disabled={savingPrivacy}
@@ -230,9 +235,9 @@ export default function SettingsPage() {
               ))}
             </div>
           </div>
-          <Row icon="🟢" iconBg="#EEEDFE" title="Show online status" subtitle="Let classmates see when you're active"
+          <Row icon="/icon/online.png" iconBg="#EEEDFE" title="Show online status" subtitle="Let classmates see when you're active"
             right={<Toggle on={currentUser?.show_online_status !== false} onToggle={handleToggleOnlineStatus} />} />
-          <Row icon="🚫" iconBg="#EEEDFE" title="Blocked users"
+          <Row icon="/icon/blockuser_black.png" iconBg="#EEEDFE" title="Blocked users"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => setShowBlockedUsers(true)} />
         </Card>
@@ -240,27 +245,27 @@ export default function SettingsPage() {
         {/* NOTIFICATIONS */}
         <SectionLabel text="Notifications" />
         <Card>
-          <Row icon="🔔" iconBg="#FAEEDA" title="Push notifications" subtitle="Messages, reactions, comments"
+          <Row icon="/icon/notification_black.png" iconBg="#FAEEDA" title="Push notifications" subtitle="Messages, reactions, comments"
             right={<Toggle on={showPushNotif} onToggle={() => { setShowPushNotif(v => !v); showToast(showPushNotif ? "Notifications off" : "Notifications on"); }} />} />
-          <Row icon="💬" iconBg="#FAEEDA" title="Message requests" subtitle="Notify on new requests"
+          <Row icon="/icon/chat_black.png" iconBg="#FAEEDA" title="Message requests" subtitle="Notify on new requests"
             right={<Toggle on={showMsgRequests} onToggle={() => { setShowMsgRequests(v => !v); showToast(showMsgRequests ? "Message request notifications off" : "Message request notifications on"); }} />} />
         </Card>
 
         {/* APPEARANCE */}
         <SectionLabel text="Appearance" />
         <Card>
-          <Row icon="🌙" iconBg="#F1EFE8" title="Dark mode"
+          <Row icon="/icon/dark_black.png" iconBg="#F1EFE8" title="Dark mode"
             right={<Toggle on={false} onToggle={() => showToast("Dark mode coming soon!")} />} />
         </Card>
 
         {/* ABOUT */}
         <SectionLabel text="About" />
         <Card>
-          <Row icon="ℹ️" iconBg="#EAF3DE" title="App version" right={<span style={{fontSize: "0.8rem", color: "#aaa"}}>v1.0.0</span>} />
-          <Row icon="📄" iconBg="#EAF3DE" title="Terms of service"
+          <Row icon="/icon/version_black.png" iconBg="#EAF3DE" title="App version" right={<span style={{fontSize: "0.8rem", color: "#aaa"}}>v1.0.0</span>} />
+          <Row icon="/icon/terms_black.png" iconBg="#EAF3DE" title="Terms of service"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => showToast("Coming soon!")} />
-          <Row icon="🛡️" iconBg="#EAF3DE" title="Privacy policy"
+          <Row icon="/icon/icons8-privacy-50.png" iconBg="#EAF3DE" title="Privacy policy"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => showToast("Coming soon!")} />
         </Card>
@@ -271,8 +276,8 @@ export default function SettingsPage() {
             <SectionLabel text="Admin" />
             <div style={{margin: "0 16px"}}>
               <button onClick={() => router.push("/admin")}
-                style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #2BB39A", backgroundColor: "#E1F5EE", color: "#2BB39A", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
-                🛡️ Admin Panel
+                style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #2BB39A", backgroundColor: "#E1F5EE", color: "#2BB39A", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
+                <img src="/icon/settings_black.png" alt="" style={{width: "20px", height: "20px", objectFit: "contain"}} /> Admin Panel
               </button>
             </div>
           </>
@@ -281,8 +286,7 @@ export default function SettingsPage() {
         {/* DANGER ZONE */}
         <SectionLabel text="Danger zone" />
         <Card>
-          <Row icon="🚪" iconBg="#FCEBEB" title="Log out" danger onClick={() => setShowLogoutConfirm(true)} />
-          <Row icon="🗑️" iconBg="#FCEBEB" title="Delete account" subtitle="This cannot be undone" danger onClick={() => setShowDeleteConfirm(true)} />
+          <Row icon="/icon/delete_black.png" iconBg="#FCEBEB" title="Delete account" subtitle="This cannot be undone" danger onClick={() => setShowDeleteConfirm(true)} />
         </Card>
 
         <div style={{height: "16px"}} />
