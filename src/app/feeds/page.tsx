@@ -98,6 +98,10 @@ export default function FeedsPage() {
   const [editingPost, setEditingPost] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [newPostCount, setNewPostCount] = useState(0);
+  const [showScrollPill, setShowScrollPill] = useState(false);
+  const [scrollingDown, setScrollingDown] = useState(true);
+  const lastScrollY = useRef(0);
 
   // Verified users
   const [verifiedUsers, setVerifiedUsers] = useState<Set<string>>(new Set());
@@ -165,6 +169,17 @@ export default function FeedsPage() {
     return () => { if (longPressTimer.current) clearTimeout(longPressTimer.current); };
   }, []);
 
+  useEffect(() => {
+    function handleScroll() {
+      const currentY = window.scrollY;
+      setScrollingDown(currentY > lastScrollY.current);
+      lastScrollY.current = currentY;
+      setShowScrollPill(currentY > 500);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
 
   useEffect(() => {
@@ -213,7 +228,11 @@ export default function FeedsPage() {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "posts", filter: `school_id=eq.${currentUser.school_id}` },
         (payload) => {
           if (payload.new.user_id !== currentUser.id && payload.new.type === "feed" && !payload.new.is_hidden) {
-            fetchPosts();
+            if (window.scrollY > 500) {
+              setNewPostCount(prev => prev + 1);
+            } else {
+              fetchPosts();
+            }
           }
         }
       )
@@ -1214,6 +1233,41 @@ export default function FeedsPage() {
         />
       )}
       {appError && <ErrorBanner message={appError.message} onClose={() => setAppError(null)} />}
+      {/* Scroll Signpost Pill */}
+      {activeTab === "feeds" && showScrollPill && (
+        <div
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            if (newPostCount > 0) { fetchPosts(); setNewPostCount(0); }
+            setTimeout(() => setShowScrollPill(false), 600);
+          }}
+          style={{
+            position: "fixed",
+            bottom: "90px",
+            right: "16px",
+            backgroundColor: "#2BB39A",
+            color: "#fff",
+            padding: "10px 18px",
+            borderRadius: "9999px",
+            fontWeight: 700,
+            fontSize: "0.8rem",
+            cursor: "pointer",
+            zIndex: 300,
+            boxShadow: "0 4px 16px rgba(43,179,154,0.35)",
+            backdropFilter: "blur(8px)",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            opacity: scrollingDown ? 0.6 : 1,
+            transition: "opacity 0.3s ease, transform 0.3s ease",
+            transform: showScrollPill ? "translateY(0)" : "translateY(20px)",
+            userSelect: "none",
+            fontFamily: "inherit",
+          }}
+        >
+          {newPostCount > 0 ? `${newPostCount} New Post${newPostCount > 1 ? "s" : ""} ↑` : "↑ Back to Top"}
+        </div>
+      )}
       <BottomNav active="/feeds" unreadMessages={unreadMessages} show={showNav} />
 
       {toast && (
