@@ -68,9 +68,14 @@ export default function BazaarPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const [
+      { data: userData },
+      { data: schoolData }
+    ] = await Promise.all([
+      supabase.from("users").select("*").eq("id", user.id).single(),
+      supabase.from("schools").select("id, name, abbreviation").order("name")
+    ]);
     if (userData) setCurrentUser(userData);
-    const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
     if (schoolData) setSchools(schoolData);
     fetchUnreadCount(userData);
   }
@@ -97,9 +102,18 @@ export default function BazaarPage() {
     if (filterCategory !== "All") query = query.eq("category", filterCategory);
     const { data } = await query;
     if (data) {
-      const enriched = await Promise.all(data.map(async (listing) => {
-        const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("listing_id", listing.id);
-        return { ...listing, commentCount: count || 0, users: Array.isArray(listing.users) ? listing.users[0] ?? null : listing.users };
+      const listingIds = data.map((l: any) => l.id);
+      const { data: allComments } = listingIds.length > 0
+        ? await supabase.from("comments").select("listing_id").in("listing_id", listingIds)
+        : { data: [] };
+      const commentMap: Record<string, number> = {};
+      (allComments || []).forEach((c: any) => {
+        commentMap[c.listing_id] = (commentMap[c.listing_id] || 0) + 1;
+      });
+      const enriched = data.map((listing: any) => ({
+        ...listing,
+        commentCount: commentMap[listing.id] || 0,
+        users: Array.isArray(listing.users) ? listing.users[0] ?? null : listing.users
       }));
       setListings(enriched);
     }

@@ -66,9 +66,14 @@ export default function LivingPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const [
+      { data: userData },
+      { data: schoolData }
+    ] = await Promise.all([
+      supabase.from("users").select("*").eq("id", user.id).single(),
+      supabase.from("schools").select("id, name, abbreviation").order("name")
+    ]);
     if (userData) setCurrentUser(userData);
-    const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
     if (schoolData) setSchools(schoolData);
     fetchUnreadCount(userData);
   }
