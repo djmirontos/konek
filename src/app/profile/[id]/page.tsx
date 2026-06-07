@@ -851,7 +851,7 @@ export default function ProfilePage() {
                   <div style={{fontWeight: 700, fontSize: "0.72rem", color: "#aaa", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Info</div>
                   <div style={{display: "flex", flexDirection: "column", gap: "12px"}}>
                     <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                      <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>🏫</div>
+                      <img src="/icon/settings_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
                       <div>
                         <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>School</div>
                         <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{school?.name || "Unknown"}</div>
@@ -859,7 +859,7 @@ export default function ProfilePage() {
                     </div>
                     {(profileUser.course || profileUser.year_level) && canView("course") && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                        <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>📚</div>
+                        <img src="/icon/course_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
                         <div>
                           <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Course</div>
                           <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{profileUser.course}{profileUser.course && profileUser.year_level ? " · " : ""}{profileUser.year_level}</div>
@@ -868,7 +868,7 @@ export default function ProfilePage() {
                     )}
                     {profileUser.hometown && canView("hometown") && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                        <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>📍</div>
+                        <img src="/icon/living_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
                         <div>
                           <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Hometown</div>
                           <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{profileUser.hometown}</div>
@@ -877,7 +877,7 @@ export default function ProfilePage() {
                     )}
                     {profileUser.birthdate && canView("birthdate") && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                        <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>🎂</div>
+                        <img src="/icon/birthday_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
                         <div>
                           <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Birthday</div>
                           <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{new Date(profileUser.birthdate).toLocaleDateString("en-PH", {month: "long", day: "numeric", year: "numeric"})}</div>
@@ -886,7 +886,7 @@ export default function ProfilePage() {
                     )}
                     {profileUser.phone_number && canView("phone") && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                        <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>📱</div>
+                        <img src="/icon/phone_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
                         <div>
                           <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Phone</div>
                           <a href={"tel:" + profileUser.phone_number} style={{fontSize: "0.85rem", fontWeight: 600, color: "#2BB39A", textDecoration: "none"}}>{profileUser.phone_number}</a>
@@ -894,7 +894,7 @@ export default function ProfilePage() {
                       </div>
                     )}
                     <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                      <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>📅</div>
+                      <img src="/icon/birthday_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
                       <div>
                         <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Member since</div>
                         <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{formatMemberSince(profileUser.created_at)}</div>
