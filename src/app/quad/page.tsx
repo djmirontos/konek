@@ -94,12 +94,23 @@ export default function QuadPage() {
     const { data } = await query;
     if (data) {
       const now = new Date();
-      const enriched = await Promise.all(data.map(async (post) => {
+      const postIds = data.map((p: any) => p.id);
+
+      // 1 bulk query for all comment counts
+      const { data: commentData } = await supabase
+        .from("comments")
+        .select("post_id")
+        .in("post_id", postIds);
+      const countMap: Record<string, number> = {};
+      (commentData || []).forEach((c: any) => {
+        countMap[c.post_id] = (countMap[c.post_id] || 0) + 1;
+      });
+
+      const enriched = data.map((post: any) => {
         const isExpired = post.expires_at ? new Date(post.expires_at) < now : false;
-        const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", post.id);
-        return { ...post, commentCount: count || 0, isExpired };
-      }));
-      setPosts(enriched.map((p) => ({...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users})));
+        return { ...post, commentCount: countMap[post.id] || 0, isExpired };
+      });
+      setPosts(enriched.map((p: any) => ({...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users})));
     }
     setLoading(false);
   }
@@ -348,9 +359,22 @@ export default function QuadPage() {
       {/* Feed */}
       <div style={{flex: 1, paddingBottom: "80px"}}>
         {loading ? (
-          <div style={{textAlign: "center", padding: "48px 16px", color: "#888"}}>
-            <div style={{fontSize: "2rem", marginBottom: "8px"}}>⏳</div>
-            <div style={{fontSize: "0.85rem"}}>Loading posts...</div>
+          <div>
+            <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
+            {[1,2,3].map(i => (
+              <div key={i} style={{backgroundColor: "#fff", marginBottom: "8px", padding: "12px 16px"}}>
+                <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "12px"}}>
+                  <div style={{width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
+                  <div style={{flex: 1}}>
+                    <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "6px", width: "40%"}} />
+                    <div style={{height: "10px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "25%"}} />
+                  </div>
+                </div>
+                <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "8px"}} />
+                <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "8px", width: "80%"}} />
+                <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "60%"}} />
+              </div>
+            ))}
           </div>
         ) : posts.length === 0 ? (
           <div style={{textAlign: "center", padding: "48px 16px"}}>
