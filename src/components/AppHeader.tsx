@@ -118,7 +118,7 @@ export default function AppHeader({
 
           {/* Profile */}
           <button onClick={() => { setMenuOpen(false); router.push(`/profile/${currentUser?.id}`); }} style={{display: "flex", alignItems: "center", gap: "14px", padding: "16px 24px", background: "none", border: "none", cursor: "pointer", width: "100%", textAlign: "left"}}>
-            <div style={{width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#E8F8F5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.85rem"}}>👤</div>
+            <img src="/icon/profile.png" alt="profile" style={{width: "22px", height: "22px", objectFit: "contain", opacity: 0.7}} />
             <span style={{fontSize: "0.95rem", fontWeight: 600, color: "#1a1a1a"}}>Profile</span>
           </button>
 

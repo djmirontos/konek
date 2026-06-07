@@ -851,7 +851,7 @@ export default function ProfilePage() {
                   <div style={{fontWeight: 700, fontSize: "0.72rem", color: "#aaa", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Info</div>
                   <div style={{display: "flex", flexDirection: "column", gap: "12px"}}>
                     <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                      <img src="/icon/settings_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
+                      <img src="/icon/school.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
                       <div>
                         <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>School</div>
                         <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{school?.name || "Unknown"}</div>
@@ -894,7 +894,7 @@ export default function ProfilePage() {
                       </div>
                     )}
                     <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                      <img src="/icon/birthday_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
+                      <img src="/icon/member.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
                       <div>
                         <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Member since</div>
                         <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{formatMemberSince(profileUser.created_at)}</div>
