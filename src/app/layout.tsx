@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SchoolProvider } from "@/context/SchoolContext";
-import { Plus_Jakarta_Sans, Poppins, Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import DesktopLayout from "@/components/DesktopLayout";
 
@@ -8,16 +8,6 @@ const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-jakarta",
-});
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-poppins",
-});
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -49,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${jakarta.variable} ${poppins.variable} ${inter.variable}`}>
+    <html lang="en" className={`${jakarta.variable}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <meta name="theme-color" content="#2BB39A" />
