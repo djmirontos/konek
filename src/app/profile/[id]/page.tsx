@@ -83,6 +83,9 @@ export default function ProfilePage() {
   const [followingCount, setFollowingCount] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+  const [showFollowSheet, setShowFollowSheet] = useState<"followers"|"following"|null>(null);
+  const [followSheetList, setFollowSheetList] = useState<{id:string;full_name:string;avatar_url:string|null;ign:string|null;school_id:string}[]>([]);
+  const [loadingFollowSheet, setLoadingFollowSheet] = useState(false);
   const [postCount, setPostCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
   const [reactionsReceived, setReactionsReceived] = useState(0);
@@ -231,7 +234,7 @@ export default function ProfilePage() {
     ] = await Promise.all([
       supabase.from("followers").select("id", { count: "exact", head: true }).eq("following_id", profileId),
       supabase.from("followers").select("id", { count: "exact", head: true }).eq("follower_id", profileId),
-      supabase.from("followers").select("id").eq("follower_id", currentUserId).eq("following_id", profileId).single()
+      supabase.from("followers").select("id").eq("follower_id", currentUserId).eq("following_id", profileId).maybeSingle()
     ]);
     setFollowerCount(followers || 0);
     setFollowingCount(following || 0);
@@ -251,6 +254,28 @@ export default function ProfilePage() {
       setFollowerCount(prev => prev + 1);
     }
     setFollowLoading(false);
+    // Re-fetch to ensure accuracy
+    fetchFollowData(profileUser.id, currentUser.id);
+  }
+
+  async function fetchFollowList(type: "followers"|"following") {
+    if (!profileUser) return;
+    setLoadingFollowSheet(true);
+    setShowFollowSheet(type);
+    setFollowSheetList([]);
+    let userIds: string[] = [];
+    if (type === "followers") {
+      const { data } = await supabase.from("followers").select("follower_id").eq("following_id", profileUser.id);
+      userIds = (data || []).map((r: any) => r.follower_id);
+    } else {
+      const { data } = await supabase.from("followers").select("following_id").eq("follower_id", profileUser.id);
+      userIds = (data || []).map((r: any) => r.following_id);
+    }
+    if (userIds.length > 0) {
+      const { data: users } = await supabase.from("users").select("id, full_name, avatar_url, ign, school_id").in("id", userIds);
+      setFollowSheetList(users || []);
+    }
+    setLoadingFollowSheet(false);
   }
 
   async function fetchTabData(tab: string) {
@@ -653,13 +678,14 @@ export default function ProfilePage() {
             {/* 4-col Stats */}
             <div style={{display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "2px", marginTop: "8px"}}>
               {[
-                { label: "Posts", value: postCount },
-                { label: "Reactions", value: reactionsReceived },
-                { label: "Following", value: followingCount },
-                { label: "Followers", value: followerCount },
+                { label: "Posts", value: postCount, tap: null },
+                { label: "Reactions", value: reactionsReceived, tap: null },
+                { label: "Following", value: followingCount, tap: "following" as const },
+                { label: "Followers", value: followerCount, tap: "followers" as const },
               ].map(stat => (
-                <div key={stat.label} style={{textAlign: "center", padding: "6px 2px"}}>
-                  <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A"}}>{stat.value.toLocaleString()}</div>
+                <div key={stat.label} onClick={() => stat.tap && fetchFollowList(stat.tap)}
+                  style={{textAlign: "center", padding: "6px 2px", cursor: stat.tap ? "pointer" : "default"}}>
+                  <div style={{fontWeight: 700, fontSize: "1rem", color: stat.tap ? "#2BB39A" : "#1A1A1A"}}>{stat.value.toLocaleString()}</div>
                   <div style={{fontSize: "0.6rem", color: "#888", marginTop: "1px"}}>{stat.label}</div>
                 </div>
               ))}
@@ -1194,6 +1220,52 @@ export default function ProfilePage() {
       )}
 
 
+
+      {/* Follow Sheet */}
+      {showFollowSheet && (
+        <>
+          <div onClick={() => setShowFollowSheet(null)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px,100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, maxHeight: "70vh", display: "flex", flexDirection: "column"}}>
+            <div style={{padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", justifyContent: "space-between"}}>
+              <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "0 auto"}} />
+            </div>
+            <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", justifyContent: "space-between"}}>
+              <span style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A"}}>
+                {showFollowSheet === "followers" ? "Followers" : "Following"}
+              </span>
+              <button onClick={() => setShowFollowSheet(null)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.1rem", padding: "4px"}}>✕</button>
+            </div>
+            <div style={{overflowY: "auto", flex: 1, paddingBottom: "24px"}}>
+              {loadingFollowSheet ? (
+                <div style={{textAlign: "center", padding: "32px", color: "#888", fontSize: "0.85rem"}}>Loading...</div>
+              ) : followSheetList.length === 0 ? (
+                <div style={{textAlign: "center", padding: "32px"}}>
+                  <div style={{fontSize: "2rem", marginBottom: "8px"}}>{showFollowSheet === "followers" ? "👥" : "🔍"}</div>
+                  <div style={{fontSize: "0.85rem", color: "#888"}}>{showFollowSheet === "followers" ? "No followers yet" : "Not following anyone yet"}</div>
+                </div>
+              ) : followSheetList.map(u => {
+                const uSchool = schools.find(s => s.id === u.school_id);
+                return (
+                  <div key={u.id} onClick={() => { setShowFollowSheet(null); router.push("/profile/" + u.id); }}
+                    style={{display: "flex", alignItems: "center", gap: "12px", padding: "10px 16px", borderBottom: "1px solid #F0F0F0", cursor: "pointer"}}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F7F7F7")}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
+                    {u.avatar_url
+                      ? <img src={u.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                      : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem", flexShrink: 0}}>{u.full_name?.charAt(0).toUpperCase()}</div>
+                    }
+                    <div style={{flex: 1, minWidth: 0}}>
+                      <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{u.full_name}</div>
+                      <div style={{fontSize: "0.72rem", color: "#888"}}>@{u.ign || u.full_name?.toLowerCase().replace(/\s+/g,"")}</div>
+                      {uSchool && <div style={{fontSize: "0.68rem", color: "#2BB39A", fontWeight: 600}}>{uSchool.abbreviation}</div>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
 
       {toast && (
         <div style={{position: "fixed", top: "70px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#1A1A1A", color: "#fff", padding: "10px 20px", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 600, zIndex: 1000, whiteSpace: "nowrap"}}>{toast}</div>
