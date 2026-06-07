@@ -56,11 +56,12 @@ export default function AppHeader({
             <div style={{width: "22px", height: "2px", backgroundColor: "#fff", borderRadius: "2px"}} />
             <div style={{width: "22px", height: "2px", backgroundColor: "#fff", borderRadius: "2px"}} />
           </button>
-          <div style={{display: "flex", flexDirection: "column", gap: "1px"}}>
+          <div style={{display: "flex", alignItems: "center", gap: "6px"}}>
             <Image src="/whitebg.svg" alt="Klasmeyt" width={110} height={30} priority />
-            <button onClick={onSchoolPickerToggle} style={{background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: "3px", fontFamily: "inherit"}}>
-              <span style={{color: "rgba(255,255,255,0.8)", fontSize: "0.65rem", fontWeight: 500, letterSpacing: "0.01em"}}>📍 {getSchoolLabel()}</span>
-              <span style={{color: "rgba(255,255,255,0.7)", fontSize: "0.55rem"}}>▾</span>
+            <span style={{color: "rgba(255,255,255,0.5)", fontSize: "0.75rem", fontWeight: 300}}>·</span>
+            <button onClick={onSchoolPickerToggle} style={{background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: "2px", fontFamily: "inherit"}}>
+              <span style={{color: "rgba(255,255,255,0.85)", fontSize: "0.72rem", fontWeight: 500}}>{getSchoolLabel()}</span>
+              <span style={{color: "rgba(255,255,255,0.6)", fontSize: "0.55rem"}}>▾</span>
             </button>
           </div>
         </div>
