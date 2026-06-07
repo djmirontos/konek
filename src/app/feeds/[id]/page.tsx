@@ -337,11 +337,36 @@ export default function PostDetailPage() {
   }
 
   if (loading) return (
-    <div style={{minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-      <div style={{textAlign: "center", color: "#888"}}>
-        <div style={{fontSize: "2rem", marginBottom: "8px"}}>⏳</div>
-        <div style={{fontSize: "0.85rem"}}>Loading post...</div>
+    <div style={{minHeight: "100vh", background: "#F7F7F7", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+      <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
+      {/* Header skeleton */}
+      <div style={{backgroundColor: "#2BB39A", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px"}}>
+        <div style={{width: "28px", height: "28px", borderRadius: "50%", background: "rgba(255,255,255,0.3)"}} />
+        <div style={{height: "16px", width: "120px", borderRadius: "8px", background: "rgba(255,255,255,0.3)"}} />
       </div>
+      {/* Post skeleton */}
+      <div style={{backgroundColor: "#fff", padding: "16px", marginBottom: "8px"}}>
+        <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "12px"}}>
+          <div style={{width: "44px", height: "44px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
+          <div style={{flex: 1}}>
+            <div style={{height: "13px", width: "40%", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "6px"}} />
+            <div style={{height: "10px", width: "25%", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
+          </div>
+        </div>
+        <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "8px"}} />
+        <div style={{height: "12px", width: "80%", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "8px"}} />
+        <div style={{height: "12px", width: "60%", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
+      </div>
+      {/* Comments skeleton */}
+      {[1,2,3].map(i => (
+        <div key={i} style={{backgroundColor: "#fff", padding: "12px 16px", marginBottom: "1px", display: "flex", gap: "10px"}}>
+          <div style={{width: "36px", height: "36px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
+          <div style={{flex: 1}}>
+            <div style={{height: "11px", width: "35%", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "6px"}} />
+            <div style={{height: "11px", width: "85%", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
+          </div>
+        </div>
+      ))}
     </div>
   );
 
