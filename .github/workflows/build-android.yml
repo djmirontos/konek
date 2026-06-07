@@ -47,14 +47,21 @@ jobs:
       - name: Verify Keystore exists
         run: ls -la $GITHUB_WORKSPACE/android/app/
 
-      - name: Build Release APK
+      - name: Build Release APK + AAB
         run: |
           cd android
-          ./gradlew assembleRelease             -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/android/app/klasmeyt-release.jks             -Pandroid.injected.signing.store.password=klasmeyt2024             -Pandroid.injected.signing.key.alias=klasmeyt             -Pandroid.injected.signing.key.password=klasmeyt2024
+          ./gradlew assembleRelease bundleRelease             -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/android/app/klasmeyt-release.jks             -Pandroid.injected.signing.store.password=klasmeyt2024             -Pandroid.injected.signing.key.alias=klasmeyt             -Pandroid.injected.signing.key.password=klasmeyt2024
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: klasmeyt-release.apk
           path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
+
+      - name: Upload Release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: klasmeyt-release.aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
