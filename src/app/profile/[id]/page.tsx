@@ -547,7 +547,7 @@ export default function ProfilePage() {
       <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.back()} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "2px 4px", display: "flex", alignItems: "center", lineHeight: 1}}>&#8249;</button>
         <span style={{color: "#fff", fontWeight: 700, fontSize: "1rem", flex: 1}}>{isOwnProfile ? "My Profile" : profileUser.full_name}</span>
-        {isOwnProfile && <button onClick={() => router.push("/settings")} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.3rem", padding: "4px", opacity: 0.9}}>⚙️</button>}
+        <button onClick={() => router.push("/feeds")} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "4px", lineHeight: 1}}>✕</button>
       </div>
 
       <div style={{backgroundColor: "#fff", padding: "20px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center", borderBottom: "1px solid #F0F0F0"}}>
