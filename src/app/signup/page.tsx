@@ -106,6 +106,18 @@ export default function SignupPage() {
     return clean + digits;
   }
 
+  async function generateUniqueIgn(firstName: string, lastName: string): Promise<string> {
+    const base = (firstName.trim() + lastName.trim()).toLowerCase().replace(/[^a-z0-9]/g, "");
+    let candidate = base;
+    let counter = 0;
+    while (true) {
+      const { data } = await supabase.from("users").select("id").eq("ign", candidate).single();
+      if (!data) return candidate;
+      counter++;
+      candidate = base + counter;
+    }
+  }
+
   async function handleSignup() {
     setError("");
     if (!selectedSchool) { setError("Please select your school"); return; }
@@ -186,6 +198,7 @@ export default function SignupPage() {
         referred_by: referredByCode,
         referral_count: 0,
         birthdate: birthdate || null,
+        ign: await generateUniqueIgn(firstName, lastName),
       });
       if (profileError) throw profileError;
 
