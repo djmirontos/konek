@@ -485,7 +485,7 @@ export default function SoapboxPage() {
         <>
           {/* COLLAPSED COMPOSER ROW */}
           <div style={{backgroundColor: "#fff", padding: "10px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "10px"}}>
-            <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#1A1A1A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0}}>🎭</div>
+            <img src="/icon/anonymous.png" alt="anonymous" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
             <div onClick={() => setShowComposerSheet(true)}
               style={{flex: 1, backgroundColor: "#F7F7F7", borderRadius: "20px", padding: "10px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", userSelect: "none"}}>
               What's on your mind?
@@ -688,7 +688,7 @@ export default function SoapboxPage() {
         <>
           {/* COLLAPSED CONFESSION COMPOSER ROW */}
           <div style={{backgroundColor: "#fff", padding: "10px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "10px"}}>
-            <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#4A1D6F", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0}}>💌</div>
+            <img src="/icon/confess.png" alt="confession" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
             <div onClick={() => setShowConfessionSheet(true)}
               style={{flex: 1, backgroundColor: "#F7F7F7", borderRadius: "20px", padding: "10px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", userSelect: "none"}}>
               Want to confess something?
