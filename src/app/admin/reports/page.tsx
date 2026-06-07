@@ -105,7 +105,7 @@ export default function AdminReportsPage() {
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
       {toast && <div style={{position: "fixed", top: "70px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#1A1A1A", color: "#fff", padding: "10px 20px", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 600, zIndex: 1000, whiteSpace: "nowrap"}}>{toast}</div>}
 
-      <div style={{backgroundColor: "#1D9E75", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.push("/admin")} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "0", width: "36px"}}>‹</button>
         <div style={{fontWeight: 800, fontSize: "1rem", color: "#fff", letterSpacing: "0.05em"}}>REPORTS QUEUE</div>
         <div style={{width: "36px"}}></div>
@@ -114,7 +114,7 @@ export default function AdminReportsPage() {
       <div style={{display: "flex", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0"}}>
         {(["pending", "resolved"] as const).map(tab => (
           <button key={tab} onClick={() => setFilter(tab)}
-            style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", color: filter === tab ? "#1D9E75" : "#888", borderBottom: filter === tab ? "2px solid #1D9E75" : "2px solid transparent", textTransform: "capitalize"}}>
+            style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", color: filter === tab ? "#2BB39A" : "#888", borderBottom: filter === tab ? "2px solid #2BB39A" : "2px solid transparent", textTransform: "capitalize"}}>
             {tab}
           </button>
         ))}

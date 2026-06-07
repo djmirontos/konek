@@ -214,7 +214,7 @@ export default function QuadPage() {
   }
 
   function getTagColor(tag: string) {
-    return HANGOUT_TAG_SET.has(tag) ? "#1D9E75" : "#F59E0B";
+    return HANGOUT_TAG_SET.has(tag) ? "#2BB39A" : "#F59E0B";
   }
 
   function getTagBg(tag: string) {
@@ -276,7 +276,7 @@ export default function QuadPage() {
         <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
           {currentUser?.avatar_url
             ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, marginTop: "2px"}} />
-            : <div style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0, marginTop: "2px"}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+            : <div style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0, marginTop: "2px"}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
           }
           <div style={{flex: 1}}>
             <textarea
@@ -292,7 +292,7 @@ export default function QuadPage() {
                   placeholder="📍 Nasaan ka? (e.g. Library, Canteen, Gym)"
                   value={location}
                   onChange={e => setLocation(e.target.value)}
-                  style={{width: "100%", border: "1px solid #1D9E75", borderRadius: "10px", padding: "8px 12px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box", color: "#1A1A1A"}}
+                  style={{width: "100%", border: "1px solid #2BB39A", borderRadius: "10px", padding: "8px 12px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box", color: "#1A1A1A"}}
                 />
               </div>
             )}
@@ -304,7 +304,7 @@ export default function QuadPage() {
             )}
             <div style={{marginTop: "8px", position: "relative"}}>
               <button onClick={() => setShowTagPicker(!showTagPicker)}
-                style={{width: "100%", padding: "9px 14px", borderRadius: "10px", border: "1px solid " + (selectedTag ? (HANGOUT_TAG_SET.has(selectedTag) ? "#1D9E75" : "#F59E0B") : "#F0F0F0"), backgroundColor: selectedTag ? (HANGOUT_TAG_SET.has(selectedTag) ? "#E1F5EE" : "#FEF3C7") : "#F7F7F7", color: selectedTag ? (HANGOUT_TAG_SET.has(selectedTag) ? "#1D9E75" : "#F59E0B") : "#888", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center", textAlign: "left"}}>
+                style={{width: "100%", padding: "9px 14px", borderRadius: "10px", border: "1px solid " + (selectedTag ? (HANGOUT_TAG_SET.has(selectedTag) ? "#2BB39A" : "#F59E0B") : "#F0F0F0"), backgroundColor: selectedTag ? (HANGOUT_TAG_SET.has(selectedTag) ? "#E1F5EE" : "#FEF3C7") : "#F7F7F7", color: selectedTag ? (HANGOUT_TAG_SET.has(selectedTag) ? "#2BB39A" : "#F59E0B") : "#888", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center", textAlign: "left"}}>
                 <span>{selectedTag || "Select a tag (required)"}</span>
                 <span style={{fontSize: "0.7rem"}}>{showTagPicker ? "▲" : "▾"}</span>
               </button>
@@ -315,7 +315,7 @@ export default function QuadPage() {
                     <div style={{padding: "8px 12px 4px", fontSize: "0.68rem", color: "#888", fontWeight: 700, letterSpacing: "0.05em"}}>🟢 HANGOUT</div>
                     {HANGOUT_TAGS.map(tag => (
                       <button key={tag} onClick={() => { setSelectedTag(tag); setShowTagPicker(false); }}
-                        style={{width: "100%", padding: "9px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: selectedTag === tag ? "#E1F5EE" : "#fff", color: selectedTag === tag ? "#1D9E75" : "#1A1A1A", fontWeight: selectedTag === tag ? 700 : 400, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left"}}>
+                        style={{width: "100%", padding: "9px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: selectedTag === tag ? "#E1F5EE" : "#fff", color: selectedTag === tag ? "#2BB39A" : "#1A1A1A", fontWeight: selectedTag === tag ? 700 : 400, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left"}}>
                         {tag}
                       </button>
                     ))}
@@ -337,7 +337,7 @@ export default function QuadPage() {
               </button>
               <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleImageSelect} />
               <button onClick={handlePost} disabled={posting || !postContent.trim() || !selectedTag}
-                style={{backgroundColor: posting || !postContent.trim() || !selectedTag ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 20px", fontWeight: 700, fontSize: "0.8rem", cursor: posting || !postContent.trim() || !selectedTag ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                style={{backgroundColor: posting || !postContent.trim() || !selectedTag ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 20px", fontWeight: 700, fontSize: "0.8rem", cursor: posting || !postContent.trim() || !selectedTag ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                 {posting ? "Posting..." : "Post"}
               </button>
             </div>
@@ -366,7 +366,7 @@ export default function QuadPage() {
               ) : post.users?.avatar_url ? (
                 <img src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
               ) : (
-                <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+                <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
               )}
               <div style={{flex: 1}}>
                 <div style={{fontWeight: 700, fontSize: "0.875rem", color: post.isExpired ? "#888" : "#1A1A1A"}}>{post.isExpired ? "Expired Post" : post.users?.full_name}</div>
@@ -391,7 +391,7 @@ export default function QuadPage() {
               <>
                 {post.location && (
                   <div style={{padding: "0 16px 6px", display: "flex", alignItems: "center", gap: "5px"}}>
-                    <span style={{fontSize: "0.75rem", color: "#1D9E75", fontWeight: 600}}>📍 {post.location}</span>
+                    <span style={{fontSize: "0.75rem", color: "#2BB39A", fontWeight: 600}}>📍 {post.location}</span>
                   </div>
                 )}
                 <div style={{padding: "0 16px 10px", fontSize: "0.9rem", color: "#1A1A1A", lineHeight: 1.5}}>{post.content}</div>
@@ -444,7 +444,7 @@ export default function QuadPage() {
               style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             <div style={{display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end"}}>
               <button onClick={() => setEditingPost(null)} style={{padding: "9px 20px", borderRadius: "20px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
-              <button onClick={() => handleEditPost(editingPost)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+              <button onClick={() => handleEditPost(editingPost)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
             </div>
           </div>
         </>

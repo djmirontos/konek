@@ -111,7 +111,7 @@ export default function CommentReactionButton({
                       initial={{ opacity: 0, y: 2, scale: 0.8 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      style={{fontSize: "0.52rem", fontWeight: 700, color: "#1D9E75", fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: "nowrap", textTransform: "uppercase"}}
+                      style={{fontSize: "0.52rem", fontWeight: 700, color: "#2BB39A", fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: "nowrap", textTransform: "uppercase"}}
                     >
                       {r.label}
                     </motion.span>
@@ -145,7 +145,7 @@ export default function CommentReactionButton({
             {activeReaction ? activeReaction.emoji : "👍"}
           </motion.span>
         </AnimatePresence>
-        <span style={{fontSize: "0.72rem", fontWeight: 600, color: activeReaction ? "#1D9E75" : "#888", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+        <span style={{fontSize: "0.72rem", fontWeight: 600, color: activeReaction ? "#2BB39A" : "#888", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
           {activeReaction ? activeReaction.label : "Like"}
         </span>
       </motion.button>

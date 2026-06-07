@@ -142,7 +142,7 @@ export default function AdminPage() {
   ];
 
   if (loading) return (
-    <div style={{minHeight: "100vh", backgroundColor: "#1D9E75", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", backgroundColor: "#2BB39A", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
       <div style={{color: "#fff", fontSize: "0.9rem", fontWeight: 600}}>Loading admin panel...</div>
     </div>
   );
@@ -151,7 +151,7 @@ export default function AdminPage() {
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {/* Header */}
-      <div style={{backgroundColor: "#1D9E75", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.push("/feeds")} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "0", width: "36px"}}>‹</button>
         <div style={{textAlign: "center"}}>
           <div style={{fontWeight: 800, fontSize: "1rem", color: "#fff", letterSpacing: "0.05em"}}>ADMIN PANEL</div>
@@ -163,7 +163,7 @@ export default function AdminPage() {
       {/* Stats Grid */}
       <div style={{padding: "16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px"}}>
         {[
-          { label: "Total Users", value: stats?.totalUsers, icon: "👥", color: "#1D9E75" },
+          { label: "Total Users", value: stats?.totalUsers, icon: "👥", color: "#2BB39A" },
           { label: "New Today", value: stats?.newUsersToday, icon: "🆕", color: "#3B82F6", onClick: fetchNewTodayUsers },
           { label: "Posts Today", value: stats?.totalPostsToday, icon: "📝", color: "#8B5CF6", onClick: fetchPostsToday },
           { label: "Active Quad", value: stats?.activeQuadPosts, icon: "🗺️", color: "#F59E0B", onClick: fetchActiveQuad },
@@ -201,10 +201,10 @@ export default function AdminPage() {
         <div onClick={() => router.push("/admin/schools")} style={{margin: "0 16px 10px", backgroundColor: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: "12px", padding: "12px 16px", display: "flex", alignItems: "center", gap: "10px", cursor: "pointer"}}>
           <span style={{fontSize: "1.3rem"}}>🏫</span>
           <div style={{flex: 1}}>
-            <div style={{fontWeight: 700, fontSize: "0.85rem", color: "#1D9E75"}}>{stats?.pendingSchoolRequests} School Requests</div>
+            <div style={{fontWeight: 700, fontSize: "0.85rem", color: "#2BB39A"}}>{stats?.pendingSchoolRequests} School Requests</div>
             <div style={{fontSize: "0.75rem", color: "#888"}}>New schools waiting for approval</div>
           </div>
-          <span style={{color: "#1D9E75", fontSize: "1.1rem"}}>›</span>
+          <span style={{color: "#2BB39A", fontSize: "1.1rem"}}>›</span>
         </div>
       )}
 
@@ -242,18 +242,18 @@ export default function AdminPage() {
                   style={{display: "flex", alignItems: "flex-start", gap: "12px", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", cursor: "pointer"}}>
                   {p.avatar_url
                     ? <img src={p.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{p.real_name?.charAt(0).toUpperCase()}</div>
+                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{p.real_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div style={{flex: 1, minWidth: 0}}>
                     <div style={{display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px", flexWrap: "wrap"}}>
                       <span style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A"}}>{p.real_name}</span>
                       {p.anonymous_name && <span style={{fontSize: "0.7rem", color: "#888", backgroundColor: "#F0F0F0", padding: "1px 6px", borderRadius: "8px"}}>as {p.anonymous_name}</span>}
-                      <span style={{fontSize: "0.65rem", color: "#fff", backgroundColor: p.type === "confession" ? "#F59E0B" : p.type === "soapbox" ? "#8B5CF6" : "#1D9E75", padding: "1px 6px", borderRadius: "8px", textTransform: "capitalize"}}>{p.type}</span>
+                      <span style={{fontSize: "0.65rem", color: "#fff", backgroundColor: p.type === "confession" ? "#F59E0B" : p.type === "soapbox" ? "#8B5CF6" : "#2BB39A", padding: "1px 6px", borderRadius: "8px", textTransform: "capitalize"}}>{p.type}</span>
                     </div>
                     <div style={{fontSize: "0.78rem", color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{p.content}</div>
                     <div style={{fontSize: "0.65rem", color: "#AAA", marginTop: "2px"}}>{new Date(p.created_at).toLocaleTimeString("en-PH", {hour: "2-digit", minute: "2-digit"})}</div>
                   </div>
-                  <span style={{color: "#1D9E75", fontSize: "1.1rem"}}>›</span>
+                  <span style={{color: "#2BB39A", fontSize: "1.1rem"}}>›</span>
                 </div>
               ))}
             </div>
@@ -279,14 +279,14 @@ export default function AdminPage() {
                   style={{display: "flex", alignItems: "flex-start", gap: "12px", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", cursor: "pointer"}}>
                   {p.avatar_url
                     ? <img src={p.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{p.real_name?.charAt(0).toUpperCase()}</div>
+                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.9rem", flexShrink: 0}}>{p.real_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div style={{flex: 1, minWidth: 0}}>
                     <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A", marginBottom: "2px"}}>{p.real_name}</div>
                     <div style={{fontSize: "0.78rem", color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{p.content}</div>
                     <div style={{fontSize: "0.65rem", color: "#F59E0B", marginTop: "2px"}}>Expires: {new Date(p.expires_at).toLocaleString("en-PH", {month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"})}</div>
                   </div>
-                  <span style={{color: "#1D9E75", fontSize: "1.1rem"}}>›</span>
+                  <span style={{color: "#2BB39A", fontSize: "1.1rem"}}>›</span>
                 </div>
               ))}
             </div>
@@ -314,13 +314,13 @@ export default function AdminPage() {
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
                   {u.avatar_url
                     ? <img src={u.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                    : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", flexShrink: 0}}>{u.full_name?.charAt(0).toUpperCase()}</div>
+                    : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem", flexShrink: 0}}>{u.full_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div style={{flex: 1}}>
                     <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{u.full_name}</div>
                     <div style={{fontSize: "0.72rem", color: "#888"}}>{(u.schools as any)?.abbreviation || "—"} · {new Date(u.created_at).toLocaleTimeString("en-PH", {hour: "2-digit", minute: "2-digit"})}</div>
                   </div>
-                  <span style={{color: "#1D9E75", fontSize: "1.1rem"}}>›</span>
+                  <span style={{color: "#2BB39A", fontSize: "1.1rem"}}>›</span>
                 </div>
               ))}
             </div>

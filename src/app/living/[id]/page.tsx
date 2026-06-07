@@ -42,7 +42,7 @@ type Comment = {
 
 function VerifiedBadge() {
   return (
-    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "15px", height: "15px", backgroundColor: "#1D9E75", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
+    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "15px", height: "15px", backgroundColor: "#2BB39A", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
       <svg width="9" height="9" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
       </svg>
@@ -313,7 +313,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
         )}
 
         {/* Header */}
-        <div style={{backgroundColor: "#1D9E75", padding: "14px 16px", display: "flex", alignItems: "center", gap: "12px", flexShrink: 0}}>
+        <div style={{backgroundColor: "#2BB39A", padding: "14px 16px", display: "flex", alignItems: "center", gap: "12px", flexShrink: 0}}>
           <button onClick={() => router.back()} style={{background: "rgba(255,255,255,0.2)", border: "none", cursor: "pointer", color: "#fff", width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem"}}>←</button>
           <div style={{flex: 1}}>
             <div style={{color: "#fff", fontWeight: 700, fontSize: "0.95rem"}}>Living</div>
@@ -339,7 +339,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                     style={{position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.4)", border: "none", color: "#fff", width: "32px", height: "32px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>›</button>
                   <div style={{position: "absolute", bottom: "10px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "6px"}}>
                     {post.images.map((_, i) => (
-                      <div key={i} onClick={() => setCurrentImageIndex(i)} style={{width: i === currentImageIndex ? "20px" : "6px", height: "6px", borderRadius: "3px", backgroundColor: i === currentImageIndex ? "#1D9E75" : "rgba(255,255,255,0.6)", cursor: "pointer", transition: "all 0.2s"}} />
+                      <div key={i} onClick={() => setCurrentImageIndex(i)} style={{width: i === currentImageIndex ? "20px" : "6px", height: "6px", borderRadius: "3px", backgroundColor: i === currentImageIndex ? "#2BB39A" : "rgba(255,255,255,0.6)", cursor: "pointer", transition: "all 0.2s"}} />
                     ))}
                   </div>
                 </>
@@ -361,14 +361,14 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
             <div style={{display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px"}}>
               {post?.is_fully_booked && <span style={{backgroundColor: "#EF4444", color: "#fff", fontSize: "0.7rem", fontWeight: 700, padding: "3px 10px", borderRadius: "10px"}}>FULLY BOOKED</span>}
               {post?.post_type === "looking" && <span style={{backgroundColor: "#F59E0B", color: "#fff", fontSize: "0.7rem", fontWeight: 700, padding: "3px 10px", borderRadius: "10px"}}>LOOKING</span>}
-              {post?.post_type === "listing" && !post?.is_fully_booked && <span style={{backgroundColor: "#1D9E75", color: "#fff", fontSize: "0.7rem", fontWeight: 700, padding: "3px 10px", borderRadius: "10px"}}>FOR RENT</span>}
-              {post?.is_negotiable && <span style={{backgroundColor: "#E1F5EE", color: "#1D9E75", fontSize: "0.7rem", fontWeight: 600, padding: "3px 10px", borderRadius: "10px"}}>Negotiable</span>}
+              {post?.post_type === "listing" && !post?.is_fully_booked && <span style={{backgroundColor: "#2BB39A", color: "#fff", fontSize: "0.7rem", fontWeight: 700, padding: "3px 10px", borderRadius: "10px"}}>FOR RENT</span>}
+              {post?.is_negotiable && <span style={{backgroundColor: "#E1F5EE", color: "#2BB39A", fontSize: "0.7rem", fontWeight: 600, padding: "3px 10px", borderRadius: "10px"}}>Negotiable</span>}
             </div>
 
             <div style={{fontWeight: 700, fontSize: "1.1rem", color: "#1A1A1A", marginBottom: "6px"}}>{post?.name}</div>
 
             {post?.price_per_month && (
-              <div style={{fontWeight: 700, fontSize: "1.15rem", color: "#1D9E75", marginBottom: "8px"}}>
+              <div style={{fontWeight: 700, fontSize: "1.15rem", color: "#2BB39A", marginBottom: "8px"}}>
                 ₱{post.price_per_month.toLocaleString("en-PH")}/mo
               </div>
             )}
@@ -380,7 +380,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
             )}
 
             {post?.available_slots !== null && post?.available_slots !== undefined && !post?.is_fully_booked && (
-              <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600, marginBottom: "8px"}}>
+              <div style={{fontSize: "0.82rem", color: "#2BB39A", fontWeight: 600, marginBottom: "8px"}}>
                 🚪 {post.available_slots} slot{post.available_slots !== 1 ? "s" : ""} available
               </div>
             )}
@@ -411,12 +411,12 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                     <span style={{fontSize: "1.2rem"}}>📞</span>
                     <div>
                       <div style={{fontSize: "0.72rem", color: "#888", fontWeight: 600}}>Contact Number</div>
-                      <a href={"tel:" + post.contact_number} style={{fontWeight: 700, fontSize: "1rem", color: "#1D9E75", textDecoration: "none"}}>{post.contact_number}</a>
+                      <a href={"tel:" + post.contact_number} style={{fontWeight: 700, fontSize: "1rem", color: "#2BB39A", textDecoration: "none"}}>{post.contact_number}</a>
                     </div>
                   </div>
                 ) : (
                   <button onClick={() => setShowContactNumber(true)}
-                    style={{width: "100%", backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "12px", padding: "12px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
+                    style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "12px", padding: "12px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
                     📞 Show Contact Number
                   </button>
                 )}
@@ -451,14 +451,14 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
               </div>
               {post?.users?.avatar_url
                 ? <img onClick={() => post && setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} src={post.users.avatar_url} alt="" style={{width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
-                : <div onClick={() => post && setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: null})} style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.95rem", cursor: "pointer"}}>{post?.users?.full_name?.charAt(0).toUpperCase()}</div>}
+                : <div onClick={() => post && setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: null})} style={{width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.95rem", cursor: "pointer"}}>{post?.users?.full_name?.charAt(0).toUpperCase()}</div>}
               <div>
                 <div style={{fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{post?.users?.full_name}{post && verifiedUsers.has(post.user_id) && <VerifiedBadge />}</div>
                 <div style={{fontSize: "0.72rem", color: "#888"}}>{formatTime(post?.created_at || "")}{post?.edited_at ? " · Edited" : ""}</div>
               </div>
               {currentUser && post && currentUser.id !== post.user_id && (
                 <button onClick={handleMessageOwner} disabled={messagingOwner}
-                  style={{marginLeft: "auto", backgroundColor: messagingOwner ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 16px", fontSize: "0.78rem", fontWeight: 700, cursor: messagingOwner ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "6px"}}>
+                  style={{marginLeft: "auto", backgroundColor: messagingOwner ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", padding: "8px 16px", fontSize: "0.78rem", fontWeight: 700, cursor: messagingOwner ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "6px"}}>
                   💬 {messagingOwner ? "Opening..." : "Message Owner"}
                 </button>
               )}
@@ -478,12 +478,12 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                 <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
                   {comment.users?.avatar_url
                     ? <img onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: comment.users?.avatar_url || null})} src={comment.users.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
-                    : <div onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: null})} style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0, cursor: "pointer"}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
+                    : <div onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: null})} style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0, cursor: "pointer"}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div style={{flex: 1}}>
                     <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "8px 12px"}}>
                       <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start"}}>
-                        <div style={{fontWeight: 700, fontSize: "0.78rem", color: "#1D9E75", marginBottom: "3px", display: "flex", alignItems: "center"}}>{comment.users?.full_name}{verifiedUsers.has(comment.user_id) && <VerifiedBadge />}</div>
+                        <div style={{fontWeight: 700, fontSize: "0.78rem", color: "#2BB39A", marginBottom: "3px", display: "flex", alignItems: "center"}}>{comment.users?.full_name}{verifiedUsers.has(comment.user_id) && <VerifiedBadge />}</div>
                         {currentUser?.id === comment.user_id && <button onClick={() => setShowCommentMenu(showCommentMenu === comment.id ? null : comment.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem", padding: "0 4px"}}>•••</button>}
                       </div>
                       {editingComment === comment.id ? (
@@ -492,7 +492,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                             style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "8px", padding: "6px 8px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#fff", resize: "none", boxSizing: "border-box"}} />
                           <div style={{display: "flex", gap: "6px", marginTop: "6px", justifyContent: "flex-end"}}>
                             <button onClick={() => setEditingComment(null)} style={{padding: "5px 12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
-                            <button onClick={() => handleEditComment(comment.id)} style={{padding: "5px 12px", borderRadius: "12px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+                            <button onClick={() => handleEditComment(comment.id)} style={{padding: "5px 12px", borderRadius: "12px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
                           </div>
                         </div>
                       ) : (
@@ -509,19 +509,19 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                         onReact={handleCommentReact}
                       />
                       <button onClick={() => { setReplyingTo(replyingTo === comment.id ? null : comment.id); setReplyText(""); }}
-                        style={{background: "none", border: "none", cursor: "pointer", fontSize: "0.7rem", color: "#1D9E75", fontWeight: 600, padding: 0, fontFamily: "inherit"}}>Reply</button>
+                        style={{background: "none", border: "none", cursor: "pointer", fontSize: "0.7rem", color: "#2BB39A", fontWeight: 600, padding: 0, fontFamily: "inherit"}}>Reply</button>
                     </div>
                     {replyingTo === comment.id && (
                       <div style={{display: "flex", gap: "8px", marginTop: "8px", alignItems: "center"}}>
                         {currentUser?.avatar_url
                           ? <img src={currentUser.avatar_url} alt="" style={{width: "26px", height: "26px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                          : <div style={{width: "26px", height: "26px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.7rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                          : <div style={{width: "26px", height: "26px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.7rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
                         }
                         <input autoFocus placeholder="Write a reply..." value={replyText} onChange={e => setReplyText(e.target.value)}
                           onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleReply(); } }}
                           style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "20px", padding: "7px 14px", fontSize: "0.8rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}} />
                         <button onClick={handleReply} disabled={submitting || !replyText.trim()}
-                          style={{backgroundColor: submitting || !replyText.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "7px 14px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit"}}>Reply</button>
+                          style={{backgroundColor: submitting || !replyText.trim() ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", padding: "7px 14px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit"}}>Reply</button>
                       </div>
                     )}
                     {comment.replies && comment.replies.length > 0 && (
@@ -530,12 +530,12 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                           <div key={reply.id} style={{display: "flex", gap: "8px", alignItems: "flex-start", marginBottom: "10px"}}>
                             {reply.users?.avatar_url
                               ? <img onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: reply.users?.avatar_url || null})} src={reply.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
-                              : <div onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: null})} style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.75rem", flexShrink: 0, cursor: "pointer"}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
+                              : <div onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: null})} style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.75rem", flexShrink: 0, cursor: "pointer"}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
                             }
                             <div style={{flex: 1}}>
                               <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "7px 11px"}}>
                                 <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start"}}>
-                                  <div style={{fontWeight: 700, fontSize: "0.75rem", color: "#1D9E75", marginBottom: "2px", display: "flex", alignItems: "center"}}>{reply.users?.full_name}{verifiedUsers.has(reply.user_id) && <VerifiedBadge />}</div>
+                                  <div style={{fontWeight: 700, fontSize: "0.75rem", color: "#2BB39A", marginBottom: "2px", display: "flex", alignItems: "center"}}>{reply.users?.full_name}{verifiedUsers.has(reply.user_id) && <VerifiedBadge />}</div>
                                   {currentUser?.id === reply.user_id && <button onClick={() => setShowCommentMenu(showCommentMenu === reply.id ? null : reply.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem", padding: "0 4px"}}>•••</button>}
                                 </div>
                                 {editingComment === reply.id ? (
@@ -544,7 +544,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                                       style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "8px", padding: "6px 8px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#fff", resize: "none", boxSizing: "border-box"}} />
                                     <div style={{display: "flex", gap: "6px", marginTop: "6px", justifyContent: "flex-end"}}>
                                       <button onClick={() => setEditingComment(null)} style={{padding: "5px 12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
-                                      <button onClick={() => handleEditComment(reply.id)} style={{padding: "5px 12px", borderRadius: "12px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+                                      <button onClick={() => handleEditComment(reply.id)} style={{padding: "5px 12px", borderRadius: "12px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
                                     </div>
                                   </div>
                                 ) : (
@@ -569,7 +569,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
         <div style={{position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "10px 16px", display: "flex", gap: "10px", alignItems: "center"}}>
           {currentUser?.avatar_url
             ? <img src={currentUser.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-            : <div style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+            : <div style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
           }
           <button onClick={() => setShowCommentEmoji(!showCommentEmoji)}
             style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.3rem", padding: "4px", opacity: 0.6, flexShrink: 0}}>
@@ -579,7 +579,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
             onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleComment(); } }}
             style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 16px", fontSize: "0.85rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}} />
           <button onClick={handleComment} disabled={submitting || !commentText.trim()}
-            style={{backgroundColor: submitting || !commentText.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 18px", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit"}}>
+            style={{backgroundColor: submitting || !commentText.trim() ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 18px", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit"}}>
             {submitting ? "..." : "Ask"}
           </button>
           {showCommentEmoji && (
@@ -680,7 +680,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                   <input placeholder="Price/month (₱)" value={editPrice} onChange={e => setEditPrice(e.target.value)} type="number"
                     style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}} />
                   <button onClick={() => setEditIsNegotiable(!editIsNegotiable)}
-                    style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (editIsNegotiable ? "#1D9E75" : "#F0F0F0"), backgroundColor: editIsNegotiable ? "#E1F5EE" : "#F7F7F7", color: editIsNegotiable ? "#1D9E75" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                    style={{padding: "10px 14px", borderRadius: "10px", border: "1px solid " + (editIsNegotiable ? "#2BB39A" : "#F0F0F0"), backgroundColor: editIsNegotiable ? "#E1F5EE" : "#F7F7F7", color: editIsNegotiable ? "#2BB39A" : "#888", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
                     {editIsNegotiable ? "✓ Nego" : "Nego?"}
                   </button>
                 </div>
@@ -692,7 +692,7 @@ export default function LivingDetailPage({ params }: { params: Promise<{ id: str
                   style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box"}} />
                 {editError && <div style={{color: "#EF4444", fontSize: "0.75rem"}}>{editError}</div>}
                 <button onClick={handleEditPost} disabled={saving}
-                  style={{backgroundColor: saving ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "12px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                  style={{backgroundColor: saving ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "12px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                   {saving ? "Saving..." : "Save Changes"}
                 </button>
               </div>

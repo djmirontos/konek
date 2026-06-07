@@ -133,7 +133,7 @@ export default function ReactionButton({
                         initial={{ opacity: 0, y: 4, scale: 0.8 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
-                        style={{fontSize: "0.58rem", fontWeight: 700, color: "#1D9E75", fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: "0.03em"}}
+                        style={{fontSize: "0.58rem", fontWeight: 700, color: "#2BB39A", fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: "0.03em"}}
                       >
                         {r.label}
                       </motion.span>
@@ -163,7 +163,7 @@ export default function ReactionButton({
               transition: "opacity 0.2s"}}
           />
           {total > 0 && (
-            <span style={{fontSize: "0.78rem", fontWeight: 600, color: userReaction ? "#1D9E75" : "#888", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+            <span style={{fontSize: "0.78rem", fontWeight: 600, color: userReaction ? "#2BB39A" : "#888", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
               {total}
             </span>
           )}

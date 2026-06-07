@@ -118,7 +118,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", alignItems: "center", justifyContent: "center"}}>
-        <div style={{width: "24px", height: "24px", border: "2px solid #E0E0E0", borderTopColor: "#1D9E75", borderRadius: "50%", animation: "spin 0.8s linear infinite"}} />
+        <div style={{width: "24px", height: "24px", border: "2px solid #E0E0E0", borderTopColor: "#2BB39A", borderRadius: "50%", animation: "spin 0.8s linear infinite"}} />
       </div>
     );
   }
@@ -126,7 +126,7 @@ export default function SettingsPage() {
   const Toggle = ({ on, onToggle }: { on: boolean; onToggle: () => void }) => (
     <button onClick={onToggle}
       style={{width: "44px", height: "24px", borderRadius: "12px", border: "none", cursor: "pointer",
-        backgroundColor: on ? "#1D9E75" : "#E0E0E0", position: "relative", flexShrink: 0, transition: "background-color 0.2s"}}>
+        backgroundColor: on ? "#2BB39A" : "#E0E0E0", position: "relative", flexShrink: 0, transition: "background-color 0.2s"}}>
       <div style={{position: "absolute", top: "2px", width: "20px", height: "20px", borderRadius: "50%",
         backgroundColor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.2)", transition: "left 0.2s",
         left: on ? "22px" : "2px"}} />
@@ -174,7 +174,7 @@ export default function SettingsPage() {
       )}
 
       {/* TOPBAR */}
-      <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.back()} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "2px 4px", lineHeight: 1}}>&#8249;</button>
         <span style={{color: "#fff", fontWeight: 700, fontSize: "1rem"}}>Settings</span>
       </div>
@@ -221,7 +221,7 @@ export default function SettingsPage() {
                   <select value={privacySettings[item.field] || "public"}
                     onChange={e => handleSavePrivacy(item.field, e.target.value)}
                     disabled={savingPrivacy}
-                    style={{fontSize: "0.75rem", fontWeight: 600, color: "#1D9E75", border: "1px solid #E0E0E0", borderRadius: "8px", padding: "4px 8px", backgroundColor: "#F7F7F7", cursor: "pointer", fontFamily: "inherit", outline: "none"}}>
+                    style={{fontSize: "0.75rem", fontWeight: 600, color: "#2BB39A", border: "1px solid #E0E0E0", borderRadius: "8px", padding: "4px 8px", backgroundColor: "#F7F7F7", cursor: "pointer", fontFamily: "inherit", outline: "none"}}>
                     <option value="public">Public</option>
                     <option value="school_only">School Only</option>
                     <option value="private">Private</option>
@@ -271,7 +271,7 @@ export default function SettingsPage() {
             <SectionLabel text="Admin" />
             <div style={{margin: "0 16px"}}>
               <button onClick={() => router.push("/admin")}
-                style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #1D9E75", backgroundColor: "#E1F5EE", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
+                style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #2BB39A", backgroundColor: "#E1F5EE", color: "#2BB39A", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
                 🛡️ Admin Panel
               </button>
             </div>
@@ -322,7 +322,7 @@ export default function SettingsPage() {
               <button onClick={() => { setShowChangePassword(false); setCurrentPassword(""); setNewPassword(""); setConfirmPassword(""); setPasswordError(""); }}
                 style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
               <button onClick={handleChangePassword} disabled={changingPassword}
-                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: changingPassword ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: changingPassword ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: changingPassword ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: changingPassword ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                 {changingPassword ? "Saving..." : "Save"}
               </button>
             </div>

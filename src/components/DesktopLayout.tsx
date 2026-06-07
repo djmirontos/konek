@@ -55,7 +55,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
       }}>
         {/* Logo */}
         <div style={{
-          backgroundColor: "#1D9E75",
+          backgroundColor: "#2BB39A",
           borderRadius: "16px",
           padding: "14px 20px",
           marginBottom: "16px",
@@ -86,7 +86,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
               <span style={{
                 fontSize: "0.9rem",
                 fontWeight: isActive ? 700 : 500,
-                color: isActive ? "#1D9E75" : "#1A1A1A",
+                color: isActive ? "#2BB39A" : "#1A1A1A",
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
               }}>
                 {item.label}
@@ -98,7 +98,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
         {/* Bottom tagline */}
         <div style={{marginTop: "auto", padding: "16px", borderTop: "1px solid #F0F0F0"}}>
           <div style={{fontSize: "0.72rem", color: "#aaa", lineHeight: 1.6, fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
-            <span style={{fontWeight: 700, color: "#1D9E75"}}>Klasmeyt</span> — Your Campus. Your Community.
+            <span style={{fontWeight: 700, color: "#2BB39A"}}>Klasmeyt</span> — Your Campus. Your Community.
             
           </div>
         </div>
@@ -141,7 +141,7 @@ export default function DesktopLayout({ children }: { children: React.ReactNode 
           <div style={{
             fontSize: "0.78rem",
             fontWeight: 700,
-            color: "#1D9E75",
+            color: "#2BB39A",
             letterSpacing: "0.06em",
             textTransform: "uppercase",
             marginBottom: "10px",

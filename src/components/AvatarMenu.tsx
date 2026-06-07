@@ -67,7 +67,7 @@ export default function AvatarMenu({ user, currentUserId, onClose, onEditProfile
         <div style={{display: "flex", alignItems: "center", gap: "12px", padding: "16px 20px", borderBottom: "1px solid #F0F0F0"}}>
           {user.avatar_url
             ? <img src={user.avatar_url} alt="" style={{width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-            : <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem", flexShrink: 0}}>{user.full_name?.charAt(0).toUpperCase()}</div>
+            : <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.1rem", flexShrink: 0}}>{user.full_name?.charAt(0).toUpperCase()}</div>
           }
           <div>
             <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A"}}>{user.full_name}</div>
@@ -87,7 +87,7 @@ export default function AvatarMenu({ user, currentUserId, onClose, onEditProfile
 
           {isOwnProfile ? (
             <button onClick={handleEditProfile}
-              style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, color: "#1D9E75", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "14px"}}
+              style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, color: "#2BB39A", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "14px"}}
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F7F7F7")}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
               <span style={{fontSize: "1.2rem"}}>✏️</span>
@@ -95,7 +95,7 @@ export default function AvatarMenu({ user, currentUserId, onClose, onEditProfile
             </button>
           ) : (
             <button onClick={handleMessage} disabled={messaging}
-              style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, color: messaging ? "#aaa" : "#1D9E75", cursor: messaging ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "14px"}}
+              style={{width: "100%", padding: "14px 20px", border: "none", backgroundColor: "#fff", textAlign: "left", fontSize: "0.9rem", fontWeight: 600, color: messaging ? "#aaa" : "#2BB39A", cursor: messaging ? "not-allowed" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "14px"}}
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F7F7F7")}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
               <span style={{fontSize: "1.2rem"}}>💬</span>

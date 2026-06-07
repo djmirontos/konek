@@ -69,7 +69,7 @@ export default function AvatarUploader({ onComplete, onCancel }: AvatarUploaderP
     // circle border
     ctx.beginPath();
     ctx.arc(SIZE / 2, SIZE / 2, SIZE / 2 - 1, 0, Math.PI * 2);
-    ctx.strokeStyle = "#1D9E75";
+    ctx.strokeStyle = "#2BB39A";
     ctx.lineWidth = 3;
     ctx.stroke();
   }, [zoom, offset]);
@@ -153,7 +153,7 @@ export default function AvatarUploader({ onComplete, onCancel }: AvatarUploaderP
           <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "6px"}}>Choose a Photo</div>
           <div style={{fontSize: "0.8rem", color: "#888", marginBottom: "20px"}}>Select a photo to use as your profile picture</div>
           <button onClick={() => fileInputRef.current?.click()}
-            style={{width: "100%", backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "10px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", marginBottom: "10px"}}>
+            style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "10px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", marginBottom: "10px"}}>
             Choose Photo
           </button>
           <button onClick={onCancel}
@@ -180,7 +180,7 @@ export default function AvatarUploader({ onComplete, onCancel }: AvatarUploaderP
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
-            style={{borderRadius: "50%", cursor: dragging ? "grabbing" : "grab", touchAction: "none", boxShadow: "0 0 0 4px #1D9E75"}}
+            style={{borderRadius: "50%", cursor: dragging ? "grabbing" : "grab", touchAction: "none", boxShadow: "0 0 0 4px #2BB39A"}}
           />
 
           {/* ZOOM SLIDER */}
@@ -188,7 +188,7 @@ export default function AvatarUploader({ onComplete, onCancel }: AvatarUploaderP
             <span style={{fontSize: "0.75rem", color: "rgba(255,255,255,0.7)"}}>🔍−</span>
             <input type="range" min={0.3} max={5} step={0.01} value={zoom}
               onChange={e => setZoom(parseFloat(e.target.value))}
-              style={{flex: 1, accentColor: "#1D9E75"}} />
+              style={{flex: 1, accentColor: "#2BB39A"}} />
             <span style={{fontSize: "0.75rem", color: "rgba(255,255,255,0.7)"}}>🔍+</span>
           </div>
 
@@ -199,7 +199,7 @@ export default function AvatarUploader({ onComplete, onCancel }: AvatarUploaderP
               Change Photo
             </button>
             <button onClick={handleConfirm}
-              style={{flex: 2, backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "10px", padding: "13px", fontWeight: 700, fontSize: "0.875rem", cursor: "pointer", fontFamily: "inherit"}}>
+              style={{flex: 2, backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "10px", padding: "13px", fontWeight: 700, fontSize: "0.875rem", cursor: "pointer", fontFamily: "inherit"}}>
               Use This Photo
             </button>
           </div>

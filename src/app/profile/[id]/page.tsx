@@ -38,7 +38,7 @@ const TABS = ["Posts", "Bazaar", "Living", "About"];
 
 function VerifiedBadge({ size = 15 }: { size?: number }) {
   return (
-    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: size + "px", height: size + "px", backgroundColor: "#1D9E75", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
+    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: size + "px", height: size + "px", backgroundColor: "#2BB39A", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
       <svg width={size * 0.6} height={size * 0.6} viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
       </svg>
@@ -49,7 +49,7 @@ function VerifiedBadge({ size = 15 }: { size?: number }) {
 function getTrustLevel(xp: number) {
   if (xp >= 1000) return { label: "Legend",  emoji: "👑", bg: "#FAEEDA", color: "#633806", border: "#FAC775", track: "#FAC775", fill: "#BA7517" };
   if (xp >= 500)  return { label: "Trusted",  emoji: "⭐", bg: "#E6F1FB", color: "#185FA5", border: "#B5D4F4", track: "#B5D4F4", fill: "#378ADD" };
-  if (xp >= 100)  return { label: "Regular",  emoji: "🌿", bg: "#EAF3DE", color: "#3B6D11", border: "#C0DD97", track: "#C0DD97", fill: "#1D9E75" };
+  if (xp >= 100)  return { label: "Regular",  emoji: "🌿", bg: "#EAF3DE", color: "#3B6D11", border: "#C0DD97", track: "#C0DD97", fill: "#2BB39A" };
   return null;
 }
 
@@ -521,7 +521,7 @@ export default function ProfilePage() {
       <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", alignItems: "center", justifyContent: "center"}}>
         <div style={{fontSize: "3rem", marginBottom: "12px"}}>😕</div>
         <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem"}}>User not found</div>
-        <button onClick={() => router.back()} style={{marginTop: "16px", padding: "10px 24px", backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Go Back</button>
+        <button onClick={() => router.back()} style={{marginTop: "16px", padding: "10px 24px", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Go Back</button>
       </div>
     );
   }
@@ -544,7 +544,7 @@ export default function ProfilePage() {
     )}
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
-      <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.back()} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "2px 4px", display: "flex", alignItems: "center", lineHeight: 1}}>&#8249;</button>
         <span style={{color: "#fff", fontWeight: 700, fontSize: "1rem", flex: 1}}>{isOwnProfile ? "My Profile" : profileUser.full_name}</span>
         <button onClick={() => router.push("/feeds")} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "4px", lineHeight: 1}}>✕</button>
@@ -553,17 +553,17 @@ export default function ProfilePage() {
       <div style={{backgroundColor: "#fff", padding: "20px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center", borderBottom: "1px solid #F0F0F0"}}>
         <div style={{position: "relative", marginBottom: "12px"}}>
           {profileUser.avatar_url
-            ? <img src={profileUser.avatar_url} alt="avatar" onClick={() => setViewAvatar({src: profileUser.avatar_original_url || profileUser.avatar_url || '', name: profileUser.full_name})} style={{cursor: "pointer", width: "88px", height: "88px", borderRadius: "50%", objectFit: "cover", border: "3px solid #1D9E75"}} />
-            : <div style={{width: "88px", height: "88px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "3px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "2rem"}}>{profileUser.full_name?.charAt(0).toUpperCase()}</div>
+            ? <img src={profileUser.avatar_url} alt="avatar" onClick={() => setViewAvatar({src: profileUser.avatar_original_url || profileUser.avatar_url || '', name: profileUser.full_name})} style={{cursor: "pointer", width: "88px", height: "88px", borderRadius: "50%", objectFit: "cover", border: "3px solid #2BB39A"}} />
+            : <div style={{width: "88px", height: "88px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "3px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "2rem"}}>{profileUser.full_name?.charAt(0).toUpperCase()}</div>
           }
           {isVerified && (
-            <div style={{position: "absolute", bottom: "2px", right: "2px", width: "22px", height: "22px", backgroundColor: "#1D9E75", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center"}}>
+            <div style={{position: "absolute", bottom: "2px", right: "2px", width: "22px", height: "22px", backgroundColor: "#2BB39A", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center"}}>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M20 6L9 17l-5-5"/><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </div>
           )}
           {isOwnProfile && (
             <button onClick={() => setShowAvatarUploader(true)} disabled={uploadingAvatar}
-              style={{position: "absolute", bottom: isVerified ? "24px" : "0px", right: "0", backgroundColor: "#1D9E75", border: "2px solid #fff", borderRadius: "50%", width: "28px", height: "28px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "0.7rem"}}>
+              style={{position: "absolute", bottom: isVerified ? "24px" : "0px", right: "0", backgroundColor: "#2BB39A", border: "2px solid #fff", borderRadius: "50%", width: "28px", height: "28px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "0.7rem"}}>
               {uploadingAvatar ? "⏳" : "📷"}
             </button>
           )}
@@ -580,25 +580,25 @@ export default function ProfilePage() {
           {profileUser.full_name}
           {(() => { const tl = getTrustLevel(profileUser.trust_xp || 0); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.68rem",fontWeight:700,padding:"2px 8px",borderRadius:"10px"}}>{tl.emoji} {tl.label}</span> : null; })()}
         </div>
-        {school && <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600, marginBottom: "2px"}}>{school.abbreviation}</div>}
+        {school && <div style={{fontSize: "0.82rem", color: "#2BB39A", fontWeight: 600, marginBottom: "2px"}}>{school.abbreviation}</div>}
         {profileUser.bio && <div style={{fontSize: "0.83rem", color: "#555", textAlign: "center", marginBottom: "10px", lineHeight: 1.5, maxWidth: "300px", marginTop: "4px"}}>{profileUser.bio}</div>}
 
         <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", margin: "8px 0 14px", backgroundColor: "#F7F7F7", borderRadius: "12px", overflow: "hidden"}}>
           <div style={{padding: "14px 8px", textAlign: "center", borderRight: "1px solid #E8E8E8"}}>
             <div style={{fontWeight: 700, fontSize: "1.5rem", color: "#1A1A1A"}}>{commentCount.toLocaleString()}</div>
-            {commentsToday > 0 && <div style={{fontSize: "0.72rem", color: "#1D9E75", fontWeight: 700, marginTop: "2px"}}>+{commentsToday} today</div>}
+            {commentsToday > 0 && <div style={{fontSize: "0.72rem", color: "#2BB39A", fontWeight: 700, marginTop: "2px"}}>+{commentsToday} today</div>}
             <div style={{fontSize: "0.7rem", color: "#888", marginTop: "2px"}}>Commented on your post</div>
           </div>
           <div style={{padding: "14px 8px", textAlign: "center"}}>
             <div style={{fontWeight: 700, fontSize: "1.5rem", color: "#1A1A1A"}}>{reactionsReceived.toLocaleString()}</div>
-            {reactionsToday > 0 && <div style={{fontSize: "0.72rem", color: "#1D9E75", fontWeight: 700, marginTop: "2px"}}>+{reactionsToday} today</div>}
+            {reactionsToday > 0 && <div style={{fontSize: "0.72rem", color: "#2BB39A", fontWeight: 700, marginTop: "2px"}}>+{reactionsToday} today</div>}
             <div style={{fontSize: "0.7rem", color: "#888", marginTop: "2px"}}>Reactions received</div>
           </div>
         </div>
         {!isOwnProfile && (
           <div style={{display: "flex", gap: "10px"}}>
             <button onClick={handleMessageUser} disabled={messagingUser}
-              style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: messagingUser ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: messagingUser ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+              style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: messagingUser ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: messagingUser ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
               {messagingUser ? "Opening..." : "💬 Message"}
             </button>
             <button style={{padding: "9px 20px", borderRadius: "20px", border: "1.5px solid #EF4444", backgroundColor: "#fff", color: "#EF4444", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>🚩 Report</button>
@@ -615,7 +615,7 @@ export default function ProfilePage() {
           {visibleTabs.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               style={{flex: 1, padding: "8px 4px", border: "none", borderRadius: "8px",
-                backgroundColor: activeTab === tab ? "#1D9E75" : "transparent",
+                backgroundColor: activeTab === tab ? "#2BB39A" : "transparent",
                 color: activeTab === tab ? "#fff" : "#888",
                 fontWeight: activeTab === tab ? 700 : 500,
                 fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", transition: "all 0.15s"}}>
@@ -629,7 +629,7 @@ export default function ProfilePage() {
         {loadingTab ? (
           <div style={{padding: "40px", textAlign: "center"}}>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-            <div style={{display: "inline-block", width: "24px", height: "24px", border: "2px solid #E0E0E0", borderTopColor: "#1D9E75", borderRadius: "50%", animation: "spin 0.8s linear infinite"}} />
+            <div style={{display: "inline-block", width: "24px", height: "24px", border: "2px solid #E0E0E0", borderTopColor: "#2BB39A", borderRadius: "50%", animation: "spin 0.8s linear infinite"}} />
           </div>
         ) : (
           <>
@@ -647,10 +647,10 @@ export default function ProfilePage() {
                       style={{backgroundColor: "#fff", marginBottom: "8px", padding: "14px 16px", cursor: "pointer", borderBottom: "1px solid #F0F0F0"}}>
                       <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px"}}>
                         {post.type === "quad"
-                          ? <span style={{fontSize: "0.65rem", backgroundColor: "#E1F5EE", color: "#1D9E75", fontWeight: 700, padding: "2px 8px", borderRadius: "10px"}}>QUAD</span>
+                          ? <span style={{fontSize: "0.65rem", backgroundColor: "#E1F5EE", color: "#2BB39A", fontWeight: 700, padding: "2px 8px", borderRadius: "10px"}}>QUAD</span>
                           : <span style={{fontSize: "0.65rem", backgroundColor: "#F0F0F0", color: "#888", fontWeight: 700, padding: "2px 8px", borderRadius: "10px"}}>FEED</span>
                         }
-                        {post.tag && <span style={{fontSize: "0.68rem", color: "#1D9E75"}}>{post.tag}</span>}
+                        {post.tag && <span style={{fontSize: "0.68rem", color: "#2BB39A"}}>{post.tag}</span>}
                         <span style={{fontSize: "0.68rem", color: "#aaa", marginLeft: "auto"}}>{formatTime(post.created_at)}</span>
                       </div>
                       <div style={{fontSize: "0.875rem", color: "#1A1A1A", lineHeight: 1.5}}>{post.content}</div>
@@ -688,12 +688,12 @@ export default function ProfilePage() {
                           : <div style={{width: "100%", height: "120px", backgroundColor: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem"}}>🛍️</div>
                         }
                         {listing.is_sold && (
-                          <div style={{position: "absolute", top: "6px", left: "6px", backgroundColor: "#1D9E75", color: "#fff", fontSize: "0.6rem", fontWeight: 700, padding: "2px 8px", borderRadius: "8px"}}>SOLD</div>
+                          <div style={{position: "absolute", top: "6px", left: "6px", backgroundColor: "#2BB39A", color: "#fff", fontSize: "0.6rem", fontWeight: 700, padding: "2px 8px", borderRadius: "8px"}}>SOLD</div>
                         )}
                       </div>
                       <div style={{padding: "8px"}}>
                         <div style={{fontWeight: 600, fontSize: "0.82rem", color: "#1A1A1A", marginBottom: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{listing.title}</div>
-                        <div style={{fontWeight: 700, fontSize: "0.88rem", color: "#1D9E75"}}>{formatPrice(listing.price)}</div>
+                        <div style={{fontWeight: 700, fontSize: "0.88rem", color: "#2BB39A"}}>{formatPrice(listing.price)}</div>
                         <div style={{fontSize: "0.68rem", color: "#aaa", marginTop: "2px"}}>{listing.condition}</div>
                       </div>
                     </div>
@@ -720,13 +720,13 @@ export default function ProfilePage() {
                       }
                       <div style={{flex: 1, minWidth: 0}}>
                         <div style={{display: "flex", gap: "6px", alignItems: "center", marginBottom: "4px", flexWrap: "wrap"}}>
-                          <span style={{fontSize: "0.65rem", backgroundColor: lp.post_type === "listing" ? "#E1F5EE" : "#FEF2F2", color: lp.post_type === "listing" ? "#1D9E75" : "#EF4444", fontWeight: 700, padding: "2px 8px", borderRadius: "10px"}}>
+                          <span style={{fontSize: "0.65rem", backgroundColor: lp.post_type === "listing" ? "#E1F5EE" : "#FEF2F2", color: lp.post_type === "listing" ? "#2BB39A" : "#EF4444", fontWeight: 700, padding: "2px 8px", borderRadius: "10px"}}>
                             {lp.post_type === "listing" ? "🏠 FOR RENT" : "🔍 LOOKING"}
                           </span>
                           {lp.is_fully_booked && <span style={{fontSize: "0.65rem", backgroundColor: "#F0F0F0", color: "#888", fontWeight: 700, padding: "2px 8px", borderRadius: "10px"}}>FULLY BOOKED</span>}
                         </div>
                         <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", marginBottom: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{lp.title}</div>
-                        {lp.price_per_month && <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 600}}>\u20b1{lp.price_per_month.toLocaleString()}/mo</div>}
+                        {lp.price_per_month && <div style={{fontSize: "0.82rem", color: "#2BB39A", fontWeight: 600}}>\u20b1{lp.price_per_month.toLocaleString()}/mo</div>}
                         {lp.address && <div style={{fontSize: "0.72rem", color: "#888", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>📍 {lp.address}</div>}
                         <div style={{fontSize: "0.68rem", color: "#aaa", marginTop: "4px"}}>{formatTime(lp.created_at)}</div>
                       </div>
@@ -782,7 +782,7 @@ export default function ProfilePage() {
                         <div style={{width: "32px", height: "32px", borderRadius: "8px", backgroundColor: "#EAF3DE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0}}>📱</div>
                         <div>
                           <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Phone</div>
-                          <a href={"tel:" + profileUser.phone_number} style={{fontSize: "0.85rem", fontWeight: 600, color: "#1D9E75", textDecoration: "none"}}>{profileUser.phone_number}</a>
+                          <a href={"tel:" + profileUser.phone_number} style={{fontSize: "0.85rem", fontWeight: 600, color: "#2BB39A", textDecoration: "none"}}>{profileUser.phone_number}</a>
                         </div>
                       </div>
                     )}
@@ -853,7 +853,7 @@ export default function ProfilePage() {
                         {profileUser.invite_code}
                       </div>
                       <button onClick={() => { navigator.clipboard.writeText(profileUser.invite_code || ""); showToast("Copied!"); }}
-                        style={{backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "10px", padding: "10px 16px", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                        style={{backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "10px", padding: "10px 16px", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
                         Copy
                       </button>
                     </div>
@@ -868,7 +868,7 @@ export default function ProfilePage() {
                         const done = (profileUser.referral_count || 0) >= m.count;
                         return (
                           <div key={m.count} style={{display: "flex", alignItems: "center", gap: "8px", opacity: done ? 1 : 0.5}}>
-                            <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: done ? "#1D9E75" : "#888", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: "#fff", fontWeight: 700, flexShrink: 0}}>
+                            <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: done ? "#2BB39A" : "#888", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: "#fff", fontWeight: 700, flexShrink: 0}}>
                               {done ? "✓" : m.count}
                             </div>
                             <span style={{fontSize: "0.75rem", fontWeight: done ? 700 : 400, color: done ? "#0F6E56" : "#1A1A1A", textDecoration: done ? "none" : "none"}}>
@@ -890,7 +890,7 @@ export default function ProfilePage() {
                         <span style={{fontSize: "1.6rem"}}>✅</span>
                         <div>
                           <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#0F6E56"}}>Verified Student</div>
-                          <div style={{fontSize: "0.72rem", color: "#1D9E75", marginTop: "2px"}}>Your Student ID has been verified successfully.</div>
+                          <div style={{fontSize: "0.72rem", color: "#2BB39A", marginTop: "2px"}}>Your Student ID has been verified successfully.</div>
                         </div>
                       </div>
                     )}
@@ -927,11 +927,11 @@ export default function ProfilePage() {
                         <div style={{display: "flex", flexDirection: "column", gap: "5px", marginBottom: "14px"}}>
                           {["Verified badge beside your name", "More trust in Bazaar listings", "More credibility across Klasmeyt"].map(benefit => (
                             <div key={benefit} style={{display: "flex", alignItems: "center", gap: "8px", fontSize: "0.78rem", color: "#555"}}>
-                              <span style={{color: "#1D9E75", fontWeight: 700}}>✓</span> {benefit}
+                              <span style={{color: "#2BB39A", fontWeight: 700}}>✓</span> {benefit}
                             </div>
                           ))}
                         </div>
-                        <button onClick={() => setShowVerifySheet(true)} style={{backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "8px", padding: "11px 20px", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", width: "100%"}}>Verify Student ID</button>
+                        <button onClick={() => setShowVerifySheet(true)} style={{backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "8px", padding: "11px 20px", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", width: "100%"}}>Verify Student ID</button>
                       </div>
                     )}
                   </div>
@@ -940,7 +940,7 @@ export default function ProfilePage() {
                 {/* ADMIN PANEL — admin/mod only */}
                 {isOwnProfile && (currentUser?.role === "admin" || currentUser?.role === "moderator") && (
                   <div style={{paddingBottom: "8px"}}>
-                    <button onClick={() => router.push("/admin")} style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #1D9E75", backgroundColor: "#E1F5EE", color: "#1D9E75", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
+                    <button onClick={() => router.push("/admin")} style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #2BB39A", backgroundColor: "#E1F5EE", color: "#2BB39A", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit"}}>
                       🛡️ Admin Panel
                     </button>
                   </div>
@@ -960,7 +960,7 @@ export default function ProfilePage() {
           <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "24px 16px 40px"}}>
             <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "0 auto 16px"}} />
             <div style={{textAlign: "center", marginBottom: "20px"}}>
-              {newAvatarUrl && <img src={newAvatarUrl} alt="" style={{width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", border: "3px solid #1D9E75", marginBottom: "12px"}} />}
+              {newAvatarUrl && <img src={newAvatarUrl} alt="" style={{width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", border: "3px solid #2BB39A", marginBottom: "12px"}} />}
               <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "6px"}}>Profile photo updated!</div>
               <div style={{fontSize: "0.82rem", color: "#888"}}>Would you like to share this to your school feed?</div>
             </div>
@@ -970,7 +970,7 @@ export default function ProfilePage() {
                 Skip
               </button>
               <button onClick={sharePhotoToFeed} disabled={sharingPhoto}
-                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: sharingPhoto ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: sharingPhoto ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: sharingPhoto ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: sharingPhoto ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                 {sharingPhoto ? "Sharing..." : "Share to Feed"}
               </button>
             </div>
@@ -1033,7 +1033,7 @@ export default function ProfilePage() {
             </div>
             <div style={{display: "flex", gap: "10px"}}>
               <button onClick={() => setShowEditSheet(false)} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
-              <button onClick={handleSaveProfile} disabled={savingProfile} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: savingProfile ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: savingProfile ? "not-allowed" : "pointer", fontFamily: "inherit"}}>{savingProfile ? "Saving..." : "Save"}</button>
+              <button onClick={handleSaveProfile} disabled={savingProfile} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: savingProfile ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: savingProfile ? "not-allowed" : "pointer", fontFamily: "inherit"}}>{savingProfile ? "Saving..." : "Save"}</button>
             </div>
           </div>
         </>
@@ -1061,11 +1061,11 @@ export default function ProfilePage() {
               <label style={{display: "block", cursor: "pointer"}}>
                 {verifyFrontPreview ? (
                   <div style={{position: "relative"}}>
-                    <img src={verifyFrontPreview} alt="front" style={{width: "100%", height: "160px", objectFit: "contain", borderRadius: "10px", border: "2px solid #1D9E75", backgroundColor: "#F7F7F7"}} />
-                    <div style={{position: "absolute", bottom: "8px", right: "8px", backgroundColor: "#1D9E75", color: "#fff", borderRadius: "6px", padding: "4px 10px", fontSize: "0.7rem", fontWeight: 700}}>Change</div>
+                    <img src={verifyFrontPreview} alt="front" style={{width: "100%", height: "160px", objectFit: "contain", borderRadius: "10px", border: "2px solid #2BB39A", backgroundColor: "#F7F7F7"}} />
+                    <div style={{position: "absolute", bottom: "8px", right: "8px", backgroundColor: "#2BB39A", color: "#fff", borderRadius: "6px", padding: "4px 10px", fontSize: "0.7rem", fontWeight: 700}}>Change</div>
                   </div>
                 ) : (
-                  <div style={{width: "100%", height: "140px", border: "2px dashed #1D9E75", borderRadius: "10px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backgroundColor: "#E1F5EE", gap: "6px"}}>
+                  <div style={{width: "100%", height: "140px", border: "2px dashed #2BB39A", borderRadius: "10px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backgroundColor: "#E1F5EE", gap: "6px"}}>
                     <span style={{fontSize: "2rem"}}>🪪</span>
                     <span style={{fontSize: "0.8rem", fontWeight: 600, color: "#0F6E56"}}>Tap to upload front of ID</span>
                     <span style={{fontSize: "0.68rem", color: "#888"}}>JPG or PNG, max 10MB</span>
@@ -1104,7 +1104,7 @@ export default function ProfilePage() {
                 Cancel
               </button>
               <button onClick={handleVerificationSubmit} disabled={!verifyFrontFile || submittingVerify}
-                style={{flex: 2, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: !verifyFrontFile || submittingVerify ? "#ccc" : "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: !verifyFrontFile || submittingVerify ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                style={{flex: 2, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: !verifyFrontFile || submittingVerify ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: !verifyFrontFile || submittingVerify ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                 {submittingVerify ? "Submitting..." : "Submit for Verification"}
               </button>
             </div>

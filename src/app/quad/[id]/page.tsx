@@ -153,7 +153,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   function getTagColor(tag: string) {
-    return HANGOUT_TAG_SET.has(tag) ? "#1D9E75" : "#F59E0B";
+    return HANGOUT_TAG_SET.has(tag) ? "#2BB39A" : "#F59E0B";
   }
 
   function getTagBg(tag: string) {
@@ -181,7 +181,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
         )}
 
         {/* Header */}
-        <div style={{backgroundColor: "#1D9E75", padding: "14px 16px", display: "flex", alignItems: "center", gap: "12px", flexShrink: 0}}>
+        <div style={{backgroundColor: "#2BB39A", padding: "14px 16px", display: "flex", alignItems: "center", gap: "12px", flexShrink: 0}}>
           <button onClick={() => router.back()} style={{background: "rgba(255,255,255,0.2)", border: "none", cursor: "pointer", color: "#fff", width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem"}}>←</button>
           <div>
             <div style={{color: "#fff", fontWeight: 700, fontSize: "0.95rem"}}>Quad</div>
@@ -198,7 +198,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
               <div style={{padding: "14px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
                 {post.users?.avatar_url
                   ? <img onClick={() => router.push(`/profile/${post.user_id}`)} src={post.users.avatar_url} alt="" style={{width: "42px", height: "42px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
-                  : <div onClick={() => router.push(`/profile/${post.user_id}`)} style={{width: "42px", height: "42px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+                  : <div onClick={() => router.push(`/profile/${post.user_id}`)} style={{width: "42px", height: "42px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                 }
                 <div style={{flex: 1}}>
                   <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A"}}>{post.users?.full_name}</div>
@@ -215,7 +215,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
               </div>
               {post.location && !post.isExpired && (
                 <div style={{padding: "0 16px 6px", display: "flex", alignItems: "center", gap: "5px"}}>
-                  <span style={{fontSize: "0.78rem", color: "#1D9E75", fontWeight: 600}}>📍 {post.location}</span>
+                  <span style={{fontSize: "0.78rem", color: "#2BB39A", fontWeight: 600}}>📍 {post.location}</span>
                 </div>
               )}
               {post.isExpired ? (
@@ -248,12 +248,12 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
                 <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
                   {comment.users?.avatar_url
                     ? <img onClick={() => router.push(`/profile/${comment.user_id}`)} src={comment.users.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
-                    : <div onClick={() => router.push(`/profile/${comment.user_id}`)} style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0, cursor: "pointer"}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
+                    : <div onClick={() => router.push(`/profile/${comment.user_id}`)} style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0, cursor: "pointer"}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div style={{flex: 1}}>
                     <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "8px 12px"}}>
                       <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start"}}>
-                        <div style={{fontWeight: 700, fontSize: "0.78rem", color: "#1D9E75", marginBottom: "3px"}}>{comment.users?.full_name}</div>
+                        <div style={{fontWeight: 700, fontSize: "0.78rem", color: "#2BB39A", marginBottom: "3px"}}>{comment.users?.full_name}</div>
                         {currentUser?.id === comment.user_id && !post?.isExpired && <button onClick={() => setShowCommentMenu(showCommentMenu === comment.id ? null : comment.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem", padding: "0 4px", lineHeight: 1}}>•••</button>}
                       </div>
                       <div style={{fontSize: "0.85rem", color: "#1A1A1A", lineHeight: 1.4}}>{comment.content}</div>
@@ -262,7 +262,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
                       <span style={{fontSize: "0.7rem", color: "#888"}}>{formatTime(comment.created_at)}{comment.edited_at && <span style={{marginLeft: "4px", fontStyle: "italic", color: "#aaa"}}>· Edited</span>}</span>
                       {!post?.isExpired && (
                         <button onClick={() => { setReplyingTo(replyingTo === comment.id ? null : comment.id); setReplyText(""); }}
-                          style={{background: "none", border: "none", cursor: "pointer", fontSize: "0.7rem", color: "#1D9E75", fontWeight: 600, padding: 0, fontFamily: "inherit"}}>
+                          style={{background: "none", border: "none", cursor: "pointer", fontSize: "0.7rem", color: "#2BB39A", fontWeight: 600, padding: 0, fontFamily: "inherit"}}>
                           Reply
                         </button>
                       )}
@@ -271,7 +271,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
                       <div style={{display: "flex", gap: "8px", marginTop: "8px", alignItems: "center"}}>
                         {currentUser?.avatar_url
                           ? <img src={currentUser.avatar_url} alt="" style={{width: "26px", height: "26px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                          : <div style={{width: "26px", height: "26px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.7rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                          : <div style={{width: "26px", height: "26px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.7rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
                         }
                         <input
                           autoFocus
@@ -282,7 +282,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
                           style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "20px", padding: "7px 14px", fontSize: "0.8rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}}
                         />
                         <button onClick={handleReply} disabled={submitting || !replyText.trim()}
-                          style={{backgroundColor: submitting || !replyText.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "7px 14px", fontSize: "0.75rem", fontWeight: 700, cursor: submitting || !replyText.trim() ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                          style={{backgroundColor: submitting || !replyText.trim() ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", padding: "7px 14px", fontSize: "0.75rem", fontWeight: 700, cursor: submitting || !replyText.trim() ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
                           Reply
                         </button>
                       </div>
@@ -293,12 +293,12 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
                           <div key={reply.id} style={{display: "flex", gap: "8px", alignItems: "flex-start", marginBottom: "10px"}}>
                             {reply.users?.avatar_url
                               ? <img onClick={() => router.push(`/profile/${reply.user_id}`)} src={reply.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
-                              : <div onClick={() => router.push(`/profile/${reply.user_id}`)} style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.75rem", flexShrink: 0, cursor: "pointer"}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
+                              : <div onClick={() => router.push(`/profile/${reply.user_id}`)} style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.75rem", flexShrink: 0, cursor: "pointer"}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
                             }
                             <div style={{flex: 1}}>
                               <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "7px 11px"}}>
                                 <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start"}}>
-                                  <div style={{fontWeight: 700, fontSize: "0.75rem", color: "#1D9E75", marginBottom: "2px"}}>{reply.users?.full_name}</div>
+                                  <div style={{fontWeight: 700, fontSize: "0.75rem", color: "#2BB39A", marginBottom: "2px"}}>{reply.users?.full_name}</div>
                                   {currentUser?.id === reply.user_id && !post?.isExpired && <button onClick={() => setShowCommentMenu(showCommentMenu === reply.id ? null : reply.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1rem", padding: "0 4px", lineHeight: 1}}>•••</button>}
                                 </div>
                                 <div style={{fontSize: "0.82rem", color: "#1A1A1A", lineHeight: 1.4}}>{reply.content}</div>
@@ -326,7 +326,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
           <div style={{position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "10px 16px", display: "flex", gap: "10px", alignItems: "center"}}>
             {currentUser?.avatar_url
               ? <img src={currentUser.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-              : <div style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+              : <div style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
             }
             <input
               placeholder="Write a comment..."
@@ -336,7 +336,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
               style={{flex: 1, border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 16px", fontSize: "0.85rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7"}}
             />
             <button onClick={handleComment} disabled={submitting || !commentText.trim()}
-              style={{backgroundColor: submitting || !commentText.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 18px", fontWeight: 700, fontSize: "0.8rem", cursor: submitting || !commentText.trim() ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+              style={{backgroundColor: submitting || !commentText.trim() ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 18px", fontWeight: 700, fontSize: "0.8rem", cursor: submitting || !commentText.trim() ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
               {submitting ? "..." : "Comment"}
             </button>
           </div>
@@ -368,7 +368,7 @@ export default function QuadDetailPage({ params }: { params: Promise<{ id: strin
               style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             <div style={{display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end"}}>
               <button onClick={() => setEditingComment(null)} style={{padding: "9px 20px", borderRadius: "20px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
-              <button onClick={() => handleEditComment(editingComment)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+              <button onClick={() => handleEditComment(editingComment)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
             </div>
           </div>
         </>

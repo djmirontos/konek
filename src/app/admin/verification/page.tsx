@@ -144,7 +144,7 @@ export default function AdminVerificationPage() {
         </>
       )}
 
-      <div style={{backgroundColor: "#1D9E75", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.push("/admin")} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "0", width: "36px"}}>‹</button>
         <div style={{fontWeight: 800, fontSize: "1rem", color: "#fff", letterSpacing: "0.05em"}}>VERIFICATION</div>
         <div style={{width: "36px"}}></div>
@@ -153,7 +153,7 @@ export default function AdminVerificationPage() {
       <div style={{display: "flex", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0"}}>
         {(["pending", "approved", "rejected"] as const).map(tab => (
           <button key={tab} onClick={() => setFilter(tab)}
-            style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", color: filter === tab ? "#1D9E75" : "#888", borderBottom: filter === tab ? "2px solid #1D9E75" : "2px solid transparent", textTransform: "capitalize"}}>
+            style={{flex: 1, padding: "12px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", color: filter === tab ? "#2BB39A" : "#888", borderBottom: filter === tab ? "2px solid #2BB39A" : "2px solid transparent", textTransform: "capitalize"}}>
             {tab}
           </button>
         ))}
@@ -172,7 +172,7 @@ export default function AdminVerificationPage() {
             <div style={{display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px"}}>
               {req.avatar_url
                 ? <img src={req.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover"}} />
-                : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem"}}>{req.full_name?.charAt(0).toUpperCase()}</div>
+                : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem"}}>{req.full_name?.charAt(0).toUpperCase()}</div>
               }
               <div style={{flex: 1}}>
                 <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A"}}>{req.full_name}</div>
@@ -201,7 +201,7 @@ export default function AdminVerificationPage() {
                   Reject
                 </button>
                 <button onClick={() => handleApprove(req.id)} disabled={acting === req.id}
-                  style={{flex: 1, padding: "10px", borderRadius: "10px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>
+                  style={{flex: 1, padding: "10px", borderRadius: "10px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>
                   {acting === req.id ? "Processing..." : "Approve ✓"}
                 </button>
               </div>

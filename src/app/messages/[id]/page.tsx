@@ -222,7 +222,7 @@ export default function ConversationPage() {
     <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {/* HEADER */}
-      <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.push("/messages")}
           style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "4px", display: "flex", alignItems: "center", lineHeight: 1}}>
           ←
@@ -247,7 +247,7 @@ export default function ConversationPage() {
             <div style={{fontSize: "0.82rem", color: "#0F6E56", fontWeight: 600, lineHeight: 1.3}}>{convContext.title}</div>
           </div>
           <button onClick={() => router.push("/" + convContext.type + "/" + convContext.id)}
-            style={{backgroundColor: "#1D9E75", color: "#fff", border: "none", borderRadius: "8px", padding: "5px 12px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", flexShrink: 0}}>
+            style={{backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "8px", padding: "5px 12px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", flexShrink: 0}}>
             View
           </button>
         </div>
@@ -265,7 +265,7 @@ export default function ConversationPage() {
               Decline
             </button>
             <button onClick={async () => { await supabase.from("conversations").update({ status: "accepted" }).eq("id", convId); setIsAccepted(true); }}
-              style={{padding: "8px 20px", borderRadius: "8px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
+              style={{padding: "8px 20px", borderRadius: "8px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
               Accept
             </button>
           </div>
@@ -304,7 +304,7 @@ export default function ConversationPage() {
                         );
                       }
                       return (
-                        <div style={{maxWidth: "75%", backgroundColor: isMine ? "#1D9E75" : "#fff", color: isMine ? "#fff" : "#1A1A1A", borderRadius: isMine ? "16px 16px 4px 16px" : "16px 16px 16px 4px", padding: msg.image_url && !msg.content ? "4px" : "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)"}}>
+                        <div style={{maxWidth: "75%", backgroundColor: isMine ? "#2BB39A" : "#fff", color: isMine ? "#fff" : "#1A1A1A", borderRadius: isMine ? "16px 16px 4px 16px" : "16px 16px 16px 4px", padding: msg.image_url && !msg.content ? "4px" : "10px 14px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)"}}>
                           {msg.image_url && (
                             <img src={msg.image_url} alt="" style={{width: "100%", maxWidth: "220px", borderRadius: "12px", display: "block", marginBottom: msg.content ? "6px" : 0}} />
                           )}
@@ -366,7 +366,7 @@ export default function ConversationPage() {
           style={{flex: 1, backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "10px 16px", fontSize: "0.875rem", color: "#1A1A1A", outline: "none", fontFamily: "inherit"}}
         />
         <button onClick={handleSend} disabled={sending || (!text.trim() && !imageFile)}
-          style={{backgroundColor: sending || (!text.trim() && !imageFile) ? "#ccc" : "#1D9E75", border: "none", borderRadius: "50%", width: "38px", height: "38px", display: "flex", alignItems: "center", justifyContent: "center", cursor: sending || (!text.trim() && !imageFile) ? "not-allowed" : "pointer", flexShrink: 0}}>
+          style={{backgroundColor: sending || (!text.trim() && !imageFile) ? "#ccc" : "#2BB39A", border: "none", borderRadius: "50%", width: "38px", height: "38px", display: "flex", alignItems: "center", justifyContent: "center", cursor: sending || (!text.trim() && !imageFile) ? "not-allowed" : "pointer", flexShrink: 0}}>
           <span style={{color: "#fff", fontSize: "1rem"}}>➤</span>
         </button>
       </div>

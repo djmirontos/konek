@@ -171,7 +171,7 @@ export default function PhotoViewer({
           <button onClick={onClose} style={{background: "none", border: "none", color: "#fff", fontSize: "1.4rem", cursor: "pointer", padding: "4px", lineHeight: 1, flexShrink: 0}}>←</button>
           {posterAvatar
             ? <img src={posterAvatar} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(255,255,255,0.5)", flexShrink: 0}} />
-            : <div style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{posterName?.charAt(0).toUpperCase()}</div>
+            : <div style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{posterName?.charAt(0).toUpperCase()}</div>
           }
           <div style={{flex: 1}}>
             <div style={{color: "#fff", fontWeight: 700, fontSize: "0.88rem", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>{posterName}</div>
@@ -200,7 +200,7 @@ export default function PhotoViewer({
         <div style={{position: "absolute", bottom: "80px", display: "flex", gap: "6px", opacity}}>
           {images.map((_, i) => (
             <div key={i} onClick={() => { onIndexChange(i); setScale(1); setTranslateX(0); setTranslateY(0); }}
-              style={{width: i === currentIndex ? "20px" : "7px", height: "7px", borderRadius: "4px", backgroundColor: i === currentIndex ? "#1D9E75" : "rgba(255,255,255,0.5)", cursor: "pointer", transition: "all 0.2s"}} />
+              style={{width: i === currentIndex ? "20px" : "7px", height: "7px", borderRadius: "4px", backgroundColor: i === currentIndex ? "#2BB39A" : "rgba(255,255,255,0.5)", cursor: "pointer", transition: "all 0.2s"}} />
           ))}
         </div>
       )}

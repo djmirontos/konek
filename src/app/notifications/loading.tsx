@@ -2,7 +2,7 @@ export default function Loading() {
   return (
     <div style={{minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto"}}>
       {/* Header skeleton */}
-      <div style={{height: "56px", backgroundColor: "#1D9E75", display: "flex", alignItems: "center", padding: "0 16px", gap: "12px"}}>
+      <div style={{height: "56px", backgroundColor: "#2BB39A", display: "flex", alignItems: "center", padding: "0 16px", gap: "12px"}}>
         <div style={{width: "80px", height: "24px", backgroundColor: "rgba(255,255,255,0.3)", borderRadius: "6px"}} />
         <div style={{flex: 1}} />
         <div style={{width: "32px", height: "32px", backgroundColor: "rgba(255,255,255,0.3)", borderRadius: "50%"}} />

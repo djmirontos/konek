@@ -25,7 +25,7 @@ export default function SchoolPicker({ schools, currentUser, selectedSchool, onS
         {options.map(option => (
           <button key={option.id} onClick={() => { onSelect(option.id); onClose(); }}
             style={{width: "100%", padding: "12px 16px", background: selectedSchool === option.id ? "#E1F5EE" : "#fff", border: "none", borderBottom: "1px solid #F0F0F0", cursor: "pointer", textAlign: "left", fontFamily: "inherit"}}>
-            <div style={{fontWeight: 600, fontSize: "0.85rem", color: selectedSchool === option.id ? "#1D9E75" : "#1A1A1A"}}>{option.label}</div>
+            <div style={{fontWeight: 600, fontSize: "0.85rem", color: selectedSchool === option.id ? "#2BB39A" : "#1A1A1A"}}>{option.label}</div>
             {option.sub && <div style={{fontSize: "0.72rem", color: "#888", marginTop: "2px"}}>{option.sub}</div>}
           </button>
         ))}

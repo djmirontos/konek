@@ -26,7 +26,7 @@ function timeAgo(ts: string) {
 
 function VerifiedBadge() {
   return (
-    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "15px", height: "15px", backgroundColor: "#1D9E75", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
+    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "15px", height: "15px", backgroundColor: "#2BB39A", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
       <svg width="9" height="9" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
       </svg>
@@ -156,7 +156,7 @@ export default function SearchPage() {
       <div key={u.id} onClick={() => router.push("/profile/" + u.id)} style={{padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "12px", cursor: "pointer", backgroundColor: "#fff"}}>
         {u.avatar_url
           ? <img src={u.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-          : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", flexShrink: 0}}>{u.full_name?.charAt(0).toUpperCase()}</div>
+          : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem", flexShrink: 0}}>{u.full_name?.charAt(0).toUpperCase()}</div>
         }
         <div style={{flex: 1}}>
           <div style={{display: "flex", alignItems: "center", fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A"}}>{u.full_name}{u.isVerified && <VerifiedBadge />}</div>
@@ -172,7 +172,7 @@ export default function SearchPage() {
         <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "6px"}}>
           {p.users?.avatar_url
             ? <img src={p.users.avatar_url} alt="" style={{width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover"}} />
-            : <div style={{width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.8rem"}}>{p.users?.full_name?.charAt(0).toUpperCase()}</div>
+            : <div style={{width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.8rem"}}>{p.users?.full_name?.charAt(0).toUpperCase()}</div>
           }
           <div>
             <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A"}}>{p.users?.full_name}</div>
@@ -193,7 +193,7 @@ export default function SearchPage() {
         }
         <div style={{flex: 1}}>
           <div style={{fontWeight: 700, fontSize: "0.88rem", color: "#1A1A1A", marginBottom: "3px"}}>{l.title}</div>
-          <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 700, marginBottom: "3px"}}>₱{l.price?.toLocaleString() || "Free"}</div>
+          <div style={{fontSize: "0.82rem", color: "#2BB39A", fontWeight: 700, marginBottom: "3px"}}>₱{l.price?.toLocaleString() || "Free"}</div>
           <div style={{display: "flex", alignItems: "center", fontSize: "0.72rem", color: "#888"}}>
             {l.users?.full_name}{l.isVerified && <VerifiedBadge />}
           </div>
@@ -212,7 +212,7 @@ export default function SearchPage() {
         <div style={{flex: 1}}>
           <div style={{fontWeight: 700, fontSize: "0.88rem", color: "#1A1A1A", marginBottom: "3px"}}>{b.name}</div>
           {b.address && <div style={{fontSize: "0.75rem", color: "#888", marginBottom: "3px"}}>📍 {b.address}</div>}
-          <div style={{fontSize: "0.82rem", color: "#1D9E75", fontWeight: 700}}>₱{b.price_per_month?.toLocaleString() || "Negotiable"}/mo</div>
+          <div style={{fontSize: "0.82rem", color: "#2BB39A", fontWeight: 700}}>₱{b.price_per_month?.toLocaleString() || "Negotiable"}/mo</div>
         </div>
       </div>
     ));
@@ -224,7 +224,7 @@ export default function SearchPage() {
         <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "6px"}}>
           {q.users?.avatar_url
             ? <img src={q.users.avatar_url} alt="" style={{width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover"}} />
-            : <div style={{width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.8rem"}}>{q.users?.full_name?.charAt(0).toUpperCase()}</div>
+            : <div style={{width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.8rem"}}>{q.users?.full_name?.charAt(0).toUpperCase()}</div>
           }
           <div>
             <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A"}}>{q.users?.full_name}</div>
@@ -240,7 +240,7 @@ export default function SearchPage() {
   function renderSchools() {
     return schoolResults.map(s => (
       <div key={s.id} style={{padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "12px", backgroundColor: "#fff"}}>
-        <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: "1rem", flexShrink: 0}}>{s.abbreviation?.charAt(0)}</div>
+        <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: "1rem", flexShrink: 0}}>{s.abbreviation?.charAt(0)}</div>
         <div>
           <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A"}}>{s.name}</div>
           <div style={{fontSize: "0.75rem", color: "#888"}}>{s.abbreviation}</div>
@@ -299,7 +299,7 @@ export default function SearchPage() {
     <div style={{minHeight: "100vh", backgroundColor: "#F7F7F7", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", display: "flex", flexDirection: "column"}}>
 
       {/* SEARCH HEADER */}
-      <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "10px", position: "sticky", top: 0, zIndex: 100}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "12px 16px", display: "flex", alignItems: "center", gap: "10px", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.back()} style={{background: "none", border: "none", color: "#fff", fontSize: "1.4rem", cursor: "pointer", padding: "4px", lineHeight: 1, flexShrink: 0}}>←</button>
         <div style={{flex: 1, backgroundColor: "rgba(255,255,255,0.2)", borderRadius: "12px", display: "flex", alignItems: "center", padding: "8px 12px", gap: "8px"}}>
           <span style={{color: "rgba(255,255,255,0.8)", fontSize: "1rem"}}>🔍</span>
@@ -321,11 +321,11 @@ export default function SearchPage() {
       <div style={{backgroundColor: "#fff", padding: "10px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "12px"}}>
         <span style={{fontSize: "0.78rem", color: "#888", fontWeight: 600}}>Scope:</span>
         <button onClick={() => { setAllSchools(false); if (query.length >= 2) doSearch(query); }}
-          style={{padding: "4px 12px", borderRadius: "20px", border: "none", backgroundColor: !allSchools ? "#1D9E75" : "#F0F0F0", color: !allSchools ? "#fff" : "#888", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit"}}>
+          style={{padding: "4px 12px", borderRadius: "20px", border: "none", backgroundColor: !allSchools ? "#2BB39A" : "#F0F0F0", color: !allSchools ? "#fff" : "#888", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit"}}>
           My School
         </button>
         <button onClick={() => { setAllSchools(true); if (query.length >= 2) doSearch(query); }}
-          style={{padding: "4px 12px", borderRadius: "20px", border: "none", backgroundColor: allSchools ? "#1D9E75" : "#F0F0F0", color: allSchools ? "#fff" : "#888", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit"}}>
+          style={{padding: "4px 12px", borderRadius: "20px", border: "none", backgroundColor: allSchools ? "#2BB39A" : "#F0F0F0", color: allSchools ? "#fff" : "#888", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit"}}>
           All Schools
         </button>
       </div>
@@ -335,7 +335,7 @@ export default function SearchPage() {
         <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", display: "flex", overflowX: "auto", scrollbarWidth: "none", position: "sticky", top: "60px", zIndex: 99}}>
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              style={{flexShrink: 0, padding: "10px 14px", border: "none", background: "none", fontFamily: "inherit", fontWeight: activeTab === tab ? 700 : 500, fontSize: "0.8rem", color: activeTab === tab ? "#1D9E75" : "#888", borderBottom: activeTab === tab ? "2px solid #1D9E75" : "2px solid transparent", cursor: "pointer", whiteSpace: "nowrap"}}>
+              style={{flexShrink: 0, padding: "10px 14px", border: "none", background: "none", fontFamily: "inherit", fontWeight: activeTab === tab ? 700 : 500, fontSize: "0.8rem", color: activeTab === tab ? "#2BB39A" : "#888", borderBottom: activeTab === tab ? "2px solid #2BB39A" : "2px solid transparent", cursor: "pointer", whiteSpace: "nowrap"}}>
               {tab}
             </button>
           ))}
@@ -347,7 +347,7 @@ export default function SearchPage() {
         <div style={{backgroundColor: "#fff", marginBottom: "8px"}}>
           <div style={{padding: "12px 16px 4px", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
             <span style={{fontSize: "0.78rem", fontWeight: 700, color: "#888", textTransform: "uppercase", letterSpacing: "0.05em"}}>Recent</span>
-            <button onClick={() => { setRecentSearches([]); localStorage.removeItem("konek_recent_searches"); }} style={{background: "none", border: "none", color: "#1D9E75", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>Clear all</button>
+            <button onClick={() => { setRecentSearches([]); localStorage.removeItem("konek_recent_searches"); }} style={{background: "none", border: "none", color: "#2BB39A", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit"}}>Clear all</button>
           </div>
           {recentSearches.map(s => (
             <div key={s} style={{display: "flex", alignItems: "center", padding: "10px 16px", borderBottom: "1px solid #F0F0F0", gap: "12px"}}>

@@ -36,7 +36,7 @@ type Post = {
 
 function VerifiedBadge() {
   return (
-    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "15px", height: "15px", backgroundColor: "#1D9E75", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
+    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "15px", height: "15px", backgroundColor: "#2BB39A", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
       <svg width="9" height="9" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
       </svg>
@@ -384,7 +384,7 @@ export default function PostDetailPage() {
       <style>{`@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
 
       {/* Header */}
-      <div style={{backgroundColor: "#1D9E75", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.back()} style={{background: "none", border: "none", cursor: "pointer", padding: "4px", color: "#fff", fontSize: "1.2rem"}}>←</button>
         <span style={{color: "#fff", fontWeight: 700, fontSize: "1rem"}}>Post</span>
       </div>
@@ -394,13 +394,13 @@ export default function PostDetailPage() {
         <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
           {post.users?.avatar_url
             ? <img onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} src={post.users.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
-            : <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: null})} style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+            : <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: null})} style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
           }
           <div>
             <div style={{fontWeight: 700, fontSize: "0.9rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{post.users?.full_name}{verifiedUsers.has(post.user_id) && <VerifiedBadge />}</div>
             <div style={{fontSize: "0.72rem", color: "#888"}}>
               {formatTime(post.created_at)}
-              {post.tag && <span style={{marginLeft: "8px", color: "#1D9E75", fontWeight: 600}}>{post.tag}</span>}
+              {post.tag && <span style={{marginLeft: "8px", color: "#2BB39A", fontWeight: 600}}>{post.tag}</span>}
             </div>
           </div>
         </div>
@@ -467,7 +467,7 @@ export default function PostDetailPage() {
             <div style={{display: "flex", gap: "10px", alignItems: "flex-start"}}>
               {comment.users?.avatar_url
                 ? <img onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: comment.users?.avatar_url || null})} src={comment.users.avatar_url} alt="" style={{width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
-                : <div onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: null})} style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0, cursor: "pointer"}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
+                : <div onClick={() => setAvatarMenu({id: comment.user_id, full_name: comment.users?.full_name || "", avatar_url: null})} style={{width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0, cursor: "pointer"}}>{comment.users?.full_name?.charAt(0).toUpperCase()}</div>
               }
               <div style={{flex: 1}}>
                 <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "8px 12px", position: "relative"}}>
@@ -499,7 +499,7 @@ export default function PostDetailPage() {
                       <div key={reply.id} style={{display: "flex", gap: "8px", alignItems: "flex-start"}}>
                         {reply.users?.avatar_url
                           ? <img onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: reply.users?.avatar_url || null})} src={reply.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer"}} />
-                          : <div onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: null})} style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.72rem", flexShrink: 0, cursor: "pointer"}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
+                          : <div onClick={() => setAvatarMenu({id: reply.user_id, full_name: reply.users?.full_name || "", avatar_url: null})} style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.72rem", flexShrink: 0, cursor: "pointer"}}>{reply.users?.full_name?.charAt(0).toUpperCase()}</div>
                         }
                         <div style={{flex: 1}}>
                           <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "6px 10px"}}>
@@ -534,14 +534,14 @@ export default function PostDetailPage() {
       <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderTop: "1px solid #F0F0F0", padding: "8px 12px", zIndex: 100}}>
         {replyTo && (
           <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px", backgroundColor: "#E1F5EE", padding: "4px 10px", borderRadius: "8px"}}>
-            <span style={{fontSize: "0.75rem", color: "#1D9E75", fontWeight: 600}}>Replying to {replyTo.name}</span>
+            <span style={{fontSize: "0.75rem", color: "#2BB39A", fontWeight: 600}}>Replying to {replyTo.name}</span>
             <button onClick={() => setReplyTo(null)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "0.8rem", padding: 0}}>✕</button>
           </div>
         )}
         <div style={{display: "flex", gap: "8px", alignItems: "center"}}>
           {currentUser?.avatar_url
             ? <img src={currentUser.avatar_url} alt="" style={{width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-            : <div style={{width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.8rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+            : <div style={{width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.8rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
           }
           <button onClick={() => setShowCommentEmoji(!showCommentEmoji)}
             style={{background: "none", border: "none", cursor: "pointer", fontSize: "1.3rem", padding: "4px", opacity: 0.6, flexShrink: 0, display: "flex", alignItems: "center"}}>
@@ -557,7 +557,7 @@ export default function PostDetailPage() {
             style={{flex: 1, backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "8px 14px", fontSize: "0.85rem", color: "#1A1A1A", outline: "none", fontFamily: "inherit"}}
           />
           <button onClick={handleComment} disabled={submitting || !commentText.trim()}
-            style={{backgroundColor: submitting || !commentText.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "50%", width: "34px", height: "34px", cursor: submitting || !commentText.trim() ? "not-allowed" : "pointer", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
+            style={{backgroundColor: submitting || !commentText.trim() ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "50%", width: "34px", height: "34px", cursor: submitting || !commentText.trim() ? "not-allowed" : "pointer", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
             ➤
           </button>
           {showCommentEmoji && (
@@ -575,7 +575,7 @@ export default function PostDetailPage() {
           <div onClick={() => setShowReactionList(false)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 400}} />
           <div style={{position: "fixed", top: 0, right: 0, width: "100%", maxWidth: "480px", height: "100vh", backgroundColor: "#fff", zIndex: 500, display: "flex", flexDirection: "column", boxShadow: "-4px 0 20px rgba(0,0,0,0.2)", animation: "slideInRight 0.25s ease-out"}}>
             <style>{`@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
-            <div style={{padding: "16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1D9E75"}}>
+            <div style={{padding: "16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#2BB39A"}}>
               <span style={{fontWeight: 700, fontSize: "1rem", color: "#fff"}}>Reactions</span>
               <button onClick={() => setShowReactionList(false)} style={{background: "rgba(255,255,255,0.2)", border: "none", cursor: "pointer", color: "#fff", fontSize: "1rem", width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center"}}>X</button>
             </div>
@@ -585,7 +585,7 @@ export default function PostDetailPage() {
                 const img = idx >= 0 ? REACTIONS[idx] : "";
                 return (
                   <button key={tab} onClick={() => setReactionTab(tab)}
-                    style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: reactionTab === tab ? "#E1F5EE" : "#F7F7F7", color: reactionTab === tab ? "#1D9E75" : "#888", fontWeight: reactionTab === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0, display: "flex", alignItems: "center", gap: "4px"}}>
+                    style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: reactionTab === tab ? "#E1F5EE" : "#F7F7F7", color: reactionTab === tab ? "#2BB39A" : "#888", fontWeight: reactionTab === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0, display: "flex", alignItems: "center", gap: "4px"}}>
                     {tab === "All" ? "All " + reactionList.length : <><img src={img} alt={tab} style={{width: "16px", height: "16px"}} /> {tab}</>}
                   </button>
                 );
@@ -605,7 +605,7 @@ export default function PostDetailPage() {
                     <div style={{position: "relative", flexShrink: 0}}>
                       {r.users?.avatar_url
                         ? <img onClick={() => router.push(`/profile/${r.user_id}`)} src={r.users.avatar_url} alt="" style={{width: "46px", height: "46px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
-                        : <div onClick={() => router.push(`/profile/${r.user_id}`)} style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem", cursor: "pointer"}}>{r.users?.full_name?.charAt(0).toUpperCase()}</div>
+                        : <div onClick={() => router.push(`/profile/${r.user_id}`)} style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.1rem", cursor: "pointer"}}>{r.users?.full_name?.charAt(0).toUpperCase()}</div>
                       }
                       <div style={{position: "absolute", bottom: "-2px", right: "-2px", backgroundColor: "#fff", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.15)"}}><img src={reactionImg} alt="" style={{width: "16px", height: "16px"}} /></div>
                     </div>
@@ -648,7 +648,7 @@ export default function PostDetailPage() {
               style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             <div style={{display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end"}}>
               <button onClick={() => setEditingComment(null)} style={{padding: "9px 20px", borderRadius: "20px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
-              <button onClick={() => handleEditComment(editingComment)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+              <button onClick={() => handleEditComment(editingComment)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
             </div>
           </div>
         </>

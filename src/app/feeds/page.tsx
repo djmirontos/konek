@@ -58,7 +58,7 @@ type ReactionUser = {
 
 function VerifiedBadge() {
   return (
-    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "15px", height: "15px", backgroundColor: "#1D9E75", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
+    <span title="Verified Student" style={{display: "inline-flex", alignItems: "center", justifyContent: "center", width: "15px", height: "15px", backgroundColor: "#2BB39A", borderRadius: "50%", marginLeft: "4px", flexShrink: 0, verticalAlign: "middle"}}>
       <svg width="9" height="9" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
       </svg>
@@ -678,7 +678,7 @@ export default function FeedsPage() {
     return tabs;
   }
 
-  function getTagColor(tag: string) { return HANGOUT_TAG_SET.has(tag) ? "#1D9E75" : "#F59E0B"; }
+  function getTagColor(tag: string) { return HANGOUT_TAG_SET.has(tag) ? "#2BB39A" : "#F59E0B"; }
   function getTagBg(tag: string) { return HANGOUT_TAG_SET.has(tag) ? "#E1F5EE" : "#FEF3C7"; }
 
   return (
@@ -697,11 +697,11 @@ export default function FeedsPage() {
       {/* Tab Bar */}
       <div style={{display: "flex", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", position: "sticky", top: showNav ? "56px" : "0px", zIndex: 99, transition: "top 0.25s ease"}}>
         <button onClick={() => setActiveTab("feeds")}
-          style={{flex: 1, padding: "12px 0", border: "none", background: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: activeTab === "feeds" ? 700 : 500, fontSize: "0.875rem", color: activeTab === "feeds" ? "#1D9E75" : "#888", borderBottom: activeTab === "feeds" ? "2px solid #1D9E75" : "2px solid transparent", transition: "all 0.15s"}}>
+          style={{flex: 1, padding: "12px 0", border: "none", background: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: activeTab === "feeds" ? 700 : 500, fontSize: "0.875rem", color: activeTab === "feeds" ? "#2BB39A" : "#888", borderBottom: activeTab === "feeds" ? "2px solid #2BB39A" : "2px solid transparent", transition: "all 0.15s"}}>
           📢 Feeds
         </button>
         <button onClick={() => setActiveTab("quad")}
-          style={{flex: 1, padding: "12px 0", border: "none", background: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: activeTab === "quad" ? 700 : 500, fontSize: "0.875rem", color: activeTab === "quad" ? "#1D9E75" : "#888", borderBottom: activeTab === "quad" ? "2px solid #1D9E75" : "2px solid transparent", transition: "all 0.15s"}}>
+          style={{flex: 1, padding: "12px 0", border: "none", background: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: activeTab === "quad" ? 700 : 500, fontSize: "0.875rem", color: activeTab === "quad" ? "#2BB39A" : "#888", borderBottom: activeTab === "quad" ? "2px solid #2BB39A" : "2px solid transparent", transition: "all 0.15s"}}>
           🗺️ Quad
         </button>
       </div>
@@ -712,7 +712,7 @@ export default function FeedsPage() {
           <div onClick={() => setShowReactionList(false)} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 400}} />
           <div style={{position: "fixed", top: 0, right: 0, width: "100%", maxWidth: "480px", height: "100vh", backgroundColor: "#fff", zIndex: 500, display: "flex", flexDirection: "column", boxShadow: "-4px 0 20px rgba(0,0,0,0.2)", animation: "slideInRight 0.25s ease-out"}}>
             <style>{`@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
-            <div style={{padding: "16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#1D9E75"}}>
+            <div style={{padding: "16px", borderBottom: "1px solid #F0F0F0", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#2BB39A"}}>
               <span style={{fontWeight: 700, fontSize: "1rem", color: "#fff"}}>Reactions</span>
               <button onClick={() => setShowReactionList(false)} style={{background: "rgba(255,255,255,0.2)", border: "none", cursor: "pointer", color: "#fff", fontSize: "1rem", width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center"}}>X</button>
             </div>
@@ -722,7 +722,7 @@ export default function FeedsPage() {
                 const img = idx >= 0 ? REACTIONS[idx] : "";
                 return (
                   <button key={tab} onClick={() => setReactionTab(tab)}
-                    style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: reactionTab === tab ? "#E1F5EE" : "#F7F7F7", color: reactionTab === tab ? "#1D9E75" : "#888", fontWeight: reactionTab === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0, display: "flex", alignItems: "center", gap: "4px"}}>
+                    style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: reactionTab === tab ? "#E1F5EE" : "#F7F7F7", color: reactionTab === tab ? "#2BB39A" : "#888", fontWeight: reactionTab === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0, display: "flex", alignItems: "center", gap: "4px"}}>
                     {tab === "All" ? "All " + reactionList.length : <><img src={img} alt={tab} style={{width: "16px", height: "16px"}} /> {tab}</>}
                   </button>
                 );
@@ -742,7 +742,7 @@ export default function FeedsPage() {
                     <div onClick={() => router.push(`/profile/${r.user_id}`)} style={{position: "relative", flexShrink: 0, cursor: "pointer"}}>
                       {r.users?.avatar_url
                         ? <img src={r.users.avatar_url} alt="" style={{width: "46px", height: "46px", borderRadius: "50%", objectFit: "cover"}} />
-                        : <div style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1.1rem"}}>{r.users?.full_name?.charAt(0).toUpperCase()}</div>
+                        : <div style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.1rem"}}>{r.users?.full_name?.charAt(0).toUpperCase()}</div>
                       }
                       <div style={{position: "absolute", bottom: "-2px", right: "-2px", backgroundColor: "#fff", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.15)"}}><img src={reactionImg} alt="" style={{width: "16px", height: "16px"}} /></div>
                     </div>
@@ -763,7 +763,7 @@ export default function FeedsPage() {
             <div style={{display: "flex", gap: "10px", alignItems: "center"}}>
               {currentUser?.avatar_url
                 ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
               }
               <button onClick={() => setShowFeedsComposer(true)}
                 style={{flex: 1, textAlign: "left", backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", fontFamily: "inherit"}}>
@@ -860,7 +860,7 @@ export default function FeedsPage() {
                   <div style={{display: "flex", gap: "10px", alignItems: "flex-start", marginBottom: "10px"}}>
                     {currentUser?.avatar_url
                       ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                      : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                      : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
                     }
                     <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", alignSelf: "center"}}>{currentUser?.full_name}</div>
                   </div>
@@ -895,7 +895,7 @@ export default function FeedsPage() {
                   <div style={{display: "flex", gap: "6px", marginTop: "10px", flexWrap: "wrap"}}>
                     {TAGS.map(tag => (
                       <button key={tag} onClick={() => setSelectedTag(selectedTag === tag ? "" : tag)}
-                        style={{padding: "4px 10px", borderRadius: "12px", border: "1px solid " + (selectedTag === tag ? "#1D9E75" : "#F0F0F0"), backgroundColor: selectedTag === tag ? "#E1F5EE" : "#F7F7F7", color: selectedTag === tag ? "#1D9E75" : "#888", fontSize: "0.72rem", fontWeight: selectedTag === tag ? 700 : 400, cursor: "pointer", fontFamily: "inherit"}}>
+                        style={{padding: "4px 10px", borderRadius: "12px", border: "1px solid " + (selectedTag === tag ? "#2BB39A" : "#F0F0F0"), backgroundColor: selectedTag === tag ? "#E1F5EE" : "#F7F7F7", color: selectedTag === tag ? "#2BB39A" : "#888", fontSize: "0.72rem", fontWeight: selectedTag === tag ? 700 : 400, cursor: "pointer", fontFamily: "inherit"}}>
                         {tag}
                       </button>
                     ))}
@@ -907,7 +907,7 @@ export default function FeedsPage() {
                       <span style={{fontSize: "0.7rem", color: "#aaa"}}>{selectedImages.length}/8 photos</span>
                     </div>
                     <button onClick={() => { handlePost(); setShowFeedsComposer(false); }} disabled={posting || postCooldown || !postContent.trim()}
-                      style={{backgroundColor: posting || !postContent.trim() ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: posting || !postContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                      style={{backgroundColor: posting || !postContent.trim() ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: posting || !postContent.trim() ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                       {posting ? "Posting..." : postCooldown ? "Please wait..." : "Post"}
                     </button>
                   </div>
@@ -948,7 +948,7 @@ export default function FeedsPage() {
                   <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} style={{cursor: "pointer"}}>
                     {post.users?.avatar_url
                       ? <img src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
-                      : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+                      : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                     }
                   </div>
                   <div style={{flex: 1}}>
@@ -1002,7 +1002,7 @@ export default function FeedsPage() {
             ))}
             {loadingMore && (
               <div style={{textAlign: "center", padding: "16px", color: "#888", fontSize: "0.85rem"}}>
-                <div style={{display: "inline-block", width: "20px", height: "20px", border: "2px solid #E0E0E0", borderTopColor: "#1D9E75", borderRadius: "50%", animation: "spin 0.8s linear infinite"}} />
+                <div style={{display: "inline-block", width: "20px", height: "20px", border: "2px solid #E0E0E0", borderTopColor: "#2BB39A", borderRadius: "50%", animation: "spin 0.8s linear infinite"}} />
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               </div>
             )}
@@ -1022,7 +1022,7 @@ export default function FeedsPage() {
             <div style={{display: "flex", gap: "10px", alignItems: "center"}}>
               {currentUser?.avatar_url
                 ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
               }
               <button onClick={() => setShowQuadComposer(true)}
                 style={{flex: 1, textAlign: "left", backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", fontFamily: "inherit"}}>
@@ -1049,7 +1049,7 @@ export default function FeedsPage() {
                   <div style={{display: "flex", gap: "10px", alignItems: "flex-start", marginBottom: "10px"}}>
                     {currentUser?.avatar_url
                       ? <img src={currentUser.avatar_url} alt="avatar" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                      : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #1D9E75", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
+                      : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
                     }
                     <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", alignSelf: "center"}}>{currentUser?.full_name}</div>
                   </div>
@@ -1067,7 +1067,7 @@ export default function FeedsPage() {
                         placeholder="📍 Nasaan ka? (e.g. Library, Canteen, Gym)"
                         value={quadLocation}
                         onChange={e => setQuadLocation(e.target.value)}
-                        style={{width: "100%", border: "1px solid #1D9E75", borderRadius: "10px", padding: "8px 12px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box", color: "#1A1A1A"}}
+                        style={{width: "100%", border: "1px solid #2BB39A", borderRadius: "10px", padding: "8px 12px", fontSize: "0.82rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box", color: "#1A1A1A"}}
                       />
                     </div>
                   )}
@@ -1079,7 +1079,7 @@ export default function FeedsPage() {
                   )}
                   <div style={{marginTop: "10px", position: "relative"}}>
                     <button onClick={() => setShowTagPicker(!showTagPicker)}
-                      style={{width: "100%", padding: "9px 14px", borderRadius: "10px", border: "1px solid " + (quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#1D9E75" : "#F59E0B") : "#F0F0F0"), backgroundColor: quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#E1F5EE" : "#FEF3C7") : "#F7F7F7", color: quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#1D9E75" : "#F59E0B") : "#888", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                      style={{width: "100%", padding: "9px 14px", borderRadius: "10px", border: "1px solid " + (quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#2BB39A" : "#F59E0B") : "#F0F0F0"), backgroundColor: quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#E1F5EE" : "#FEF3C7") : "#F7F7F7", color: quadTag ? (HANGOUT_TAG_SET.has(quadTag) ? "#2BB39A" : "#F59E0B") : "#888", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                       <span>{quadTag || "Select a tag (required)"}</span>
                       <span style={{fontSize: "0.7rem"}}>{showTagPicker ? "▲" : "▾"}</span>
                     </button>
@@ -1090,7 +1090,7 @@ export default function FeedsPage() {
                           <div style={{padding: "8px 12px 4px", fontSize: "0.68rem", color: "#888", fontWeight: 700, letterSpacing: "0.05em"}}>🟢 HANGOUT</div>
                           {HANGOUT_TAGS.map(tag => (
                             <button key={tag} onClick={() => { setQuadTag(tag); setShowTagPicker(false); }}
-                              style={{width: "100%", padding: "9px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: quadTag === tag ? "#E1F5EE" : "#fff", color: quadTag === tag ? "#1D9E75" : "#1A1A1A", fontWeight: quadTag === tag ? 700 : 400, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left"}}>
+                              style={{width: "100%", padding: "9px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: quadTag === tag ? "#E1F5EE" : "#fff", color: quadTag === tag ? "#2BB39A" : "#1A1A1A", fontWeight: quadTag === tag ? 700 : 400, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left"}}>
                               {tag}
                             </button>
                           ))}
@@ -1111,7 +1111,7 @@ export default function FeedsPage() {
                       <Image src="/photos.png" alt="photos" width={22} height={22} />
                     </button>
                     <button onClick={() => handleQuadPost()} disabled={quadPosting || !quadContent.trim() || !quadTag}
-                      style={{backgroundColor: quadPosting || !quadContent.trim() || !quadTag ? "#ccc" : "#1D9E75", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: quadPosting || !quadContent.trim() || !quadTag ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                      style={{backgroundColor: quadPosting || !quadContent.trim() || !quadTag ? "#ccc" : "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", padding: "9px 24px", fontWeight: 700, fontSize: "0.85rem", cursor: quadPosting || !quadContent.trim() || !quadTag ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                       {quadPosting ? "Posting..." : "Post"}
                     </button>
                   </div>
@@ -1141,7 +1141,7 @@ export default function FeedsPage() {
                   ) : post.users?.avatar_url ? (
                     <img onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
                   ) : (
-                    <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+                    <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                   )}
                   <div style={{flex: 1}}>
                     <div style={{fontWeight: 700, fontSize: "0.875rem", color: post.isExpired ? "#888" : "#1A1A1A", display: "flex", alignItems: "center", flexWrap: "wrap", gap: "4px"}}>{post.isExpired ? "Expired Post" : post.users?.full_name}{!post.isExpired && (() => { const tl = getTrustLevel(post.users?.trust_xp); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.62rem",fontWeight:700,padding:"2px 6px",borderRadius:"8px"}}>{tl.emoji} {tl.label}</span> : null; })()}</div>
@@ -1168,7 +1168,7 @@ export default function FeedsPage() {
                   <>
                     {post.location && (
                       <div style={{padding: "0 16px 6px", display: "flex", alignItems: "center", gap: "5px"}}>
-                        <span style={{fontSize: "0.75rem", color: "#1D9E75", fontWeight: 600}}>📍 {post.location}</span>
+                        <span style={{fontSize: "0.75rem", color: "#2BB39A", fontWeight: 600}}>📍 {post.location}</span>
                       </div>
                     )}
                     <div style={{padding: "0 16px 10px", fontSize: "0.9rem", color: "#1A1A1A", lineHeight: 1.5}}>{post.content}</div>
@@ -1247,7 +1247,7 @@ export default function FeedsPage() {
               style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             <div style={{display: "flex", gap: "10px", marginTop: "12px", justifyContent: "flex-end"}}>
               <button onClick={() => setEditingPost(null)} style={{padding: "9px 20px", borderRadius: "20px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
-              <button onClick={() => handleEditPost(editingPost)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+              <button onClick={() => handleEditPost(editingPost)} style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
             </div>
           </div>
         </>

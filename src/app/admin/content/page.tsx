@@ -167,7 +167,7 @@ export default function AdminContentPage() {
   }
 
   function getTypeColor(type: string) {
-    if (type === "feed") return { bg: "#E1F5EE", color: "#1D9E75" };
+    if (type === "feed") return { bg: "#E1F5EE", color: "#2BB39A" };
     if (type === "soapbox") return { bg: "#FEF3C7", color: "#F59E0B" };
     if (type === "quad") return { bg: "#EFF6FF", color: "#3B82F6" };
     if (type === "confession") return { bg: "#FDF4FF", color: "#A855F7" };
@@ -201,7 +201,7 @@ export default function AdminContentPage() {
         </>
       )}
 
-      <div style={{backgroundColor: "#1D9E75", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.push("/admin")} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "0", width: "36px"}}>‹</button>
         <div style={{fontWeight: 800, fontSize: "1rem", color: "#fff", letterSpacing: "0.05em"}}>CONTENT</div>
         <button onClick={() => setShowHidden(!showHidden)}
@@ -213,7 +213,7 @@ export default function AdminContentPage() {
       <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", overflowX: "auto", display: "flex", padding: "0 8px"}}>
         {TYPE_FILTERS.map(tab => (
           <button key={tab} onClick={() => setTypeFilter(tab)}
-            style={{padding: "10px 14px", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", color: typeFilter === tab ? "#1D9E75" : "#888", borderBottom: typeFilter === tab ? "2px solid #1D9E75" : "2px solid transparent", whiteSpace: "nowrap", textTransform: "capitalize", flexShrink: 0}}>
+            style={{padding: "10px 14px", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", color: typeFilter === tab ? "#2BB39A" : "#888", borderBottom: typeFilter === tab ? "2px solid #2BB39A" : "2px solid transparent", whiteSpace: "nowrap", textTransform: "capitalize", flexShrink: 0}}>
             {tab}
           </button>
         ))}
@@ -234,7 +234,7 @@ export default function AdminContentPage() {
               <div style={{display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px"}}>
                 {post.users?.avatar_url
                   ? <img src={post.users.avatar_url} alt="" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                  : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+                  : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                 }
                 <div style={{flex: 1, minWidth: 0}}>
                   <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A"}}>{post.users?.full_name || "Unknown"}</div>
@@ -249,7 +249,7 @@ export default function AdminContentPage() {
               </div>
               <div style={{display: "flex", gap: "8px"}}>
                 <button onClick={() => handleToggleHide(post)} disabled={acting === post.id}
-                  style={{flex: 1, padding: "8px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: post.is_hidden ? "#E1F5EE" : "#FEF2F2", color: post.is_hidden ? "#1D9E75" : "#EF4444", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
+                  style={{flex: 1, padding: "8px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: post.is_hidden ? "#E1F5EE" : "#FEF2F2", color: post.is_hidden ? "#2BB39A" : "#EF4444", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
                   {post.is_hidden ? "Unhide" : "Hide"}
                 </button>
                 {currentUser?.role === "admin" && (
@@ -269,7 +269,7 @@ export default function AdminContentPage() {
             <div style={{display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px"}}>
               {listing.users?.avatar_url
                 ? <img src={listing.users.avatar_url} alt="" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{listing.users?.full_name?.charAt(0).toUpperCase()}</div>
+                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{listing.users?.full_name?.charAt(0).toUpperCase()}</div>
               }
               <div style={{flex: 1, minWidth: 0}}>
                 <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A"}}>{listing.users?.full_name || "Unknown"}</div>
@@ -282,7 +282,7 @@ export default function AdminContentPage() {
             <div style={{fontSize: "0.82rem", color: "#1A1A1A", lineHeight: 1.5, marginBottom: "10px"}}>{listing.description?.slice(0, 150)}{(listing.description?.length || 0) > 150 ? "..." : ""}</div>
             <div style={{display: "flex", gap: "8px"}}>
               <button onClick={() => handleToggleHideListing(listing)} disabled={acting === listing.id}
-                style={{flex: 1, padding: "8px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: listing.is_hidden ? "#E1F5EE" : "#FEF2F2", color: listing.is_hidden ? "#1D9E75" : "#EF4444", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
+                style={{flex: 1, padding: "8px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: listing.is_hidden ? "#E1F5EE" : "#FEF2F2", color: listing.is_hidden ? "#2BB39A" : "#EF4444", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
                 {listing.is_hidden ? "Unhide" : "Hide"}
               </button>
               {currentUser?.role === "admin" && (
@@ -314,7 +314,7 @@ export default function AdminContentPage() {
             <div style={{display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px"}}>
               {bh.users?.avatar_url
                 ? <img src={bh.users.avatar_url} alt="" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{bh.users?.full_name?.charAt(0).toUpperCase()}</div>
+                : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{bh.users?.full_name?.charAt(0).toUpperCase()}</div>
               }
               <div style={{flex: 1, minWidth: 0}}>
                 <div style={{fontWeight: 700, fontSize: "0.82rem", color: "#1A1A1A"}}>{bh.users?.full_name || "Unknown"}</div>
@@ -327,7 +327,7 @@ export default function AdminContentPage() {
             <div style={{fontSize: "0.82rem", color: "#1A1A1A", lineHeight: 1.5, marginBottom: "10px"}}>{bh.description?.slice(0, 150)}{(bh.description?.length || 0) > 150 ? "..." : ""}</div>
             <div style={{display: "flex", gap: "8px"}}>
               <button onClick={() => handleToggleHideBoardingHouse(bh)} disabled={acting === bh.id}
-                style={{flex: 1, padding: "8px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: bh.is_hidden ? "#E1F5EE" : "#FEF2F2", color: bh.is_hidden ? "#1D9E75" : "#EF4444", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
+                style={{flex: 1, padding: "8px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: bh.is_hidden ? "#E1F5EE" : "#FEF2F2", color: bh.is_hidden ? "#2BB39A" : "#EF4444", fontWeight: 600, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>
                 {bh.is_hidden ? "Unhide" : "Hide"}
               </button>
               {currentUser?.role === "admin" && (

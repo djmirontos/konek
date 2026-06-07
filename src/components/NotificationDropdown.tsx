@@ -51,7 +51,7 @@ export default function NotificationDropdown({ notifications, onClose, navigateT
               <div style={{fontSize: "0.85rem", color: "#1A1A1A", lineHeight: 1.4}}>{notif.message}</div>
               <div style={{fontSize: "0.72rem", color: "#888", marginTop: "3px"}}>{formatTime(notif.created_at)}</div>
             </div>
-            {!notif.is_read && <div style={{width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#1D9E75", flexShrink: 0, marginTop: "4px"}}></div>}
+            {!notif.is_read && <div style={{width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#2BB39A", flexShrink: 0, marginTop: "4px"}}></div>}
           </div>
         ))}
       </div>

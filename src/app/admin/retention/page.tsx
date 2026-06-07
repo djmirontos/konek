@@ -145,7 +145,7 @@ export default function AdminRetentionPage() {
 
     const featureCounts = [
       { label: "Messages", icon: "MSG", count: messagesSent || 0, color: "#3B82F6" },
-      { label: "Feeds", icon: "FEED", count: feedPosts || 0, color: "#1D9E75" },
+      { label: "Feeds", icon: "FEED", count: feedPosts || 0, color: "#2BB39A" },
       { label: "Soapbox", icon: "SOAP", count: soapboxPosts || 0, color: "#8B5CF6" },
       { label: "Confession", icon: "CONF", count: confessionPosts || 0, color: "#F59E0B" },
       { label: "Bazaar", icon: "BAZ", count: bazaarListings || 0, color: "#EC4899" },
@@ -186,7 +186,7 @@ export default function AdminRetentionPage() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#1D9E75", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#2BB39A", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <div style={{ color: "#fff", fontSize: "0.9rem", fontWeight: 600 }}>Loading retention data...</div>
     </div>
   );
@@ -194,7 +194,7 @@ export default function AdminRetentionPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#F7F7F7", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", paddingBottom: "40px" }}>
 
-      <div style={{ backgroundColor: "#1D9E75", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
+      <div style={{ backgroundColor: "#2BB39A", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
         <button onClick={() => router.push("/admin")} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "0", width: "36px" }}>&#8249;</button>
         <div style={{ textAlign: "center" }}>
           <div style={{ fontWeight: 800, fontSize: "1rem", color: "#fff", letterSpacing: "0.05em" }}>RETENTION</div>
@@ -207,7 +207,7 @@ export default function AdminRetentionPage() {
         <div style={{ fontWeight: 800, fontSize: "0.8rem", color: "#888", letterSpacing: "0.08em", marginBottom: "10px" }}>OVERVIEW</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "10px" }}>
           {[
-            { label: "Total Users", value: stats?.totalUsers, color: "#1D9E75" },
+            { label: "Total Users", value: stats?.totalUsers, color: "#2BB39A" },
             { label: "Daily Active", value: stats?.dau, color: "#F59E0B" },
             { label: "Weekly Active", value: stats?.wau, color: "#3B82F6" },
             { label: "Monthly Active", value: stats?.mau, color: "#8B5CF6" },
@@ -223,7 +223,7 @@ export default function AdminRetentionPage() {
             <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A" }}>DAU / MAU Ratio</div>
             <div style={{ fontSize: "0.72rem", color: "#888", marginTop: "2px" }}>Stickiness — target is 20%+</div>
           </div>
-          <div style={{ fontWeight: 800, fontSize: "1.8rem", color: (stats?.dauMauRatio || 0) >= 20 ? "#1D9E75" : (stats?.dauMauRatio || 0) >= 10 ? "#F59E0B" : "#EF4444" }}>
+          <div style={{ fontWeight: 800, fontSize: "1.8rem", color: (stats?.dauMauRatio || 0) >= 20 ? "#2BB39A" : (stats?.dauMauRatio || 0) >= 10 ? "#F59E0B" : "#EF4444" }}>
             {stats?.dauMauRatio}%
           </div>
         </div>
@@ -232,7 +232,7 @@ export default function AdminRetentionPage() {
       <div style={{ padding: "0 16px 16px" }}>
         <div style={{ fontWeight: 800, fontSize: "0.8rem", color: "#888", letterSpacing: "0.08em", marginBottom: "10px" }}>USER RETENTION</div>
         <div style={{ backgroundColor: "#fff", borderRadius: "14px", padding: "16px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-          <RetentionBar label="Day 1 Retention" value={stats?.d1Retention || 0} color="#1D9E75" />
+          <RetentionBar label="Day 1 Retention" value={stats?.d1Retention || 0} color="#2BB39A" />
           <RetentionBar label="Day 7 Retention" value={stats?.d7Retention || 0} color="#3B82F6" />
           <RetentionBar label="Day 30 Retention" value={stats?.d30Retention || 0} color="#8B5CF6" />
           <div style={{ fontSize: "0.7rem", color: "#AAA", marginTop: "8px", lineHeight: 1.5 }}>
@@ -256,13 +256,13 @@ export default function AdminRetentionPage() {
                     <span style={{ fontSize: "0.7rem", color: "#888", marginLeft: "6px" }}>{school.name}</span>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: "0.72rem", color: "#1D9E75", fontWeight: 700 }}>{school.activeUsers} active</div>
+                    <div style={{ fontSize: "0.72rem", color: "#2BB39A", fontWeight: 700 }}>{school.activeUsers} active</div>
                     <div style={{ fontSize: "0.65rem", color: "#AAA" }}>+{school.newThisWeek} this week</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <div style={{ flex: 1, backgroundColor: "#F0F0F0", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
-                    <div style={{ width: activePercent + "%", height: "100%", backgroundColor: "#1D9E75", borderRadius: "99px" }} />
+                    <div style={{ width: activePercent + "%", height: "100%", backgroundColor: "#2BB39A", borderRadius: "99px" }} />
                   </div>
                   <span style={{ fontSize: "0.7rem", color: "#888", minWidth: "32px", textAlign: "right" }}>{activePercent}%</span>
                 </div>

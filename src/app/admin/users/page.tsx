@@ -107,20 +107,20 @@ export default function AdminUsersPage() {
             <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A", marginBottom: "12px"}}>Change Role</div>
             {ROLES.map(role => (
               <button key={role} onClick={() => setNewRole(role)}
-                style={{width: "100%", padding: "12px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: newRole === role ? "#E1F5EE" : "#fff", color: newRole === role ? "#1D9E75" : "#1A1A1A", fontWeight: newRole === role ? 700 : 400, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left", textTransform: "capitalize"}}>
+                style={{width: "100%", padding: "12px 16px", border: "none", borderBottom: "1px solid #F0F0F0", backgroundColor: newRole === role ? "#E1F5EE" : "#fff", color: newRole === role ? "#2BB39A" : "#1A1A1A", fontWeight: newRole === role ? 700 : 400, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit", textAlign: "left", textTransform: "capitalize"}}>
                 {role}
               </button>
             ))}
             <div style={{display: "flex", gap: "10px", marginTop: "12px"}}>
               <button onClick={() => setShowRoleModal(null)} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
               <button onClick={() => handleChangeRole(showRoleModal)} disabled={!newRole || acting === showRoleModal}
-                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: "#1D9E75", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Save</button>
             </div>
           </div>
         </>
       )}
 
-      <div style={{backgroundColor: "#1D9E75", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
+      <div style={{backgroundColor: "#2BB39A", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.push("/admin")} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "0", width: "36px"}}>‹</button>
         <div style={{fontWeight: 800, fontSize: "1rem", color: "#fff", letterSpacing: "0.05em"}}>USER MANAGEMENT</div>
         <div style={{width: "36px"}}></div>
@@ -134,7 +134,7 @@ export default function AdminUsersPage() {
       <div style={{display: "flex", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0"}}>
         {(["all", "banned", "pending"] as const).map(tab => (
           <button key={tab} onClick={() => setFilter(tab)}
-            style={{flex: 1, padding: "10px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", color: filter === tab ? "#1D9E75" : "#888", borderBottom: filter === tab ? "2px solid #1D9E75" : "2px solid transparent", textTransform: "capitalize"}}>
+            style={{flex: 1, padding: "10px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", color: filter === tab ? "#2BB39A" : "#888", borderBottom: filter === tab ? "2px solid #2BB39A" : "2px solid transparent", textTransform: "capitalize"}}>
             {tab}
           </button>
         ))}
@@ -152,8 +152,8 @@ export default function AdminUsersPage() {
           <div key={user.id} style={{backgroundColor: "#fff", marginBottom: "1px", borderBottom: "1px solid #F0F0F0", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px"}}>
             <div onClick={() => router.push("/profile/" + user.id)} style={{position: "relative", flexShrink: 0, cursor: "pointer"}}>
               {user.avatar_url
-                ? <img src={user.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", border: "2px solid #1D9E75"}} />
-                : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1D9E75", fontWeight: 700, fontSize: "1rem", border: "2px solid #1D9E75"}}>{user.full_name?.charAt(0).toUpperCase()}</div>
+                ? <img src={user.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", border: "2px solid #2BB39A"}} />
+                : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem", border: "2px solid #2BB39A"}}>{user.full_name?.charAt(0).toUpperCase()}</div>
               }
               {user.is_banned && <div style={{position: "absolute", bottom: "-2px", right: "-2px", backgroundColor: "#EF4444", borderRadius: "50%", width: "14px", height: "14px", fontSize: "0.5rem", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff"}}>🚫</div>}
             </div>
@@ -162,7 +162,7 @@ export default function AdminUsersPage() {
               <div style={{fontSize: "0.72rem", color: "#888"}}>{user.school?.abbreviation || "—"} · {user.role} · Joined {formatDate(user.created_at)}</div>
               <div style={{display: "flex", gap: "6px", marginTop: "4px", flexWrap: "wrap"}}>
                 {user.verification_status === "pending" && <span style={{backgroundColor: "#FEF3C7", color: "#F59E0B", padding: "2px 8px", borderRadius: "8px", fontSize: "0.65rem", fontWeight: 700}}>ID Pending</span>}
-                {user.verification_status === "approved" && <span style={{backgroundColor: "#E1F5EE", color: "#1D9E75", padding: "2px 8px", borderRadius: "8px", fontSize: "0.65rem", fontWeight: 700}}>Verified</span>}
+                {user.verification_status === "approved" && <span style={{backgroundColor: "#E1F5EE", color: "#2BB39A", padding: "2px 8px", borderRadius: "8px", fontSize: "0.65rem", fontWeight: 700}}>Verified</span>}
                 {user.is_banned && <span style={{backgroundColor: "#FEF2F2", color: "#EF4444", padding: "2px 8px", borderRadius: "8px", fontSize: "0.65rem", fontWeight: 700}}>Banned</span>}
                 {user.ban_count > 0 && <span style={{backgroundColor: "#F7F7F7", color: "#888", padding: "2px 8px", borderRadius: "8px", fontSize: "0.65rem", fontWeight: 700}}>{user.ban_count} ban{user.ban_count > 1 ? "s" : ""}</span>}
               </div>
