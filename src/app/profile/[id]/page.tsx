@@ -78,6 +78,10 @@ export default function ProfilePage() {
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
 
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
   const [postCount, setPostCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
   const [reactionsReceived, setReactionsReceived] = useState(0);
@@ -174,6 +178,7 @@ export default function ProfilePage() {
     // Show profile immediately, load stats in background
     setLoading(false);
     fetchStats(targetId);
+    fetchFollowData(targetId, user.id);
   }
 
   async function fetchStats(userId: string) {
@@ -217,6 +222,36 @@ export default function ProfilePage() {
     setReactionsToday(rTodayResult.count || 0);
     setCommentsToday(cTodayResult.count || 0);
   }
+  async function fetchFollowData(profileId: string, currentUserId: string) {
+    const [
+      { count: followers },
+      { count: following },
+      { data: followCheck }
+    ] = await Promise.all([
+      supabase.from("followers").select("id", { count: "exact", head: true }).eq("following_id", profileId),
+      supabase.from("followers").select("id", { count: "exact", head: true }).eq("follower_id", profileId),
+      supabase.from("followers").select("id").eq("follower_id", currentUserId).eq("following_id", profileId).single()
+    ]);
+    setFollowerCount(followers || 0);
+    setFollowingCount(following || 0);
+    setIsFollowing(!!followCheck);
+  }
+
+  async function handleFollow() {
+    if (!currentUser || !profileUser) return;
+    setFollowLoading(true);
+    if (isFollowing) {
+      await supabase.from("followers").delete().eq("follower_id", currentUser.id).eq("following_id", profileUser.id);
+      setIsFollowing(false);
+      setFollowerCount(prev => Math.max(0, prev - 1));
+    } else {
+      await supabase.from("followers").insert({ follower_id: currentUser.id, following_id: profileUser.id });
+      setIsFollowing(true);
+      setFollowerCount(prev => prev + 1);
+    }
+    setFollowLoading(false);
+  }
+
   async function fetchTabData(tab: string) {
     if (!profileUser) return;
     setLoadingTab(true);
@@ -550,59 +585,104 @@ export default function ProfilePage() {
         <button onClick={() => router.push("/feeds")} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "4px", lineHeight: 1}}>✕</button>
       </div>
 
-      <div style={{backgroundColor: "#fff", padding: "20px 16px 16px", display: "flex", flexDirection: "column", alignItems: "center", borderBottom: "1px solid #F0F0F0"}}>
-        <div style={{position: "relative", marginBottom: "12px"}}>
-          {profileUser.avatar_url
-            ? <img src={profileUser.avatar_url} alt="avatar" onClick={() => setViewAvatar({src: profileUser.avatar_original_url || profileUser.avatar_url || '', name: profileUser.full_name})} style={{cursor: "pointer", width: "88px", height: "88px", borderRadius: "50%", objectFit: "cover", border: "3px solid #2BB39A"}} />
-            : <div style={{width: "88px", height: "88px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "3px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "2rem"}}>{profileUser.full_name?.charAt(0).toUpperCase()}</div>
-          }
-          {isVerified && (
-            <div style={{position: "absolute", bottom: "2px", right: "2px", width: "22px", height: "22px", backgroundColor: "#2BB39A", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center"}}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M20 6L9 17l-5-5"/><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      {/* ===== HERO SECTION ===== */}
+      <div style={{backgroundColor: "#fff", padding: "16px 16px 12px", borderBottom: "1px solid #F0F0F0"}}>
+        <div style={{display: "flex", gap: "14px", alignItems: "flex-start"}}>
+
+          {/* LEFT — Avatar + Trust Badge */}
+          <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", flexShrink: 0}}>
+            <div style={{position: "relative"}}>
+              {profileUser.avatar_url
+                ? <img src={profileUser.avatar_url} alt="avatar" onClick={() => setViewAvatar({src: profileUser.avatar_original_url || profileUser.avatar_url || "", name: profileUser.full_name})} style={{cursor: "pointer", width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", border: "2.5px solid #2BB39A"}} />
+                : <div style={{width: "80px", height: "80px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2.5px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.8rem"}}>{profileUser.full_name?.charAt(0).toUpperCase()}</div>
+              }
+              {isVerified && (
+                <div style={{position: "absolute", bottom: "2px", right: "2px", width: "20px", height: "20px", backgroundColor: "#2BB39A", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center"}}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </div>
+              )}
+              {isOwnProfile && (
+                <button onClick={() => setShowAvatarUploader(true)} disabled={uploadingAvatar}
+                  style={{position: "absolute", bottom: isVerified ? "22px" : "0px", right: "0", backgroundColor: "#2BB39A", border: "2px solid #fff", borderRadius: "50%", width: "26px", height: "26px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "0.65rem"}}>
+                  {uploadingAvatar ? "⏳" : "📷"}
+                </button>
+              )}
             </div>
-          )}
-          {isOwnProfile && (
-            <button onClick={() => setShowAvatarUploader(true)} disabled={uploadingAvatar}
-              style={{position: "absolute", bottom: isVerified ? "24px" : "0px", right: "0", backgroundColor: "#2BB39A", border: "2px solid #fff", borderRadius: "50%", width: "28px", height: "28px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "0.7rem"}}>
-              {uploadingAvatar ? "⏳" : "📷"}
-            </button>
-          )}
-          <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleAvatarChange} />
-          {showAvatarUploader && (
-            <AvatarUploader
-              onComplete={handleAvatarComplete}
-              onCancel={() => setShowAvatarUploader(false)}
-            />
-          )}
+            {/* Trust Badge below avatar */}
+            {(() => {
+              const tl = getTrustLevel(profileUser.trust_xp || 0);
+              return tl ? (
+                <span style={{display:"inline-flex",alignItems:"center",gap:"2px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.6rem",fontWeight:700,padding:"2px 7px",borderRadius:"8px",whiteSpace:"nowrap"}}>
+                  {tl.emoji} {tl.label}
+                </span>
+              ) : null;
+            })()}
+          </div>
+
+          {/* RIGHT — Info + Stats */}
+          <div style={{flex: 1, minWidth: 0}}>
+
+            {/* Full Name + Follow Button */}
+            <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "2px", flexWrap: "wrap"}}>
+              <span style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", lineHeight: 1.2}}>{profileUser.full_name}</span>
+              {!isOwnProfile && (
+                <button onClick={handleFollow} disabled={followLoading}
+                  style={{padding: "4px 12px", borderRadius: "20px", border: isFollowing ? "1.5px solid #2BB39A" : "none", backgroundColor: isFollowing ? "#fff" : "#2BB39A", color: isFollowing ? "#2BB39A" : "#fff", fontWeight: 700, fontSize: "0.7rem", cursor: followLoading ? "not-allowed" : "pointer", fontFamily: "inherit", flexShrink: 0}}>
+                  {followLoading ? "..." : isFollowing ? "Following" : "Follow"}
+                </button>
+              )}
+            </div>
+
+            {/* IGN */}
+            <div style={{fontSize: "0.78rem", color: "#888", marginBottom: "4px"}}>
+              @{profileUser.ign || profileUser.full_name?.toLowerCase().replace(/\s+/g, "")}
+            </div>
+
+            {/* School · Course */}
+            <div style={{fontSize: "0.75rem", color: "#2BB39A", fontWeight: 600, marginBottom: "2px", display: "flex", flexWrap: "wrap", gap: "4px", alignItems: "center"}}>
+              {school && <span>{school.abbreviation}</span>}
+              {profileUser.course && <><span style={{color: "#ccc"}}>·</span><span style={{color: "#888", fontWeight: 500}}>{profileUser.course}</span></>}
+            </div>
+
+            {/* Bio */}
+            {profileUser.bio && (
+              <div style={{fontSize: "0.78rem", color: "#555", lineHeight: 1.4, marginBottom: "8px", marginTop: "2px"}}>{profileUser.bio}</div>
+            )}
+
+            {/* 4-col Stats */}
+            <div style={{display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "2px", marginTop: "8px"}}>
+              {[
+                { label: "Posts", value: postCount },
+                { label: "Reactions", value: reactionsReceived },
+                { label: "Following", value: followingCount },
+                { label: "Followers", value: followerCount },
+              ].map(stat => (
+                <div key={stat.label} style={{textAlign: "center", padding: "6px 2px"}}>
+                  <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A"}}>{stat.value.toLocaleString()}</div>
+                  <div style={{fontSize: "0.6rem", color: "#888", marginTop: "1px"}}>{stat.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Message + Report buttons for other profiles */}
+            {!isOwnProfile && (
+              <div style={{display: "flex", gap: "8px", marginTop: "10px"}}>
+                <button onClick={handleMessageUser} disabled={messagingUser}
+                  style={{flex: 1, padding: "8px 10px", borderRadius: "20px", border: "none", backgroundColor: messagingUser ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.78rem", cursor: messagingUser ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                  {messagingUser ? "Opening..." : "💬 Message"}
+                </button>
+                <button style={{padding: "8px 14px", borderRadius: "20px", border: "1.5px solid #EF4444", backgroundColor: "#fff", color: "#EF4444", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>🚩</button>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div style={{fontWeight: 700, fontSize: "1.2rem", color: "#1A1A1A", marginBottom: "2px", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", flexWrap: "wrap"}}>
-          {profileUser.full_name}
-          {(() => { const tl = getTrustLevel(profileUser.trust_xp || 0); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.68rem",fontWeight:700,padding:"2px 8px",borderRadius:"10px"}}>{tl.emoji} {tl.label}</span> : null; })()}
-        </div>
-        {school && <div style={{fontSize: "0.82rem", color: "#2BB39A", fontWeight: 600, marginBottom: "2px"}}>{school.abbreviation}</div>}
-        {profileUser.bio && <div style={{fontSize: "0.83rem", color: "#555", textAlign: "center", marginBottom: "10px", lineHeight: 1.5, maxWidth: "300px", marginTop: "4px"}}>{profileUser.bio}</div>}
-
-        <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", width: "100%", margin: "8px 0 14px", backgroundColor: "#F7F7F7", borderRadius: "12px", overflow: "hidden"}}>
-          <div style={{padding: "14px 8px", textAlign: "center", borderRight: "1px solid #E8E8E8"}}>
-            <div style={{fontWeight: 700, fontSize: "1.5rem", color: "#1A1A1A"}}>{commentCount.toLocaleString()}</div>
-            {commentsToday > 0 && <div style={{fontSize: "0.72rem", color: "#2BB39A", fontWeight: 700, marginTop: "2px"}}>+{commentsToday} today</div>}
-            <div style={{fontSize: "0.7rem", color: "#888", marginTop: "2px"}}>Commented on your post</div>
-          </div>
-          <div style={{padding: "14px 8px", textAlign: "center"}}>
-            <div style={{fontWeight: 700, fontSize: "1.5rem", color: "#1A1A1A"}}>{reactionsReceived.toLocaleString()}</div>
-            {reactionsToday > 0 && <div style={{fontSize: "0.72rem", color: "#2BB39A", fontWeight: 700, marginTop: "2px"}}>+{reactionsToday} today</div>}
-            <div style={{fontSize: "0.7rem", color: "#888", marginTop: "2px"}}>Reactions received</div>
-          </div>
-        </div>
-        {!isOwnProfile && (
-          <div style={{display: "flex", gap: "10px"}}>
-            <button onClick={handleMessageUser} disabled={messagingUser}
-              style={{padding: "9px 20px", borderRadius: "20px", border: "none", backgroundColor: messagingUser ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: messagingUser ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
-              {messagingUser ? "Opening..." : "💬 Message"}
-            </button>
-            <button style={{padding: "9px 20px", borderRadius: "20px", border: "1.5px solid #EF4444", backgroundColor: "#fff", color: "#EF4444", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>🚩 Report</button>
-          </div>
+        <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" style={{display: "none"}} onChange={handleAvatarChange} />
+        {showAvatarUploader && (
+          <AvatarUploader
+            onComplete={handleAvatarComplete}
+            onCancel={() => setShowAvatarUploader(false)}
+          />
         )}
       </div>
 
