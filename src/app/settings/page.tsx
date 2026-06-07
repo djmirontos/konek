@@ -144,17 +144,14 @@ export default function SettingsPage() {
   );
 
   const Row = ({ icon, iconBg, title, subtitle, right, onClick, danger }: {
-    icon: string; iconBg: string; title: string; subtitle?: string;
+    icon: string; iconBg?: string; title: string; subtitle?: string;
     right?: React.ReactNode; onClick?: () => void; danger?: boolean;
   }) => (
     <div onClick={onClick}
-      style={{display: "flex", alignItems: "center", gap: "12px", padding: "13px 14px",
+      style={{display: "flex", alignItems: "center", gap: "14px", padding: "13px 16px",
         borderBottom: "1px solid #F8F8F8", cursor: onClick ? "pointer" : "default",
         backgroundColor: "#fff"}}>
-      <div style={{width: "34px", height: "34px", borderRadius: "9px", backgroundColor: iconBg,
-        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
-        <img src={icon} alt="" style={{width: "20px", height: "20px", objectFit: "contain"}} />
-      </div>
+      <img src={icon} alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: danger ? 1 : 0.75}} />
       <div style={{flex: 1, minWidth: 0}}>
         <div style={{fontSize: "0.875rem", fontWeight: 600, color: danger ? "#EF4444" : "#1A1A1A"}}>{title}</div>
         {subtitle && <div style={{fontSize: "0.72rem", color: "#aaa", marginTop: "1px"}}>{subtitle}</div>}
@@ -203,9 +200,7 @@ export default function SettingsPage() {
         <Card>
           <div style={{padding: "13px 14px", borderBottom: "1px solid #F8F8F8"}}>
             <div style={{display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px"}}>
-              <div style={{width: "34px", height: "34px", borderRadius: "9px", backgroundColor: "#EEEDFE", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0}}>
-                <img src="/icon/visibility_black.png" alt="" style={{width: "20px", height: "20px", objectFit: "contain"}} />
-              </div>
+              <img src="/icon/visibility_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.75}} />
               <div style={{flex: 1}}>
                 <div style={{fontSize: "0.875rem", fontWeight: 600, color: "#1A1A1A"}}>Profile visibility</div>
                 <div style={{fontSize: "0.72rem", color: "#aaa"}}>Who can see your info</div>
