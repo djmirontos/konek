@@ -19,6 +19,7 @@ type ProfileUser = {
   invite_code: string | null;
   referral_count: number;
   trust_xp: number;
+  ign: string | null;
 };
 type Post = {
   id: string; content: string; tag: string | null; type: string;
