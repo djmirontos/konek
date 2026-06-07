@@ -31,6 +31,9 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Create Android assets directory
+        run: mkdir -p android/app/src/main/assets
+
       - name: Sync Capacitor
         run: npx cap sync android
 
