@@ -133,41 +133,47 @@ export default function ProfilePage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
 
-    const { data: meData } = await supabase.from("users").select("*").eq("id", user.id).single();
-    if (meData) setCurrentUser(meData);
-    const { data: badges } = await supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student");
-    const verifiedIds = new Set((badges || []).map((b: {user_id: string}) => b.user_id));
-    setIsVerified(verifiedIds.has(profileId));
-
-    const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
-    if (schoolData) setSchools(schoolData);
-
     const targetId = profileId || user.id;
     const own = targetId === user.id;
     setIsOwnProfile(own);
 
-    const { data: profileData } = await supabase.from("users").select("*").eq("id", targetId).single();
+    // Run all independent queries in parallel
+    const [
+      { data: meData },
+      { data: profileData },
+      { data: badges },
+      { data: schoolData },
+      { count: livingCount }
+    ] = await Promise.all([
+      supabase.from("users").select("*").eq("id", user.id).single(),
+      supabase.from("users").select("*").eq("id", targetId).single(),
+      supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student"),
+      supabase.from("schools").select("id, name, abbreviation").order("name"),
+      supabase.from("boarding_houses").select("id", { count: "exact", head: true })
+        .eq("user_id", targetId).eq("is_hidden", false)
+    ]);
+
+    if (meData) setCurrentUser(meData);
+    if (schoolData) setSchools(schoolData);
+    setHasLiving((livingCount || 0) > 0);
+
+    const verifiedIds = new Set((badges || []).map((b: {user_id: string}) => b.user_id));
+    setIsVerified(verifiedIds.has(profileId));
+
     if (profileData) {
       setProfileUser(profileData);
       setEditBio(profileData.bio || "");
       setEditPhone(profileData.phone_number || "");
       setEditBirthdate(profileData.birthdate || "");
-      if (profileData.privacy_settings) {
-        setPrivacySettings(profileData.privacy_settings);
-      }
+      if (profileData.privacy_settings) setPrivacySettings(profileData.privacy_settings);
       setEditCourse(profileData.course || "");
       setEditYearLevel(profileData.year_level || "");
       setEditHometown(profileData.hometown || "");
     }
 
-    await fetchStats(targetId);
-
-    const { count: livingCount } = await supabase
-      .from("boarding_houses").select("id", { count: "exact", head: true })
-      .eq("user_id", targetId).eq("is_hidden", false);
-    setHasLiving((livingCount || 0) > 0);
-
+    // Show profile immediately, load stats in background
     setLoading(false);
+    fetchStats(targetId);
   }
 
   async function fetchStats(userId: string) {
