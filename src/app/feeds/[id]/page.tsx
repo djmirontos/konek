@@ -82,12 +82,17 @@ export default function PostDetailPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const [
+      { data: userData },
+      { data: badges }
+    ] = await Promise.all([
+      supabase.from("users").select("*").eq("id", user.id).single(),
+      supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student")
+    ]);
     if (userData) setCurrentUser(userData);
-    const { data: badges } = await supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student");
     if (badges) setVerifiedUsers(new Set(badges.map((b: {user_id: string}) => b.user_id)));
-    await fetchPost(userData);
-    await fetchComments(userData);
+    // Load post and comments in parallel
+    await Promise.all([fetchPost(userData), fetchComments(userData)]);
     setLoading(false);
   }
 
@@ -98,14 +103,19 @@ export default function PostDetailPage() {
       .eq("id", postId)
       .single();
     if (data) {
-      const { data: reactions } = await supabase.from("reactions").select("type, user_id").eq("post_id", postId);
+      const [
+        { data: reactions },
+        { count }
+      ] = await Promise.all([
+        supabase.from("reactions").select("type, user_id").eq("post_id", postId),
+        supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", postId)
+      ]);
       const reactionCounts: Record<string, number> = {};
       let userReaction: string | null = null;
-      (reactions || []).forEach((r) => {
+      (reactions || []).forEach((r: any) => {
         reactionCounts[r.type] = (reactionCounts[r.type] || 0) + 1;
         if (userData && r.user_id === userData.id) userReaction = r.type;
       });
-      const { count } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", postId);
       setPost({ ...data, reactionCounts, userReaction, commentCount: count || 0, users: Array.isArray(data.users) ? data.users[0] ?? null : data.users });
     }
   }
@@ -119,15 +129,20 @@ export default function PostDetailPage() {
       .eq("is_hidden", false)
       .order("created_at", { ascending: true });
     if (data && user) {
-      const enriched = await Promise.all(data.map(async (c) => {
-        const { data: reactions } = await supabase.from("comment_reactions").select("type, user_id").eq("comment_id", c.id);
-        const reactionCounts: Record<string, number> = {};
-        let userReaction: string | null = null;
-        (reactions || []).forEach((r) => {
-          reactionCounts[r.type] = (reactionCounts[r.type] || 0) + 1;
-          if (r.user_id === user.id) userReaction = r.type;
-        });
-        return { ...c, reactionCounts, userReaction };
+      const commentIds = data.map((c: any) => c.id);
+      const { data: allReactions } = commentIds.length > 0
+        ? await supabase.from("comment_reactions").select("comment_id, type, user_id").in("comment_id", commentIds)
+        : { data: [] };
+      const reactionMap: Record<string, { counts: Record<string, number>; userReaction: string | null }> = {};
+      (allReactions || []).forEach((r: any) => {
+        if (!reactionMap[r.comment_id]) reactionMap[r.comment_id] = { counts: {}, userReaction: null };
+        reactionMap[r.comment_id].counts[r.type] = (reactionMap[r.comment_id].counts[r.type] || 0) + 1;
+        if (r.user_id === user.id) reactionMap[r.comment_id].userReaction = r.type;
+      });
+      const enriched = data.map((c: any) => ({
+        ...c,
+        reactionCounts: reactionMap[c.id]?.counts || {},
+        userReaction: reactionMap[c.id]?.userReaction || null
       }));
       const topLevel = enriched.filter(c => !c.parent_id);
       const replies = enriched.filter(c => c.parent_id);

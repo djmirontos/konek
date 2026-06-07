@@ -88,16 +88,21 @@ export default function SoapboxDetailPage({ params }: { params: Promise<{ id: st
     const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (userData) {
       setCurrentUser(userData);
-      await fetchPost(userData, id);
-      await fetchComments(userData, id);
+      // Load post and comments in parallel
+      await Promise.all([fetchPost(userData, id), fetchComments(userData, id)]);
     }
     setLoading(false);
   }
 
   async function fetchPost(userData: User, id: string) {
-    const { data } = await supabase.from("posts").select("id, user_id, content, tag, images, created_at, school_id, pseudonym, upvotes, downvotes").eq("id", id).single();
+    const [
+      { data },
+      { data: myVote }
+    ] = await Promise.all([
+      supabase.from("posts").select("id, user_id, content, tag, images, created_at, school_id, pseudonym, upvotes, downvotes").eq("id", id).single(),
+      supabase.from("reactions").select("type").eq("post_id", id).eq("user_id", userData.id).single()
+    ]);
     if (data) {
-      const { data: myVote } = await supabase.from("reactions").select("type").eq("post_id", id).eq("user_id", userData.id).single();
       setPost({ ...data, userVote: myVote ? (myVote.type as "upvote" | "downvote") : null });
     }
   }
