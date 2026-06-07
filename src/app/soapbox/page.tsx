@@ -638,6 +638,7 @@ export default function SoapboxPage() {
                       <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
                         {formatTime(post.created_at)}
                         {post.edited_at && <span style={{color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
+                        {post.school_id !== currentUser?.school_id && (() => { const s = schools.find(s => s.id === post.school_id); return s ? <span style={{display: "inline-flex", alignItems: "center", gap: "2px", backgroundColor: "#E8F8F5", color: "#2BB39A", fontSize: "0.65rem", fontWeight: 700, padding: "1px 6px", borderRadius: "8px"}}>🏫 {s.abbreviation}</span> : null; })()}
                         {mood && (
                           <span style={{display: "inline-flex", alignItems: "center", gap: "3px", backgroundColor: mood.bg, color: mood.color, fontSize: "0.68rem", fontWeight: 700, padding: "2px 7px", borderRadius: "10px"}}>
                             {mood.emoji} feeling {mood.label.toLowerCase()}
@@ -859,6 +860,7 @@ export default function SoapboxPage() {
                       <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
                         {formatTime(confession.created_at)}
                         {confession.edited_at && <span style={{color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
+                        {confession.school_id !== currentUser?.school_id && (() => { const s = schools.find(s => s.id === confession.school_id); return s ? <span style={{display: "inline-flex", alignItems: "center", gap: "2px", backgroundColor: "#E8F8F5", color: "#2BB39A", fontSize: "0.65rem", fontWeight: 700, padding: "1px 6px", borderRadius: "8px"}}>🏫 {s.abbreviation}</span> : null; })()}
                         {mood && (
                           <span style={{display: "inline-flex", alignItems: "center", gap: "3px", backgroundColor: mood.bg, color: mood.color, fontSize: "0.68rem", fontWeight: 700, padding: "2px 7px", borderRadius: "10px"}}>
                             {mood.emoji} feeling {mood.label.toLowerCase()}

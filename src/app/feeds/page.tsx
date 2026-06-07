@@ -953,9 +953,10 @@ export default function FeedsPage() {
                   </div>
                   <div style={{flex: 1}}>
                     <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{post.users?.full_name}{verifiedUsers.has(post.user_id) && <VerifiedBadge />}{(() => { const tl = getTrustLevel(post.users?.trust_xp); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.62rem",fontWeight:700,padding:"2px 6px",borderRadius:"8px",marginLeft:"5px"}}>{tl.emoji} {tl.label}</span> : null; })()}</div>
-                    <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px"}}>
+                    <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
                       {formatTime(post.created_at)}
-                      {post.edited_at && <span style={{marginLeft: "6px", color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
+                      {post.edited_at && <span style={{color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
+                      {post.school_id !== currentUser?.school_id && (() => { const s = schools.find(s => s.id === post.school_id); return s ? <span style={{display: "inline-flex", alignItems: "center", gap: "2px", backgroundColor: "#E8F8F5", color: "#2BB39A", fontSize: "0.65rem", fontWeight: 700, padding: "1px 6px", borderRadius: "8px"}}>🏫 {s.abbreviation}</span> : null; })()}
                     </div>
                   </div>
                   {currentUser?.id === post.user_id && (
