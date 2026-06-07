@@ -766,7 +766,7 @@ export default function FeedsPage() {
                 : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
               }
               <button onClick={() => setShowFeedsComposer(true)}
-                style={{flex: 1, textAlign: "left", backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", fontFamily: "inherit"}}>
+                style={{flex: 1, textAlign: "left", backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "7px 14px", fontSize: "0.78rem", color: "#aaa", cursor: "pointer", fontFamily: "inherit"}}>
                 Hey {currentUser?.full_name?.split(" ")[0] || "Klasmeyt"}, what's on your mind?
               </button>
               <button onClick={() => fileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "4px", flexShrink: 0}} title="Add photos">
@@ -1025,7 +1025,7 @@ export default function FeedsPage() {
                 : <div style={{width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0}}>{currentUser?.full_name?.charAt(0).toUpperCase()}</div>
               }
               <button onClick={() => setShowQuadComposer(true)}
-                style={{flex: 1, textAlign: "left", backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", fontFamily: "inherit"}}>
+                style={{flex: 1, textAlign: "left", backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "7px 14px", fontSize: "0.78rem", color: "#aaa", cursor: "pointer", fontFamily: "inherit"}}>
                 Hangout or need help?
               </button>
               <button onClick={() => quadFileInputRef.current?.click()} style={{background: "none", border: "none", cursor: "pointer", padding: "4px", flexShrink: 0}} title="Add photo">
