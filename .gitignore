@@ -40,3 +40,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 android/app/google-services.json
+android/app/google-services.json
