@@ -262,7 +262,7 @@ export default function SettingsPage() {
             onClick={() => showToast("Coming soon!")} />
           <Row icon="/icon/icons8-privacy-50.png" iconBg="#EAF3DE" title="Privacy policy"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
-            onClick={() => showToast("Coming soon!")} />
+            onClick={() => router.push("/privacy")} />
         </Card>
 
         {/* ADMIN PANEL — admin/mod only */}
