@@ -19,8 +19,8 @@ const config: CapacitorConfig = {
       overlaysWebView: false,
     },
     SplashScreen: {
-      launchShowDuration: 2000,
-      launchAutoHide: false,
+      launchShowDuration: 1500,
+      launchAutoHide: true,
       backgroundColor: '#2BB39A',
       androidSplashResourceName: 'splash',
       showSpinner: false,
