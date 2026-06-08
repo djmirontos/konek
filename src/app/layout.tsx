@@ -3,6 +3,7 @@ import { SchoolProvider } from "@/context/SchoolContext";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import DesktopLayout from "@/components/DesktopLayout";
+import BackButtonHandler from "@/components/BackButtonHandler";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -53,6 +54,7 @@ export default function RootLayout({
       </head>
       <body style={{margin: 0, padding: 0, backgroundColor: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
         <SchoolProvider>
+          <BackButtonHandler />
           <DesktopLayout>{children}</DesktopLayout>
         </SchoolProvider>
         <script src="/sw-register.js" defer></script>
