@@ -111,7 +111,7 @@ export default function SignupPage() {
     let candidate = base;
     let counter = 0;
     while (true) {
-      const { data } = await supabase.from("users").select("id").eq("ign", candidate).single();
+      const { data } = await supabase.from("users").select("id").eq("ign", candidate).maybeSingle();
       if (!data) return candidate;
       counter++;
       candidate = base + counter;

@@ -16,7 +16,7 @@ export async function startConversation(
       "and(participant_1.eq." + currentUserId + ",participant_2.eq." + otherUserId + ")," +
       "and(participant_1.eq." + otherUserId + ",participant_2.eq." + currentUserId + ")"
     )
-    .single();
+    .maybeSingle();
 
   if (existing) return existing.id;
 
@@ -35,7 +35,7 @@ export async function startConversation(
       context_id: context?.id || null,
     })
     .select("id")
-    .single();
+    .maybeSingle();
 
   if (error || !newConv) return null;
 

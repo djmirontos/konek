@@ -48,7 +48,7 @@ export default function AdminSchoolsPage() {
     if (data) {
       const enriched = await Promise.all(data.map(async (r: any) => {
         if (!r.requested_by_user_id) return { ...r, requester: null };
-        const { data: userData } = await supabase.from("users").select("full_name").eq("id", r.requested_by_user_id).single();
+        const { data: userData } = await supabase.from("users").select("full_name").eq("id", r.requested_by_user_id).maybeSingle();
         return { ...r, requester: userData || null };
       }));
       setRequests(enriched);

@@ -100,7 +100,7 @@ export default function SoapboxDetailPage({ params }: { params: Promise<{ id: st
       { data: myVote }
     ] = await Promise.all([
       supabase.from("posts").select("id, user_id, content, tag, images, created_at, school_id, pseudonym, upvotes, downvotes").eq("id", id).single(),
-      supabase.from("reactions").select("type").eq("post_id", id).eq("user_id", userData.id).single()
+      supabase.from("reactions").select("type").eq("post_id", id).eq("user_id", userData.id).maybeSingle()
     ]);
     if (data) {
       setPost({ ...data, userVote: myVote ? (myVote.type as "upvote" | "downvote") : null });

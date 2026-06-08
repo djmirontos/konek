@@ -44,7 +44,7 @@ export default function AdminQuestionPage() {
   async function fetchTodayQuestion() {
     if (!selectedSchool) return;
     const today = new Date().toISOString().split("T")[0];
-    const { data } = await supabase.from("daily_questions").select("id, question, asked_date, school_id").eq("school_id", selectedSchool).eq("asked_date", today).single();
+    const { data } = await supabase.from("daily_questions").select("id, question, asked_date, school_id").eq("school_id", selectedSchool).eq("asked_date", today).maybeSingle();
     setTodayQuestion(data || null);
     if (data) {
       const { count } = await supabase.from("question_answers").select("id", { count: "exact", head: true }).eq("question_id", data.id);

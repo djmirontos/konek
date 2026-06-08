@@ -53,7 +53,7 @@ export default function AdminReportsPage() {
       const enriched = await Promise.all(data.map(async (r) => {
         let post = null;
         if (r.post_id) {
-          const { data: p } = await supabase.from("posts").select("content, user_id, type, users(full_name)").eq("id", r.post_id).single();
+          const { data: p } = await supabase.from("posts").select("content, user_id, type, users(full_name)").eq("id", r.post_id).maybeSingle();
           if (p) post = { ...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users };
         }
         return { ...r, reporter: Array.isArray(r.reporter) ? r.reporter[0] ?? null : r.reporter, post };
