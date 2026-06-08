@@ -1,10 +1,11 @@
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-// Custom storage using Capacitor Preferences for native app
-// Falls back to localStorage on web browser
+// Singleton instance
+let supabaseInstance: SupabaseClient | null = null;
+
 const capacitorStorage = {
   async getItem(key: string): Promise<string | null> {
     if (typeof window === "undefined") return null;
@@ -37,7 +38,9 @@ const capacitorStorage = {
 };
 
 export function createClient() {
-  return createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  if (supabaseInstance) return supabaseInstance;
+  
+  supabaseInstance = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
       storage: capacitorStorage as any,
       autoRefreshToken: true,
@@ -45,4 +48,6 @@ export function createClient() {
       detectSessionInUrl: false,
     },
   });
+  
+  return supabaseInstance;
 }
