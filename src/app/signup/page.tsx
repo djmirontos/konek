@@ -59,6 +59,7 @@ export default function SignupPage() {
 
   function validateStep1(): boolean {
     if (!firstName.trim()) { setError("Please enter your first name"); return false; }
+    if (firstName.trim().toLowerCase() === "admin") { setError("That name is reserved. Please use your real name."); return false; }
     if (!lastName.trim()) { setError("Please enter your last name"); return false; }
     if (!phone.trim()) { setError("Please enter your phone number"); return false; }
     if (!/^09\d{9}$/.test(phone.trim())) { setError("Phone number must be in format 09XXXXXXXXX (11 digits)"); return false; }
@@ -108,6 +109,7 @@ export default function SignupPage() {
 
   async function generateUniqueIgn(firstName: string, lastName: string): Promise<string> {
     const base = (firstName.trim() + lastName.trim()).toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (base === "admin") throw new Error("That name is reserved. Please use your real name.");
     let candidate = base;
     let counter = 0;
     while (true) {
