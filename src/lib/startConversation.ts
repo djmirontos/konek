@@ -20,6 +20,10 @@ export async function startConversation(
 
   if (existing) return existing.id;
 
+  // Check if sender is admin — admin messages bypass pending
+  const { data: senderData } = await supabase.from("users").select("ign").eq("id", currentUserId).maybeSingle();
+  const isAdmin = senderData?.ign === "admin";
+
   // Create new conversation
   const { data: newConv, error } = await supabase
     .from("conversations")
@@ -27,7 +31,7 @@ export async function startConversation(
       participant_1: currentUserId,
       participant_2: otherUserId,
       initiated_by: currentUserId,
-      status: "pending",
+      status: isAdmin ? "accepted" : "pending",
       last_message: initialMessage || null,
       last_message_at: new Date().toISOString(),
       context_type: context?.type || null,
