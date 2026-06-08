@@ -5,6 +5,7 @@ import "./globals.css";
 import DesktopLayout from "@/components/DesktopLayout";
 import BackButtonHandler from "@/components/BackButtonHandler";
 import OfflineDetector from "@/components/OfflineDetector";
+import StatusBarHandler from "@/components/StatusBarHandler";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -56,6 +57,7 @@ export default function RootLayout({
       <body style={{margin: 0, padding: 0, backgroundColor: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
         <SchoolProvider>
           <BackButtonHandler />
+          <StatusBarHandler />
           <OfflineDetector />
           <DesktopLayout>{children}</DesktopLayout>
         </SchoolProvider>
