@@ -10,6 +10,8 @@ type SettingsUser = {
   show_online_status: boolean;
   privacy_settings: Record<string, string>;
   verification_status: string | null;
+  ign: string | null;
+  ign_changed_at: string | null;
 };
 
 export default function SettingsPage() {
@@ -37,6 +39,11 @@ export default function SettingsPage() {
   const [showBlockedUsers, setShowBlockedUsers] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const [showEditIgn, setShowEditIgn] = useState(false);
+  const [newIgn, setNewIgn] = useState("");
+  const [ignError, setIgnError] = useState("");
+  const [savingIgn, setSavingIgn] = useState(false);
 
   const [showPushNotif, setShowPushNotif] = useState(true);
   const [showMsgRequests, setShowMsgRequests] = useState(true);
@@ -105,6 +112,52 @@ export default function SettingsPage() {
   async function handleLogout() {
     await supabase.auth.signOut();
     window.location.href = "/login";
+  }
+
+  async function handleSaveIgn() {
+    setIgnError("");
+    if (!currentUser) return;
+    const clean = newIgn.trim().toLowerCase().replace(/^@/, "");
+    if (!clean) { setIgnError("Please enter a username."); return; }
+    if (clean.length < 3) { setIgnError("Username must be at least 3 characters."); return; }
+    if (!/^[a-z0-9_]+$/.test(clean)) { setIgnError("Only letters, numbers, and underscores allowed."); return; }
+    if (clean === "admin") { setIgnError("That username is reserved."); return; }
+
+    // Check 15-day cooldown
+    if (currentUser.ign_changed_at) {
+      const daysSince = (Date.now() - new Date(currentUser.ign_changed_at).getTime()) / (1000 * 60 * 60 * 24);
+      if (daysSince < 15) {
+        const daysLeft = Math.ceil(15 - daysSince);
+        setIgnError("You can change your username again in " + daysLeft + " day" + (daysLeft > 1 ? "s" : "") + ".");
+        return;
+      }
+    }
+
+    // Check uniqueness
+    setSavingIgn(true);
+    const { data: existing } = await supabase.from("users").select("id").eq("ign", clean).maybeSingle();
+    if (existing && existing.id !== currentUser.id) {
+      setIgnError("That username is already taken. Try another one.");
+      setSavingIgn(false);
+      return;
+    }
+
+    const { error } = await supabase.from("users").update({
+      ign: clean,
+      ign_changed_at: new Date().toISOString(),
+    }).eq("id", currentUser.id);
+
+    if (error) {
+      setIgnError("Failed to update username. Try again.");
+      setSavingIgn(false);
+      return;
+    }
+
+    setCurrentUser(prev => prev ? { ...prev, ign: clean, ign_changed_at: new Date().toISOString() } : prev);
+    setShowEditIgn(false);
+    setNewIgn("");
+    setSavingIgn(false);
+    showToast("Username updated!");
   }
 
   function getVerificationLabel() {
@@ -190,6 +243,9 @@ export default function SettingsPage() {
           <Row icon="/icon/password_black.png" iconBg="#EAF3DE" title="Change password"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => setShowChangePassword(true)} />
+          <Row icon="/icon/edit_black.png" iconBg="#EAF3DE" title="Username" subtitle={"@" + (currentUser?.ign || "")}
+            right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
+            onClick={() => { setNewIgn(currentUser?.ign || ""); setIgnError(""); setShowEditIgn(true); }} />
           <Row icon="/icon/verify_black.png" iconBg="#E6F1FB" title="Student verification" subtitle={getVerificationLabel()}
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => router.push("/profile/" + currentUser?.id + "?verify=true")} />
@@ -323,6 +379,50 @@ export default function SettingsPage() {
               <button onClick={handleChangePassword} disabled={changingPassword}
                 style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: changingPassword ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: changingPassword ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
                 {changingPassword ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* EDIT IGN SHEET */}
+      {showEditIgn && (
+        <>
+          <div onClick={() => { setShowEditIgn(false); setNewIgn(""); setIgnError(""); }}
+            style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "20px 20px 40px"}}>
+            <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "0 auto 16px"}} />
+            <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "4px"}}>Change Username</div>
+            <div style={{fontSize: "0.78rem", color: "#888", marginBottom: "20px"}}>You can only change your username once every 15 days.</div>
+            <div style={{marginBottom: "8px"}}>
+              <label style={{fontSize: "0.75rem", fontWeight: 600, color: "#888", display: "block", marginBottom: "6px"}}>New username</label>
+              <div style={{position: "relative"}}>
+                <span style={{position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "0.875rem", color: "#888", fontWeight: 600}}>@</span>
+                <input
+                  type="text"
+                  value={newIgn}
+                  onChange={e => { setNewIgn(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "")); setIgnError(""); }}
+                  placeholder="yourname"
+                  maxLength={20}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px 10px 28px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}}
+                />
+              </div>
+              <div style={{fontSize: "0.7rem", color: "#aaa", marginTop: "6px"}}>Letters, numbers, and underscores only. Min 3 characters.</div>
+            </div>
+            {ignError && <div style={{color: "#EF4444", fontSize: "0.78rem", marginBottom: "12px"}}>{ignError}</div>}
+            {currentUser?.ign_changed_at && (
+              <div style={{fontSize: "0.72rem", color: "#aaa", marginBottom: "12px"}}>
+                Last changed: {new Date(currentUser.ign_changed_at).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" })}
+              </div>
+            )}
+            <div style={{display: "flex", gap: "10px"}}>
+              <button onClick={() => { setShowEditIgn(false); setNewIgn(""); setIgnError(""); }}
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
+              <button onClick={handleSaveIgn} disabled={savingIgn}
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: savingIgn ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: savingIgn ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                {savingIgn ? "Saving..." : "Save"}
               </button>
             </div>
           </div>
