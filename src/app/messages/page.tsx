@@ -95,6 +95,7 @@ export default function MessagesPage() {
       .eq("school_id", user.school_id)
       .eq("show_online_status", true)
       .neq("id", user.id)
+      .neq("ign", "admin")
       .gte("last_seen_at", fiveMinAgo)
       .order("last_seen_at", { ascending: false })
       .limit(20);

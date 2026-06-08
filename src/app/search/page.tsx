@@ -111,7 +111,7 @@ export default function SearchPage() {
 
     try {
       const [peopleRes, postsRes, listingsRes, bhRes, quadRes, schoolsRes] = await Promise.all([
-        supabase.from("users").select("id, full_name, avatar_url, school_id").ilike("full_name", term).limit(10),
+        supabase.from("users").select("id, full_name, avatar_url, school_id").ilike("full_name", term).neq("ign", "admin").limit(10),
         supabase.from("posts").select("id, user_id, content, created_at, users(full_name, avatar_url)").eq("type", "feed").eq("is_hidden", false).ilike("content", term).order("created_at", { ascending: false }).limit(10),
         supabase.from("listings").select("id, title, price, images, school_id, users(full_name, avatar_url)").eq("is_sold", false).ilike("title", term).order("created_at", { ascending: false }).limit(10),
         supabase.from("boarding_houses").select("id, name, address, price_per_month, images, school_id, users(full_name, avatar_url)").ilike("name", term).order("created_at", { ascending: false }).limit(10),
