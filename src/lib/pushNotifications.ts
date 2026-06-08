@@ -1,5 +1,4 @@
 // Push notification utilities for Klasmeyt
-
 export async function registerServiceWorker() {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
     console.log("Push notifications not supported");
@@ -19,15 +18,10 @@ export async function subscribeToPush(userId: string, supabase: any): Promise<bo
   try {
     const registration = await registerServiceWorker();
     if (!registration) return false;
-
-    // Check permission
     const permission = await Notification.requestPermission();
     if (permission !== "granted") return false;
-
     const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
     const convertedKey = urlBase64ToUint8Array(vapidKey);
-
-    // Get or create push subscription
     let subscription = await registration.pushManager.getSubscription();
     if (!subscription) {
       subscription = await registration.pushManager.subscribe({
@@ -35,17 +29,13 @@ export async function subscribeToPush(userId: string, supabase: any): Promise<bo
         applicationServerKey: convertedKey,
       });
     }
-
     const sub = subscription.toJSON();
-
-    // Save to Supabase
     await supabase.from("push_subscriptions").upsert({
       user_id: userId,
       endpoint: sub.endpoint,
       p256dh: sub.keys?.p256dh,
       auth: sub.keys?.auth,
     }, { onConflict: "user_id,endpoint" });
-
     return true;
   } catch (error) {
     console.error("Push subscription failed:", error);
@@ -62,33 +52,42 @@ export async function sendPushToUser(
   supabase: any
 ) {
   try {
-    // Get recipient subscriptions
+    // Send Web Push (browser/PWA)
     const { data: subs } = await supabase
       .from("push_subscriptions")
       .select("endpoint, p256dh, auth")
       .eq("user_id", recipientId);
 
-    if (!subs || subs.length === 0) return;
+    if (subs && subs.length > 0) {
+      for (const sub of subs) {
+        const subscription = {
+          endpoint: sub.endpoint,
+          keys: { p256dh: sub.p256dh, auth: sub.auth },
+        };
+        const response = await fetch("/api/push", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subscription, title, body, url, tag }),
+        });
+        if (response.status === 410) {
+          await supabase.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
+        }
+      }
+    }
 
-    // Send to all subscriptions
-    for (const sub of subs) {
-      const subscription = {
-        endpoint: sub.endpoint,
-        keys: { p256dh: sub.p256dh, auth: sub.auth },
-      };
+    // Send FCM Push (Android native app)
+    const { data: fcmTokens } = await supabase
+      .from("fcm_tokens")
+      .select("token")
+      .eq("user_id", recipientId);
 
-      const response = await fetch("/api/push", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscription, title, body, url, tag }),
-      });
-
-      // Remove expired subscriptions
-      if (response.status === 410) {
-        await supabase
-          .from("push_subscriptions")
-          .delete()
-          .eq("endpoint", sub.endpoint);
+    if (fcmTokens && fcmTokens.length > 0) {
+      for (const { token } of fcmTokens) {
+        await fetch("/api/fcm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, title, body, url }),
+        });
       }
     }
   } catch (error) {

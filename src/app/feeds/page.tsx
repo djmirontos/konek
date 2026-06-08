@@ -16,6 +16,7 @@ import EmojiPicker from "@/components/EmojiPicker";
 import AppHeader from "@/components/AppHeader";
 import imageCompression from "browser-image-compression";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { registerFCMToken } from "@/lib/fcmTokens";
 import SchoolPicker from "@/components/SchoolPicker";
 import { shareContent } from "@/lib/share";
 
@@ -253,8 +254,10 @@ export default function FeedsPage() {
     if (userData) {
       setCurrentUser(userData);
       supabase.from("users").update({ last_seen_at: new Date().toISOString() }).eq("id", user.id);
-      // Subscribe to push notifications silently
+      // Subscribe to web push notifications silently
       subscribeToPush(userData.id, supabase).catch(() => {});
+      // Register FCM token for native Android app
+      registerFCMToken(userData.id).catch(() => {});
     }
     const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
     if (schoolData) setSchools(schoolData);
