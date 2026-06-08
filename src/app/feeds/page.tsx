@@ -275,7 +275,7 @@ export default function FeedsPage() {
       .select("id, question, asked_date, school_id")
       .eq("school_id", schoolId)
       .eq("asked_date", today)
-      .single();
+      .maybeSingle();
     if (qData) {
       setTodayQuestion(qData);
       const { data: aData } = await supabase
