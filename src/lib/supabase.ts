@@ -7,6 +7,7 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 // Falls back to localStorage on web browser
 const capacitorStorage = {
   async getItem(key: string): Promise<string | null> {
+    if (typeof window === "undefined") return null;
     try {
       const { Preferences } = await import("@capacitor/preferences");
       const { value } = await Preferences.get({ key });
@@ -16,6 +17,7 @@ const capacitorStorage = {
     }
   },
   async setItem(key: string, value: string): Promise<void> {
+    if (typeof window === "undefined") return;
     try {
       const { Preferences } = await import("@capacitor/preferences");
       await Preferences.set({ key, value });
@@ -24,6 +26,7 @@ const capacitorStorage = {
     }
   },
   async removeItem(key: string): Promise<void> {
+    if (typeof window === "undefined") return;
     try {
       const { Preferences } = await import("@capacitor/preferences");
       await Preferences.remove({ key });
