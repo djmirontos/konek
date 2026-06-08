@@ -128,7 +128,7 @@ export default function ProfilePage() {
   const [submittingVerify, setSubmittingVerify] = useState(false);
 
   useEffect(() => { initPage(); }, [profileId]);
-  useEffect(() => { if (profileUser) fetchTabData(activeTab); }, [activeTab, profileUser]);
+  useEffect(() => { if (profileUser && activeTab !== "About") fetchTabData(activeTab); }, [activeTab, profileUser]);
   useEffect(() => {
     if (!loading && profileUser) {
       if (searchParams?.get("edit") === "true") { setShowEditSheet(true); setActiveTab("About"); }
@@ -188,39 +188,22 @@ export default function ProfilePage() {
   async function fetchStats(userId: string) {
     const todayStart = new Date(); todayStart.setHours(0,0,0,0);
 
-    const { data: userPostIds } = await supabase
-      .from("posts").select("id").eq("user_id", userId).eq("is_hidden", false);
-    const pIds = (userPostIds || []).map((p: any) => p.id);
+    // Get post IDs and post count in one query
+    const { data: userPosts } = await supabase
+      .from("posts").select("id").eq("user_id", userId).eq("is_hidden", false).in("type", ["feed", "quad"]);
+    const pIds = (userPosts || []).map((p: any) => p.id);
+    setPostCount(pIds.length);
 
-    const [
-      { count: pCount },
-      cCountResult,
-      rCountResult,
-      rTodayResult,
-      cTodayResult
-    ] = await Promise.all([
-      supabase.from("posts").select("id", { count: "exact", head: true })
-        .eq("user_id", userId).eq("is_hidden", false).in("type", ["feed", "quad"]),
-      pIds.length > 0
-        ? supabase.from("comments").select("id", { count: "exact", head: true })
-            .in("post_id", pIds).neq("user_id", userId)
-        : Promise.resolve({ count: 0 }),
-      pIds.length > 0
-        ? supabase.from("reactions").select("id", { count: "exact", head: true })
-            .in("post_id", pIds)
-        : Promise.resolve({ count: 0 }),
-      pIds.length > 0
-        ? supabase.from("reactions").select("id", { count: "exact", head: true })
-            .in("post_id", pIds).gte("created_at", todayStart.toISOString())
-        : Promise.resolve({ count: 0 }),
-      pIds.length > 0
-        ? supabase.from("comments").select("id", { count: "exact", head: true })
-            .in("post_id", pIds).neq("user_id", userId)
-            .gte("created_at", todayStart.toISOString())
-        : Promise.resolve({ count: 0 })
+    if (pIds.length === 0) return;
+
+    // Run all stat queries in parallel
+    const [cCountResult, rCountResult, rTodayResult, cTodayResult] = await Promise.all([
+      supabase.from("comments").select("id", { count: "exact", head: true }).in("post_id", pIds).neq("user_id", userId),
+      supabase.from("reactions").select("id", { count: "exact", head: true }).in("post_id", pIds),
+      supabase.from("reactions").select("id", { count: "exact", head: true }).in("post_id", pIds).gte("created_at", todayStart.toISOString()),
+      supabase.from("comments").select("id", { count: "exact", head: true }).in("post_id", pIds).neq("user_id", userId).gte("created_at", todayStart.toISOString()),
     ]);
 
-    setPostCount(pCount || 0);
     setCommentCount(cCountResult.count || 0);
     setReactionsReceived(rCountResult.count || 0);
     setReactionsToday(rTodayResult.count || 0);
@@ -545,16 +528,12 @@ export default function ProfilePage() {
       .eq("status", "accepted");
     if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
     const convIds = convs.map((c: {id: string}) => c.id);
-    let total = 0;
-    for (const cid of convIds) {
-      const { count } = await supabase.from("messages")
-        .select("id", { count: "exact", head: true })
-        .eq("conversation_id", cid)
-        .eq("is_seen", false)
-        .neq("sender_id", userId);
-      total += count || 0;
-    }
-    setUnreadMessages(total);
+    const { count } = await supabase.from("messages")
+      .select("id", { count: "exact", head: true })
+      .in("conversation_id", convIds)
+      .eq("is_seen", false)
+      .neq("sender_id", userId);
+    setUnreadMessages(count || 0);
   }
 
 
@@ -733,7 +712,7 @@ export default function ProfilePage() {
       </div>
 
       <div style={{flex: 1, paddingBottom: "80px"}}>
-        {loadingTab ? (
+        {(loadingTab && activeTab !== "About") ? (
           <div style={{padding: "40px", textAlign: "center"}}>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             <div style={{display: "inline-block", width: "24px", height: "24px", border: "2px solid #E0E0E0", borderTopColor: "#2BB39A", borderRadius: "50%", animation: "spin 0.8s linear infinite"}} />
