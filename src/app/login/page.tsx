@@ -11,17 +11,44 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [useUsername, setUseUsername] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!phone.trim()) { setError("Please enter your phone number"); return; }
-    if (!/^09\d{9}$/.test(phone.trim())) { setError("Phone number must be in format 09XXXXXXXXX (11 digits)"); return; }
     setLoading(true);
     try {
-      const placeholderEmail = phone.trim() + "@konek.app";
+      let placeholderEmail = "";
+
+      if (useUsername) {
+        const cleanUsername = username.trim().replace(/^@/, "").toLowerCase();
+        if (!cleanUsername) { setError("Please enter your username"); setLoading(false); return; }
+
+        if (cleanUsername === "admin") {
+          placeholderEmail = "admin@konek.app";
+        } else {
+          const { data, error: lookupError } = await supabase
+            .from("users")
+            .select("phone_number")
+            .eq("ign", cleanUsername)
+            .maybeSingle();
+
+          if (lookupError || !data) {
+            setError("Username not found. Please check and try again.");
+            setLoading(false);
+            return;
+          }
+          placeholderEmail = data.phone_number + "@konek.app";
+        }
+      } else {
+        if (!phone.trim()) { setError("Please enter your phone number"); setLoading(false); return; }
+        if (!/^09\d{9}$/.test(phone.trim())) { setError("Phone number must be in format 09XXXXXXXXX (11 digits)"); setLoading(false); return; }
+        placeholderEmail = phone.trim() + "@konek.app";
+      }
+
       const { error: authError } = await supabase.auth.signInWithPassword({
         email: placeholderEmail,
         password: password,
@@ -29,7 +56,7 @@ export default function LoginPage() {
       if (authError) throw authError;
       router.push("/feeds");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Invalid phone number or password");
+      setError(err instanceof Error ? err.message : "Invalid credentials. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -68,18 +95,46 @@ export default function LoginPage() {
           </div>
         )}
 
-        <div>
-          <label style={labelStyle}>Phone Number</label>
-          <input
-            type="tel"
-            required
-            placeholder="09XXXXXXXXX"
-            value={phone}
-            maxLength={11}
-            onChange={(e) => { setPhone(e.target.value.replace(/\D/g, "")); setError(""); }}
-            style={inputStyle}
-          />
-        </div>
+        {!useUsername ? (
+          <div>
+            <label style={labelStyle}>Phone Number</label>
+            <input
+              type="tel"
+              required
+              placeholder="09XXXXXXXXX"
+              value={phone}
+              maxLength={11}
+              onChange={(e) => { setPhone(e.target.value.replace(/\D/g, "")); setError(""); }}
+              style={inputStyle}
+            />
+            <p
+              onClick={() => { setUseUsername(true); setPhone(""); setError(""); }}
+              style={{fontSize: "0.75rem", color: "#2BB39A", fontWeight: 600, marginTop: "8px", cursor: "pointer", textAlign: "right"}}
+            >
+              Login with username instead
+            </p>
+          </div>
+        ) : (
+          <div>
+            <label style={labelStyle}>Username</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. airylboy"
+              value={username}
+              onChange={(e) => { setUsername(e.target.value); setError(""); }}
+              style={inputStyle}
+              autoCapitalize="none"
+              autoCorrect="off"
+            />
+            <p
+              onClick={() => { setUseUsername(false); setUsername(""); setError(""); }}
+              style={{fontSize: "0.75rem", color: "#2BB39A", fontWeight: 600, marginTop: "8px", cursor: "pointer", textAlign: "right"}}
+            >
+              Login with phone number instead
+            </p>
+          </div>
+        )}
 
         <div>
           <label style={labelStyle}>Password</label>
