@@ -259,7 +259,7 @@ export default function SettingsPage() {
           <Row icon="/icon/version_black.png" iconBg="#EAF3DE" title="App version" right={<span style={{fontSize: "0.8rem", color: "#aaa"}}>v1.0.0</span>} />
           <Row icon="/icon/terms_black.png" iconBg="#EAF3DE" title="Terms of service"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
-            onClick={() => showToast("Coming soon!")} />
+            onClick={() => router.push("/terms")} />
           <Row icon="/icon/icons8-privacy-50.png" iconBg="#EAF3DE" title="Privacy policy"
             right={<span style={{fontSize: "1rem", color: "#ccc"}}>›</span>}
             onClick={() => router.push("/privacy")} />
