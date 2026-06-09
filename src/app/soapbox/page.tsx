@@ -580,9 +580,9 @@ export default function SoapboxPage() {
           <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "10px 16px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)"}}>
             <div style={{display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "2px", scrollbarWidth: "none"}}>
               <button onClick={() => setMoodFilter(null)}
-                style={{flexShrink: 0, padding: "5px 14px", borderRadius: "20px", border: "1px solid " + (moodFilter === null ? "#2BB39A" : "#F0F0F0"),
-                  backgroundColor: moodFilter === null ? "#E1F5EE" : "#F7F7F7", color: moodFilter === null ? "#0F6E56" : "#888",
-                  fontWeight: moodFilter === null ? 700 : 400, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                style={{flexShrink: 0, padding: "5px 14px", borderRadius: "20px", border: "1px solid " + (moodFilter === null ? "#2BB39A" : "#E8F8F5"),
+                  backgroundColor: moodFilter === null ? "#E1F5EE" : "#F0FAF6", color: moodFilter === null ? "#0F6E56" : "#2BB39A",
+                  fontWeight: moodFilter === null ? 700 : 500, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", opacity: moodFilter === null ? 1 : 0.75}}>
                 All
               </button>
               {MOODS.map(mood => (
@@ -632,9 +632,9 @@ export default function SoapboxPage() {
               return (
                 <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px"}}>
                   <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
-                    <img src="/icon/anonymous.png" alt="anonymous" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                    <img src="/icon/anonymous.png" alt="anonymous" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}} />
                     <div style={{flex: 1}}>
-                      <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{post.pseudonym}</div>
+                      <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#2BB39A"}}>{post.pseudonym}</div>
                       <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
                         {formatTime(post.created_at)}
                         {post.edited_at && <span style={{color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
@@ -778,9 +778,9 @@ export default function SoapboxPage() {
           <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "10px 16px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)"}}>
             <div style={{display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "2px", scrollbarWidth: "none"}}>
               <button onClick={() => setConfessionMoodFilter(null)}
-                style={{flexShrink: 0, padding: "5px 14px", borderRadius: "20px", border: "1px solid " + (confessionMoodFilter === null ? "#2BB39A" : "#F0F0F0"),
-                  backgroundColor: confessionMoodFilter === null ? "#E1F5EE" : "#F7F7F7", color: confessionMoodFilter === null ? "#0F6E56" : "#888",
-                  fontWeight: confessionMoodFilter === null ? 700 : 400, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                style={{flexShrink: 0, padding: "5px 14px", borderRadius: "20px", border: "1px solid " + (confessionMoodFilter === null ? "#2BB39A" : "#E8F8F5"),
+                  backgroundColor: confessionMoodFilter === null ? "#E1F5EE" : "#F0FAF6", color: confessionMoodFilter === null ? "#0F6E56" : "#2BB39A",
+                  fontWeight: confessionMoodFilter === null ? 700 : 500, fontSize: "0.75rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", opacity: confessionMoodFilter === null ? 1 : 0.75}}>
                 All
               </button>
               {MOODS.map(mood => (
@@ -799,14 +799,14 @@ export default function SoapboxPage() {
 
           <div style={{flex: 1, paddingBottom: "80px"}}>
             {topConfessions.length > 0 && !confessionMoodFilter && (
-              <div style={{backgroundColor: "#fff", marginBottom: "8px", padding: "14px 16px", borderBottom: "1px solid #F0F0F0"}}>
+              <div style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", padding: "14px 16px"}}>
                 <div style={{display: "flex", alignItems: "center", gap: "6px", marginBottom: "12px"}}>
-                  <span style={{fontSize: "1rem"}}>🔥</span>
-                  <span style={{fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A"}}>Top Confessions This Week</span>
+                  <span style={{fontSize: "1.1rem"}}>🔥</span>
+                  <span style={{fontWeight: 700, fontSize: "0.88rem", color: "#1A1A1A"}}>Top Confessions This Week</span>
                 </div>
                 {topConfessions.map((c, idx) => (
                   <div key={c.id} onClick={() => router.push("/soapbox/" + c.id)}
-                    style={{display: "flex", gap: "10px", alignItems: "flex-start", marginBottom: idx < topConfessions.length - 1 ? "12px" : 0, cursor: "pointer"}}>
+                    style={{display: "flex", gap: "10px", alignItems: "flex-start", marginBottom: idx < topConfessions.length - 1 ? "14px" : 0, cursor: "pointer", padding: "8px", borderRadius: "10px", backgroundColor: "#FAFAFA"}}>
                     <div style={{width: "24px", height: "24px", borderRadius: "50%", backgroundColor: idx === 0 ? "#FFD700" : idx === 1 ? "#C0C0C0" : "#CD7F32", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.7rem", fontWeight: 700, color: "#fff", flexShrink: 0}}>
                       {idx + 1}
                     </div>
@@ -840,23 +840,23 @@ export default function SoapboxPage() {
                 ))}
               </div>
             ) : filteredConfessions.length === 0 ? (
-              <div style={{textAlign: "center", padding: "48px 16px"}}>
-                <div style={{fontSize: "3rem", marginBottom: "12px"}}>💌</div>
-                <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>
+              <div style={{textAlign: "center", padding: "56px 24px"}}>
+                <div style={{fontSize: "4rem", marginBottom: "16px", lineHeight: 1}}>💌</div>
+                <div style={{fontWeight: 800, color: "#1A1A1A", fontSize: "1.1rem", marginBottom: "8px"}}>
                   {confessionMoodFilter ? "No " + (getMood(confessionMoodFilter)?.label || "") + " confessions yet!" : "No confessions yet!"}
                 </div>
-                <div style={{color: "#888", fontSize: "0.8rem"}}>
+                <div style={{color: "#2BB39A", fontSize: "0.85rem", fontWeight: 600}}>
                   {confessionMoodFilter ? "Try a different mood filter." : "Be the first to share. Safe ka diri, promise."}
                 </div>
               </div>
             ) : filteredConfessions.map(confession => {
               const mood = getMood(confession.mood);
               return (
-                <div key={confession.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0"}}>
+                <div key={confession.id} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px"}}>
                   <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
-                    <img src="/icon/confess.png" alt="confession" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                    <img src="/icon/confess.png" alt="confession" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}} />
                     <div style={{flex: 1}}>
-                      <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{confession.pseudonym}</div>
+                      <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#6B4C9A"}}>{confession.pseudonym}</div>
                       <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
                         {formatTime(confession.created_at)}
                         {confession.edited_at && <span style={{color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
