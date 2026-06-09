@@ -1260,27 +1260,49 @@ export default function FeedsPage() {
             position: "fixed",
             bottom: "90px",
             right: "16px",
+            width: "48px",
+            height: "48px",
+            borderRadius: "50%",
             backgroundColor: "#2BB39A",
             color: "#fff",
-            padding: "10px 18px",
-            borderRadius: "9999px",
-            fontWeight: 700,
-            fontSize: "0.8rem",
             cursor: "pointer",
             zIndex: 300,
-            boxShadow: "0 4px 16px rgba(43,179,154,0.35)",
-            backdropFilter: "blur(8px)",
+            boxShadow: "0 4px 16px rgba(43,179,154,0.4)",
             display: "flex",
             alignItems: "center",
-            gap: "6px",
+            justifyContent: "center",
             opacity: scrollingDown ? 0.6 : 1,
             transition: "opacity 0.3s ease, transform 0.3s ease",
-            transform: showScrollPill ? "translateY(0)" : "translateY(20px)",
+            transform: showScrollPill ? "scale(1)" : "scale(0)",
             userSelect: "none",
-            fontFamily: "inherit",
           }}
         >
-          {newPostCount > 0 ? `${newPostCount} New Post${newPostCount > 1 ? "s" : ""} ↑` : "↑ Back to Top"}
+          {/* Arrow icon */}
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 19V5M5 12l7-7 7 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          {/* New posts badge */}
+          {newPostCount > 0 && (
+            <div style={{
+              position: "absolute",
+              top: "-4px",
+              right: "-4px",
+              minWidth: "20px",
+              height: "20px",
+              backgroundColor: "#EF4444",
+              borderRadius: "10px",
+              border: "2px solid #fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "0 4px",
+              boxSizing: "border-box",
+            }}>
+              <span style={{fontSize: "0.6rem", fontWeight: 800, color: "#fff", fontFamily: "inherit", lineHeight: 1}}>
+                {newPostCount > 99 ? "99+" : newPostCount}
+              </span>
+            </div>
+          )}
         </div>
       )}
       <BottomNav active="/feeds" unreadMessages={unreadMessages} show={showNav} />
