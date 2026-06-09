@@ -192,13 +192,10 @@ export default function MessagesPage() {
     let total = 0;
     if (convs && convs.length > 0) {
       const convIds = convs.map((c: {id: string}) => c.id);
-      for (const cid of convIds) {
-        const { count } = await supabase.from("messages").select("id", { count: "exact", head: true })
-          .eq("conversation_id", cid).eq("is_seen", false).neq("sender_id", userId);
-        total += count || 0;
-      }
+      const { count } = await supabase.from("messages").select("id", { count: "exact", head: true })
+        .in("conversation_id", convIds).eq("is_seen", false).neq("sender_id", userId);
+      total += count || 0;
     }
-    // Also count pending message requests
     const { count: requestCount } = await supabase.from("conversations")
       .select("id", { count: "exact", head: true })
       .or("participant_1.eq." + userId + ",participant_2.eq." + userId)

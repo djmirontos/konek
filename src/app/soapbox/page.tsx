@@ -159,26 +159,6 @@ export default function SoapboxPage() {
   }, [currentUser, selectedSchool, activeTab, pseudonymWordsLoaded]);
 
   useEffect(() => {
-    async function fetchUnreadMessages(userId: string) {
-      const supabase = createClient();
-      const { data: convs } = await supabase
-        .from("conversations")
-        .select("id")
-        .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
-        .eq("status", "accepted");
-      if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
-      const convIds = convs.map((c: {id: string}) => c.id);
-      let total = 0;
-      for (const cid of convIds) {
-        const { count } = await supabase.from("messages")
-          .select("id", { count: "exact", head: true })
-          .eq("conversation_id", cid)
-          .eq("is_seen", false)
-          .neq("sender_id", userId);
-        total += count || 0;
-      }
-      setUnreadMessages(total);
-    }
     return () => {
       if (longPressTimer.current) clearTimeout(longPressTimer.current);
     };
@@ -287,24 +267,30 @@ export default function SoapboxPage() {
     const post = posts.find(p => p.id === postId);
     if (!post) return;
     if (post.userVote === voteType) {
-      await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", currentUser.id);
-      await supabase.from("posts").update({
-        upvotes: voteType === "upvote" ? Math.max(0, post.upvotes - 1) : post.upvotes,
-        downvotes: voteType === "downvote" ? Math.max(0, post.downvotes - 1) : post.downvotes,
-      }).eq("id", postId);
+      await Promise.all([
+        supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", currentUser.id),
+        supabase.from("posts").update({
+          upvotes: voteType === "upvote" ? Math.max(0, post.upvotes - 1) : post.upvotes,
+          downvotes: voteType === "downvote" ? Math.max(0, post.downvotes - 1) : post.downvotes,
+        }).eq("id", postId),
+      ]);
     } else {
       if (post.userVote) {
-        await supabase.from("reactions").update({ type: voteType }).eq("post_id", postId).eq("user_id", currentUser.id);
-        await supabase.from("posts").update({
-          upvotes: voteType === "upvote" ? post.upvotes + 1 : Math.max(0, post.upvotes - 1),
-          downvotes: voteType === "downvote" ? post.downvotes + 1 : Math.max(0, post.downvotes - 1),
-        }).eq("id", postId);
+        await Promise.all([
+          supabase.from("reactions").update({ type: voteType }).eq("post_id", postId).eq("user_id", currentUser.id),
+          supabase.from("posts").update({
+            upvotes: voteType === "upvote" ? post.upvotes + 1 : Math.max(0, post.upvotes - 1),
+            downvotes: voteType === "downvote" ? post.downvotes + 1 : Math.max(0, post.downvotes - 1),
+          }).eq("id", postId),
+        ]);
       } else {
-        await supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: voteType }, { onConflict: "post_id,user_id" });
-        await supabase.from("posts").update({
-          upvotes: voteType === "upvote" ? post.upvotes + 1 : post.upvotes,
-          downvotes: voteType === "downvote" ? post.downvotes + 1 : post.downvotes,
-        }).eq("id", postId);
+        await Promise.all([
+          supabase.from("reactions").upsert({ post_id: postId, user_id: currentUser.id, type: voteType }, { onConflict: "post_id,user_id" }),
+          supabase.from("posts").update({
+            upvotes: voteType === "upvote" ? post.upvotes + 1 : post.upvotes,
+            downvotes: voteType === "downvote" ? post.downvotes + 1 : post.downvotes,
+          }).eq("id", postId),
+        ]);
       }
     }
     fetchPosts();

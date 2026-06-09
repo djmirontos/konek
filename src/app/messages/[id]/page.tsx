@@ -67,17 +67,25 @@ export default function ConversationPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("id, full_name, avatar_url, school_id").eq("id", user.id).single();
-    if (userData) setCurrentUser(userData);
 
-    const { data: conv } = await supabase.from("conversations").select("*").eq("id", convId).single();
+    const [{ data: userData }, { data: conv }] = await Promise.all([
+      supabase.from("users").select("id, full_name, avatar_url, school_id").eq("id", user.id).single(),
+      supabase.from("conversations").select("id, participant_1, participant_2, status, initiated_by, context_type, context_title, context_id").eq("id", convId).single(),
+    ]);
+    if (userData) setCurrentUser(userData);
     if (!conv) { router.push("/messages"); return; }
 
     setIsAccepted(conv.status === "accepted");
     setIsInitiator(conv.initiated_by === user.id);
+    if (conv.context_type && conv.context_title && conv.context_id) {
+      setConvContext({ type: conv.context_type, title: conv.context_title, id: conv.context_id });
+    }
 
     const otherId = conv.participant_1 === user.id ? conv.participant_2 : conv.participant_1;
-    const { data: other } = await supabase.from("users").select("id, full_name, avatar_url, school_id").eq("id", otherId).single();
+    const [{ data: other }, { data: msgs }] = await Promise.all([
+      supabase.from("users").select("id, full_name, avatar_url, school_id").eq("id", otherId).single(),
+      supabase.from("messages").select("*").eq("conversation_id", convId).order("created_at", { ascending: true }).limit(100),
+    ]);
     if (other) {
       setOtherUser(other);
       if (other.school_id) {
@@ -85,18 +93,8 @@ export default function ConversationPage() {
         if (schoolData) setOtherUserSchool(schoolData);
       }
     }
-    if (conv.context_type && conv.context_title && conv.context_id) {
-      setConvContext({ type: conv.context_type, title: conv.context_title, id: conv.context_id });
-    }
-
-    const { data: msgs } = await supabase
-      .from("messages")
-      .select("*")
-      .eq("conversation_id", convId)
-      .order("created_at", { ascending: true });
     if (msgs) setMessages(msgs);
 
-    // mark messages as seen
     await supabase.from("messages")
       .update({ is_seen: true })
       .eq("conversation_id", convId)

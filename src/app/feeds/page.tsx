@@ -320,20 +320,16 @@ export default function FeedsPage() {
   }
 
   async function fetchUnreadMessages(userId: string) {
-    // Count unread from accepted conversations
     const { data: convs } = await supabase.from("conversations").select("id")
       .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
       .eq("status", "accepted");
     let total = 0;
     if (convs && convs.length > 0) {
       const convIds = convs.map((c: {id: string}) => c.id);
-      for (const cid of convIds) {
-        const { count } = await supabase.from("messages").select("id", { count: "exact", head: true })
-          .eq("conversation_id", cid).eq("is_seen", false).neq("sender_id", userId);
-        total += count || 0;
-      }
+      const { count } = await supabase.from("messages").select("id", { count: "exact", head: true })
+        .in("conversation_id", convIds).eq("is_seen", false).neq("sender_id", userId);
+      total += count || 0;
     }
-    // Also count pending message requests
     const { count: requestCount } = await supabase.from("conversations")
       .select("id", { count: "exact", head: true })
       .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
@@ -481,14 +477,14 @@ export default function FeedsPage() {
     try {
       let imageUrls: string[] = [];
       if (selectedImages.length > 0) {
-        for (const img of selectedImages) {
+        imageUrls = await Promise.all(selectedImages.map(async (img) => {
           const ext = img.name.split(".").pop();
           const path = `feeds/${currentUser.id}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
           const { error: uploadError } = await supabase.storage.from("konek-images").upload(path, img);
           if (uploadError) throw uploadError;
           const { data: urlData } = supabase.storage.from("konek-images").getPublicUrl(path);
-          imageUrls.push(urlData.publicUrl);
-        }
+          return urlData.publicUrl;
+        }));
       }
       const { error } = await supabase.from("posts").insert({
         user_id: currentUser.id, school_id: (selectedSchool === "all" || selectedSchool === "own") ? currentUser.school_id : selectedSchool, type: "feed",

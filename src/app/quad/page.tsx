@@ -217,46 +217,12 @@ export default function QuadPage() {
     return s ? s.abbreviation : "School";
   }
 
-  function getNotifIcon(type: string) {
-    if (type === "reaction") return "👍";
-    if (type === "comment") return "💬";
-    if (type === "reply") return "↩️";
-    return "🔔";
-  }
-
   function getTagColor(tag: string) {
     return HANGOUT_TAG_SET.has(tag) ? "#2BB39A" : "#F59E0B";
   }
 
   function getTagBg(tag: string) {
     return HANGOUT_TAG_SET.has(tag) ? "#E1F5EE" : "#FEF3C7";
-  }
-
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    router.push("/login");
-  }
-
-
-  async function fetchUnreadMessages(userId: string) {
-    const supabase = createClient();
-    const { data: convs } = await supabase
-      .from("conversations")
-      .select("id")
-      .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
-      .eq("status", "accepted");
-    if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
-    const convIds = convs.map((c: {id: string}) => c.id);
-    let total = 0;
-    for (const cid of convIds) {
-      const { count } = await supabase.from("messages")
-        .select("id", { count: "exact", head: true })
-        .eq("conversation_id", cid)
-        .eq("is_seen", false)
-        .neq("sender_id", userId);
-      total += count || 0;
-    }
-    setUnreadMessages(total);
   }
 
   return (

@@ -133,14 +133,14 @@ export default function BazaarPage() {
     try {
       let imageUrls: string[] = [];
       if (selectedImages.length > 0) {
-        for (const img of selectedImages) {
+        imageUrls = await Promise.all(selectedImages.map(async (img) => {
           const ext = img.name.split(".").pop();
           const path = "bazaar/" + currentUser.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2) + "." + ext;
           const { error: uploadError } = await supabase.storage.from("konek-images").upload(path, img);
           if (uploadError) throw uploadError;
           const { data: urlData } = supabase.storage.from("konek-images").getPublicUrl(path);
-          imageUrls.push(urlData.publicUrl);
-        }
+          return urlData.publicUrl;
+        }));
       }
       const { error } = await supabase.from("listings").insert({
         user_id: currentUser.id,
@@ -261,20 +261,6 @@ export default function BazaarPage() {
     const s = schools.find(s => s.id === selectedSchool);
     return s ? s.abbreviation : "School";
   }
-
-  function getNotifIcon(type: string) {
-    if (type === "reaction") return "👍";
-    if (type === "comment") return "💬";
-    if (type === "reply") return "↩️";
-    return "🔔";
-  }
-
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    router.push("/login");
-  }
-
-
 
   return (
     <div style={{minHeight: "100vh", background: "#F0F2F5", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>

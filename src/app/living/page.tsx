@@ -114,14 +114,14 @@ export default function LivingPage() {
     try {
       let imageUrls: string[] = [];
       if (selectedImages.length > 0) {
-        for (const img of selectedImages) {
+        imageUrls = await Promise.all(selectedImages.map(async (img) => {
           const ext = img.name.split(".").pop();
           const path = "living/" + currentUser.id + "/" + Date.now() + "_" + Math.random().toString(36).slice(2) + "." + ext;
           const { error: uploadError } = await supabase.storage.from("konek-images").upload(path, img);
           if (uploadError) throw uploadError;
           const { data: urlData } = supabase.storage.from("konek-images").getPublicUrl(path);
-          imageUrls.push(urlData.publicUrl);
-        }
+          return urlData.publicUrl;
+        }));
       }
       const slots = availableSlots ? parseInt(availableSlots) : null;
       const { error } = await supabase.from("boarding_houses").insert({
@@ -214,40 +214,6 @@ export default function LivingPage() {
     if (selectedSchool === "all") return "All Schools";
     const s = schools.find(s => s.id === selectedSchool);
     return s ? s.abbreviation : "School";
-  }
-
-  function getNotifIcon(type: string) {
-    if (type === "reaction") return "👍";
-    if (type === "comment") return "💬";
-    if (type === "reply") return "↩️";
-    return "🔔";
-  }
-
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    router.push("/login");
-  }
-
-
-  async function fetchUnreadMessages(userId: string) {
-    const supabase = createClient();
-    const { data: convs } = await supabase
-      .from("conversations")
-      .select("id")
-      .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
-      .eq("status", "accepted");
-    if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
-    const convIds = convs.map((c: {id: string}) => c.id);
-    let total = 0;
-    for (const cid of convIds) {
-      const { count } = await supabase.from("messages")
-        .select("id", { count: "exact", head: true })
-        .eq("conversation_id", cid)
-        .eq("is_seen", false)
-        .neq("sender_id", userId);
-      total += count || 0;
-    }
-    setUnreadMessages(total);
   }
 
   return (
