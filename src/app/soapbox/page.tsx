@@ -450,7 +450,7 @@ export default function SoapboxPage() {
   const filteredConfessions = confessionMoodFilter ? confessions.filter(c => c.mood === confessionMoodFilter) : confessions;
 
   return (
-    <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", background: "#F0F2F5", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {toast && (
         <div style={{position: "fixed", top: "70px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#1A1A1A", color: "#fff", padding: "10px 20px", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 600, zIndex: 1000, whiteSpace: "nowrap"}}>
@@ -484,10 +484,10 @@ export default function SoapboxPage() {
       {activeTab === "soapbox" && (
         <>
           {/* COLLAPSED COMPOSER ROW */}
-          <div style={{backgroundColor: "#fff", padding: "10px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "10px"}}>
+          <div style={{backgroundColor: "#fff", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "10px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)"}}>
             <img src="/icon/anonymous.png" alt="anonymous" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
             <div onClick={() => setShowComposerSheet(true)}
-              style={{flex: 1, backgroundColor: "#F7F7F7", borderRadius: "20px", padding: "10px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", userSelect: "none"}}>
+              style={{flex: 1, backgroundColor: "#F7F7F7", borderRadius: "24px", padding: "10px 16px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", userSelect: "none", border: "1.5px solid #E8F8F5", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.04)"}}>
               What's on your mind?
             </div>
           </div>
@@ -577,7 +577,7 @@ export default function SoapboxPage() {
             </>
           )}
 
-          <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "10px 16px"}}>
+          <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "10px 16px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)"}}>
             <div style={{display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "2px", scrollbarWidth: "none"}}>
               <button onClick={() => setMoodFilter(null)}
                 style={{flexShrink: 0, padding: "5px 14px", borderRadius: "20px", border: "1px solid " + (moodFilter === null ? "#2BB39A" : "#F0F0F0"),
@@ -604,7 +604,7 @@ export default function SoapboxPage() {
               <div>
                 <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
                 {[1,2,3].map(i => (
-                  <div key={i} style={{backgroundColor: "#fff", marginBottom: "8px", padding: "14px 16px"}}>
+                  <div key={i} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", padding: "14px 16px"}}>
                     <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "10px"}}>
                       <div style={{width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
                       <div style={{flex: 1}}>
@@ -618,9 +618,9 @@ export default function SoapboxPage() {
                 ))}
               </div>
             ) : filteredPosts.length === 0 ? (
-              <div style={{textAlign: "center", padding: "48px 16px"}}>
-                <div style={{fontSize: "3rem", marginBottom: "12px"}}>🎭</div>
-                <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>
+              <div style={{textAlign: "center", padding: "56px 24px"}}>
+                <div style={{fontSize: "4rem", marginBottom: "16px", lineHeight: 1}}>🎭</div>
+                <div style={{fontWeight: 800, color: "#1A1A1A", fontSize: "1.1rem", marginBottom: "8px"}}>
                   {moodFilter ? "No " + (getMood(moodFilter)?.label || "") + " posts yet!" : "No shoutouts yet!"}
                 </div>
                 <div style={{color: "#888", fontSize: "0.8rem"}}>
@@ -630,7 +630,7 @@ export default function SoapboxPage() {
             ) : filteredPosts.map(post => {
               const mood = getMood(post.mood);
               return (
-                <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0"}}>
+                <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px"}}>
                   <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
                     <img src="/icon/anonymous.png" alt="anonymous" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
                     <div style={{flex: 1}}>
@@ -651,14 +651,14 @@ export default function SoapboxPage() {
                         style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.2rem", padding: "4px"}}>•••</button>
                     )}
                   </div>
-                  <div style={{padding: "0 16px 10px", fontSize: "0.9rem", color: "#1A1A1A", lineHeight: 1.5}}>{post.content}</div>
+                  <div style={{padding: "0 16px 12px", fontSize: "0.92rem", color: "#1A1A1A", lineHeight: 1.6}}>{post.content}</div>
                   {post.images && post.images.length > 0 && (
                     <div style={{marginBottom: "8px"}}>
                       <img src={post.images[0]} alt="" loading="lazy" style={{width: "100%", maxHeight: "300px", objectFit: "cover"}} />
                     </div>
                   )}
-                  <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
-                  <div style={{display: "flex", padding: "6px 12px", alignItems: "center", gap: "8px"}}>
+                  <div style={{height: "1px", backgroundColor: "#F5F5F5", margin: "0 12px"}}></div>
+                  <div style={{display: "flex", padding: "8px 12px", alignItems: "center", gap: "8px"}}>
                     <button onClick={() => handleVote(post.id, "upvote")}
                       style={{background: post.userVote === "upvote" ? "#E1F5EE" : "none", border: "1px solid " + (post.userVote === "upvote" ? "#2BB39A" : "#F0F0F0"), borderRadius: "20px", cursor: "pointer", padding: "5px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
                       <span style={{fontSize: "0.9rem", color: post.userVote === "upvote" ? "#2BB39A" : "#888"}}>▲</span>
@@ -688,10 +688,10 @@ export default function SoapboxPage() {
       {activeTab === "confession" && (
         <>
           {/* COLLAPSED CONFESSION COMPOSER ROW */}
-          <div style={{backgroundColor: "#fff", padding: "10px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "10px"}}>
+          <div style={{backgroundColor: "#fff", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "10px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)"}}>
             <img src="/icon/confess.png" alt="confession" style={{width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
             <div onClick={() => setShowConfessionSheet(true)}
-              style={{flex: 1, backgroundColor: "#F7F7F7", borderRadius: "20px", padding: "10px 14px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", userSelect: "none"}}>
+              style={{flex: 1, backgroundColor: "#F7F7F7", borderRadius: "24px", padding: "10px 16px", fontSize: "0.875rem", color: "#aaa", cursor: "pointer", userSelect: "none", border: "1.5px solid #E8F8F5", boxShadow: "inset 0 1px 3px rgba(0,0,0,0.04)"}}>
               Want to confess something?
             </div>
           </div>
@@ -775,7 +775,7 @@ export default function SoapboxPage() {
             </>
           )}
 
-          <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "10px 16px"}}>
+          <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "10px 16px", boxShadow: "0 1px 4px rgba(0,0,0,0.04)"}}>
             <div style={{display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "2px", scrollbarWidth: "none"}}>
               <button onClick={() => setConfessionMoodFilter(null)}
                 style={{flexShrink: 0, padding: "5px 14px", borderRadius: "20px", border: "1px solid " + (confessionMoodFilter === null ? "#2BB39A" : "#F0F0F0"),
@@ -826,7 +826,7 @@ export default function SoapboxPage() {
               <div>
                 <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
                 {[1,2,3].map(i => (
-                  <div key={i} style={{backgroundColor: "#fff", marginBottom: "8px", padding: "14px 16px"}}>
+                  <div key={i} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", padding: "14px 16px"}}>
                     <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "10px"}}>
                       <div style={{width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
                       <div style={{flex: 1}}>
