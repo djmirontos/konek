@@ -277,7 +277,7 @@ export default function BazaarPage() {
 
 
   return (
-    <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", background: "#F0F2F5", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {toast && (
         <div style={{position: "fixed", top: "70px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#1A1A1A", color: "#fff", padding: "10px 20px", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 600, zIndex: 1000, whiteSpace: "nowrap"}}>{toast}</div>
@@ -302,7 +302,7 @@ export default function BazaarPage() {
         <div style={{display: "flex", gap: "8px", paddingLeft: "12px", overflowX: "auto", scrollbarWidth: "none"}}>
           {["All", ...CATEGORIES].map(cat => (
             <button key={cat} onClick={() => setFilterCategory(cat)}
-              style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: filterCategory === cat ? "#2BB39A" : "#F7F7F7", color: filterCategory === cat ? "#fff" : "#888", fontWeight: filterCategory === cat ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0}}>
+              style={{padding: "7px 14px", borderRadius: "20px", border: "1px solid " + (filterCategory === cat ? "#2BB39A" : "#E8F8F5"), backgroundColor: filterCategory === cat ? "#2BB39A" : "#F0FAF6", color: filterCategory === cat ? "#fff" : "#2BB39A", fontWeight: filterCategory === cat ? 700 : 500, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0, opacity: filterCategory === cat ? 1 : 0.75}}>
               {cat === "All" ? "🛒 All" : CATEGORY_ICONS[cat] + " " + cat}
             </button>
           ))}
@@ -310,10 +310,10 @@ export default function BazaarPage() {
       </div>
 
       {/* Sell Button */}
-      <div style={{padding: "12px 16px", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0"}}>
+      <div style={{padding: "12px 16px 14px", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)"}}>
         <button onClick={() => setShowComposer(true)}
-          style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "12px", padding: "12px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
-          + Post a Listing
+          style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "14px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 4px 12px rgba(43,179,154,0.3)"}}>
+          🏷️ Post a Listing
         </button>
       </div>
 
@@ -323,7 +323,7 @@ export default function BazaarPage() {
                     <div>
             <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
             {[1,2,3].map(i => (
-              <div key={i} style={{backgroundColor: "#fff", marginBottom: "8px", padding: "12px 16px"}}>
+              <div key={i} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", padding: "12px 16px"}}>
                 <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "12px"}}>
                   <div style={{width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
                   <div style={{flex: 1}}>
@@ -338,16 +338,16 @@ export default function BazaarPage() {
             ))}
           </div>
         ) : listings.length === 0 ? (
-          <div style={{textAlign: "center", padding: "48px 16px"}}>
-            <div style={{fontSize: "3rem", marginBottom: "12px"}}>🛒</div>
-            <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>No listings yet!</div>
-            <div style={{color: "#888", fontSize: "0.8rem"}}>Be the first to sell something.</div>
+          <div style={{textAlign: "center", padding: "56px 24px"}}>
+            <div style={{fontSize: "4rem", marginBottom: "16px", lineHeight: 1}}>🛒</div>
+            <div style={{fontWeight: 800, color: "#1A1A1A", fontSize: "1.1rem", marginBottom: "8px"}}>No listings yet!</div>
+            <div style={{color: "#2BB39A", fontSize: "0.85rem", fontWeight: 600}}>Be the first to sell something!</div>
           </div>
         ) : (
-          <div style={{display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px", padding: "12px", background: "#F7F7F7"}}>
+          <div style={{display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px", padding: "12px 10px", background: "#F0F2F5"}}>
             {listings.map(listing => (
               <div key={listing.id} onClick={() => router.push("/bazaar/" + listing.id)}
-                style={{backgroundColor: "#fff", borderRadius: "12px", border: "0.5px solid #F0F0F0", cursor: "pointer", position: "relative", overflow: "hidden"}}>
+                style={{backgroundColor: "#fff", borderRadius: "14px", border: "none", cursor: "pointer", position: "relative", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.08)"}}>
                 {/* Image */}
                 <div style={{position: "relative", width: "100%", aspectRatio: "1 / 1", overflow: "hidden"}}>
                   {listing.images && listing.images.length > 0
@@ -358,10 +358,10 @@ export default function BazaarPage() {
                     <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#EF4444", color: "#fff", fontSize: "9px", fontWeight: 500, padding: "2px 7px", borderRadius: "6px", zIndex: 2}}>SOLD</div>
                   )}
                   {!listing.is_sold && isBumpedRecently(listing.bumped_at) && (
-                    <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#1a8a4a", color: "#fff", fontSize: "9px", fontWeight: 500, padding: "2px 7px", borderRadius: "6px", zIndex: 2}}>BUMPED</div>
+                    <div style={{position: "absolute", top: "8px", left: "8px", backgroundColor: "#2BB39A", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 7px", borderRadius: "6px", zIndex: 2, boxShadow: "0 1px 4px rgba(0,0,0,0.15)"}}>BUMPED</div>
                   )}
                   {listing.is_rental && (
-                    <div style={{position: "absolute", top: "8px", right: "8px", backgroundColor: "#1a8a4a", color: "#fff", fontSize: "9px", fontWeight: 500, padding: "2px 7px", borderRadius: "6px", zIndex: 2}}>FOR RENT</div>
+                    <div style={{position: "absolute", top: "8px", right: "8px", backgroundColor: "#2BB39A", color: "#fff", fontSize: "9px", fontWeight: 700, padding: "2px 7px", borderRadius: "6px", zIndex: 2, boxShadow: "0 1px 4px rgba(0,0,0,0.15)"}}>FOR RENT</div>
                   )}
                   {currentUser?.id === listing.user_id && (
                     <button onClick={e => { e.stopPropagation(); setShowMenu(showMenu === listing.id ? null : listing.id); }}
@@ -371,18 +371,18 @@ export default function BazaarPage() {
                   )}
                 </div>
                 {/* Card body */}
-                <div style={{padding: "8px 10px 10px"}}>
-                  <div style={{fontSize: "12px", fontWeight: 500, color: "#1A1A1A", marginBottom: "3px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.4}}>{listing.title}</div>
-                  <div style={{fontSize: "14px", fontWeight: 500, color: "#1a8a4a", marginBottom: "4px"}}>{formatPrice(listing.price, listing.is_rental, listing.rental_period)}</div>
+                <div style={{padding: "10px 10px 12px"}}>
+                  <div style={{fontSize: "12px", fontWeight: 600, color: "#1A1A1A", marginBottom: "4px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.4}}>{listing.title}</div>
+                  <div style={{fontSize: "14px", fontWeight: 700, color: "#2BB39A", marginBottom: "4px"}}>{formatPrice(listing.price, listing.is_rental, listing.rental_period)}</div>
                   {listing.is_negotiable && <div style={{fontSize: "10px", color: "#888", marginBottom: "3px"}}>Negotiable</div>}
                   <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px"}}>
-                    <span style={{fontSize: "10px", color: "#888", backgroundColor: "#F7F7F7", padding: "2px 6px", borderRadius: "6px"}}>{listing.condition}</span>
+                    <span style={{fontSize: "10px", color: "#2BB39A", backgroundColor: "#F0FAF6", padding: "2px 6px", borderRadius: "6px", fontWeight: 500}}>{listing.condition}</span>
                     <span style={{fontSize: "10px", color: "#aaa"}}>{formatTime(listing.created_at)}</span>
                   </div>
                   <div style={{display: "flex", alignItems: "center", gap: "4px"}}>
                     {listing.users?.avatar_url
-                      ? <img src={listing.users.avatar_url} alt="" style={{width: "16px", height: "16px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
-                      : <div style={{width: "16px", height: "16px", borderRadius: "50%", backgroundColor: "#C0DD97", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "8px", color: "#27500A", fontWeight: 700, flexShrink: 0}}>{listing.users?.full_name?.charAt(0).toUpperCase()}</div>
+                      ? <img src={listing.users.avatar_url} alt="" style={{width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.1)"}} />
+                      : <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: "#C0DD97", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", color: "#27500A", fontWeight: 700, flexShrink: 0}}>{listing.users?.full_name?.charAt(0).toUpperCase()}</div>
                     }
                     <span style={{fontSize: "10px", color: "#aaa", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{listing.users?.full_name}</span>
                   </div>
