@@ -101,7 +101,7 @@ export default function PrivacyPage() {
             title: "9. Contact Us",
             content: [
               "If you have questions about this Privacy Policy, contact us at:",
-              "Email: djmirontos@gmail.com",
+              "Email: support@klasmeyt.com",
               "App: Klasmeyt — klasmeyt.com",
             ]
           },

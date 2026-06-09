@@ -128,7 +128,7 @@ export default function TermsPage() {
             title: "12. Contact Us",
             content: [
               "If you have questions about these Terms of Service, contact us at:",
-              "Email: djmirontos@gmail.com",
+              "Email: support@klasmeyt.com",
               "Website: klasmeyt.com",
             ]
           },
