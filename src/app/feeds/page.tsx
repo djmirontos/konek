@@ -704,7 +704,7 @@ export default function FeedsPage() {
   function getTagBg(tag: string) { return HANGOUT_TAG_SET.has(tag) ? "#E1F5EE" : "#FEF3C7"; }
 
   return (
-    <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", background: "#F0F2F5", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       <AppHeader show={showNav}
         currentUser={currentUser}
@@ -800,7 +800,7 @@ export default function FeedsPage() {
 
           {/* Question of the Day Card */}
           {todayQuestion && selectedSchool !== "all" && (
-            <div style={{margin: "10px 12px 0", backgroundColor: "#fff", borderRadius: "16px", border: "1.5px solid #CBF7E5", overflow: "hidden", boxShadow: "0 2px 8px rgba(43,179,154,0.08)"}}>
+            <div style={{margin: "10px 8px 0", backgroundColor: "#fff", borderRadius: "16px", border: "1.5px solid #CBF7E5", overflow: "hidden", boxShadow: "0 2px 12px rgba(43,179,154,0.1)"}}>
               <div onClick={toggleQuestionCollapsed} style={{backgroundColor: "#2BB39A", padding: "10px 14px", display: "flex", alignItems: "center", gap: "8px", cursor: "pointer"}}>
                 <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: "0.85rem", color: "#fff", flexShrink: 0}}>?</div>
                 <span style={{color: "#fff", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.05em", textTransform: "uppercase", flex: 1}}>Question of the Day</span>
@@ -917,7 +917,7 @@ export default function FeedsPage() {
                   <div style={{display: "flex", gap: "6px", marginTop: "10px", flexWrap: "wrap"}}>
                     {TAGS.map(tag => (
                       <button key={tag} onClick={() => setSelectedTag(selectedTag === tag ? "" : tag)}
-                        style={{padding: "4px 10px", borderRadius: "12px", border: "1px solid " + (selectedTag === tag ? "#2BB39A" : "#F0F0F0"), backgroundColor: selectedTag === tag ? "#E1F5EE" : "#F7F7F7", color: selectedTag === tag ? "#2BB39A" : "#888", fontSize: "0.72rem", fontWeight: selectedTag === tag ? 700 : 400, cursor: "pointer", fontFamily: "inherit"}}>
+                        style={{padding: "5px 12px", borderRadius: "12px", border: "1px solid " + (selectedTag === tag ? "#2BB39A" : "#CBF7E5"), backgroundColor: selectedTag === tag ? "#E1F5EE" : "#F0FAF6", color: selectedTag === tag ? "#2BB39A" : "#2BB39A", fontSize: "0.72rem", fontWeight: selectedTag === tag ? 700 : 500, cursor: "pointer", fontFamily: "inherit", opacity: selectedTag === tag ? 1 : 0.7}}>
                         {tag}
                       </button>
                     ))}
@@ -944,9 +944,9 @@ export default function FeedsPage() {
               <div>
                 <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
                 {[1,2,3].map(i => (
-                  <div key={i} style={{backgroundColor: "#fff", marginBottom: "8px", padding: "12px 16px"}}>
+                  <div key={i} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", padding: "12px 16px"}}>
                     <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "12px"}}>
-                      <div style={{width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
+                      <div style={{width: "42px", height: "42px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
                       <div style={{flex: 1}}>
                         <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "6px", width: "40%"}} />
                         <div style={{height: "10px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "25%"}} />
@@ -959,13 +959,13 @@ export default function FeedsPage() {
                 ))}
               </div>
             ) : posts.length === 0 ? (
-              <div style={{textAlign: "center", padding: "48px 16px"}}>
-                <div style={{fontSize: "3rem", marginBottom: "12px"}}>📭</div>
-                <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>No posts yet!</div>
-                <div style={{color: "#888", fontSize: "0.8rem"}}>Be the first to post in your school community.</div>
+              <div style={{textAlign: "center", padding: "56px 24px"}}>
+                <div style={{fontSize: "4rem", marginBottom: "16px", lineHeight: 1}}>📭</div>
+                <div style={{fontWeight: 800, color: "#1A1A1A", fontSize: "1.1rem", marginBottom: "8px"}}>No posts yet!</div>
+                <div style={{color: "#2BB39A", fontSize: "0.85rem", fontWeight: 600}}>Be the first to post in your school community.</div>
               </div>
             ) : posts.map(post => (
-              <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0"}}>
+              <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px"}}>
                 <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
                   <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} style={{cursor: "pointer"}}>
                     {post.users?.avatar_url
@@ -974,7 +974,7 @@ export default function FeedsPage() {
                     }
                   </div>
                   <div style={{flex: 1}}>
-                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{post.users?.full_name}{verifiedUsers.has(post.user_id) && <VerifiedBadge />}{(() => { const tl = getTrustLevel(post.users?.trust_xp); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.62rem",fontWeight:700,padding:"2px 6px",borderRadius:"8px",marginLeft:"5px"}}>{tl.emoji} {tl.label}</span> : null; })()}</div>
+                    <div style={{fontWeight: 800, fontSize: "0.92rem", color: "#1A1A1A", display: "flex", alignItems: "center"}}>{post.users?.full_name}{verifiedUsers.has(post.user_id) && <VerifiedBadge />}{(() => { const tl = getTrustLevel(post.users?.trust_xp); return tl ? <span style={{display:"inline-flex",alignItems:"center",gap:"3px",backgroundColor:tl.bg,color:tl.color,fontSize:"0.62rem",fontWeight:700,padding:"2px 6px",borderRadius:"8px",marginLeft:"5px"}}>{tl.emoji} {tl.label}</span> : null; })()}</div>
                     <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
                       {formatTime(post.created_at)}
                       {post.edited_at && <span style={{color: "#aaa", fontSize: "0.68rem", fontStyle: "italic"}}>· Edited</span>}
@@ -985,14 +985,14 @@ export default function FeedsPage() {
                     <button onClick={() => setShowMenu(showMenu === post.id ? null : post.id)} style={{background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: "1.2rem", padding: "4px"}}>•••</button>
                   )}
                 </div>
-                <div style={{padding: "0 16px 10px", fontSize: "0.9rem", color: "#1A1A1A", lineHeight: 1.5}}>{post.content}</div>
+                <div style={{padding: "0 16px 12px", fontSize: "0.92rem", color: "#1A1A1A", lineHeight: 1.6}}>{post.content}</div>
                 {post.images && post.images.length > 0 && (
                   <div style={{padding: "0 12px"}}>
                     <PhotoGrid images={post.images} onImageClick={(i) => { setViewerImages(post.images!); setViewerIndex(i); }} />
                   </div>
                 )}
-                <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>
-                <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 12px"}}>
+                <div style={{height: "1px", backgroundColor: "#F5F5F5", margin: "0 12px"}}></div>
+                <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 12px"}}>
                   {/* LEFT: Like + Comment + Share */}
                   <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
                     <ReactionButton
@@ -1002,17 +1002,17 @@ export default function FeedsPage() {
                       reactions={FEED_REACTIONS}
                       onReact={handleReactNew}
                     />
-                    <button onClick={() => router.push("/feeds/" + post.id)} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 2px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
-                      <Image src="/comment.png" alt="comment" width={20} height={20} style={{opacity: 0.5}} />
-                      {(post.commentCount || 0) > 0 && <span style={{fontSize: "0.78rem", color: "#888", fontWeight: 600}}>{post.commentCount}</span>}
+                    <button onClick={() => router.push("/feeds/" + post.id)} style={{background: "#F7F7F7", border: "none", borderRadius: "20px", cursor: "pointer", padding: "6px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
+                      <Image src="/comment.png" alt="comment" width={18} height={18} style={{opacity: 0.5}} />
+                      {(post.commentCount || 0) > 0 && <span style={{fontSize: "0.75rem", color: "#888", fontWeight: 600}}>{post.commentCount}</span>}
                     </button>
-                    <button onClick={async () => { const result = await shareContent("Klasmeyt", post.content?.slice(0, 80) || "Check this out on Klasmeyt!", "/feeds/" + post.id); if (result === "copied") showToast("Link copied!"); }} style={{background: "none", border: "none", cursor: "pointer", padding: "6px 2px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
-                      <Image src="/share.png" alt="share" width={20} height={20} style={{opacity: 0.5}} />
+                    <button onClick={async () => { const result = await shareContent("Klasmeyt", post.content?.slice(0, 80) || "Check this out on Klasmeyt!", "/feeds/" + post.id); if (result === "copied") showToast("Link copied!"); }} style={{background: "#F7F7F7", border: "none", borderRadius: "20px", cursor: "pointer", padding: "6px 12px", display: "flex", alignItems: "center", gap: "5px", fontFamily: "inherit"}}>
+                      <Image src="/share.png" alt="share" width={18} height={18} style={{opacity: 0.5}} />
                     </button>
                   </div>
                   {/* RIGHT: Top reaction emojis */}
                   {Object.keys(post.reactionCounts || {}).length > 0 && (
-                    <div onClick={() => fetchReactionList(post.id)} style={{display: "flex", alignItems: "center", gap: "3px", cursor: "pointer", padding: "4px 8px", backgroundColor: "#F7F7F7", borderRadius: "20px"}}>
+                    <div onClick={() => fetchReactionList(post.id)} style={{display: "flex", alignItems: "center", gap: "3px", cursor: "pointer", padding: "4px 10px", backgroundColor: "#E8F8F5", borderRadius: "20px", boxShadow: "0 1px 3px rgba(43,179,154,0.1)"}}>
                       {Object.entries(post.reactionCounts || {}).filter(([,v]) => v > 0).sort((a,b) => b[1]-a[1]).slice(0,3).map(([key]) => {
                         const r = FEED_REACTIONS.find(r => r.value === key);
                         return r ? <span key={key} style={{fontSize: "0.9rem", lineHeight: 1}}>{r.emoji}</span> : null;
@@ -1147,9 +1147,9 @@ export default function FeedsPage() {
             {quadLoading ? (
               <div>
                 {[1,2,3].map(i => (
-                  <div key={i} style={{backgroundColor: "#fff", marginBottom: "8px", padding: "12px 16px"}}>
+                  <div key={i} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", padding: "12px 16px"}}>
                     <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "12px"}}>
-                      <div style={{width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
+                      <div style={{width: "42px", height: "42px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
                       <div style={{flex: 1}}>
                         <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "6px", width: "40%"}} />
                         <div style={{height: "10px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", width: "25%"}} />
@@ -1162,13 +1162,13 @@ export default function FeedsPage() {
                 ))}
               </div>
             ) : quadPosts.length === 0 ? (
-              <div style={{textAlign: "center", padding: "48px 16px"}}>
-                <div style={{fontSize: "3rem", marginBottom: "12px"}}>🗺️</div>
-                <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>No quad posts yet!</div>
-                <div style={{color: "#888", fontSize: "0.8rem"}}>Post a hangout or ask for help!</div>
+              <div style={{textAlign: "center", padding: "56px 24px"}}>
+                <div style={{fontSize: "4rem", marginBottom: "16px", lineHeight: 1}}>🗺️</div>
+                <div style={{fontWeight: 800, color: "#1A1A1A", fontSize: "1.1rem", marginBottom: "8px"}}>No quad posts yet!</div>
+                <div style={{color: "#2BB39A", fontSize: "0.85rem", fontWeight: 600}}>Post a hangout or ask for help!</div>
               </div>
             ) : quadPosts.map(post => (
-              <div key={post.id} style={{backgroundColor: post.isExpired ? "#F7F7F7" : "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0", opacity: post.isExpired ? 0.7 : 1}}>
+              <div key={post.id} style={{backgroundColor: post.isExpired ? "#F7F7F7" : "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", opacity: post.isExpired ? 0.7 : 1, borderLeft: post.isExpired ? "none" : "3px solid #2BB39A"}}>
                 <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
                   {post.isExpired ? (
                     <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E0E0E0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0}}>⏰</div>
@@ -1205,7 +1205,7 @@ export default function FeedsPage() {
                         <span style={{fontSize: "0.75rem", color: "#2BB39A", fontWeight: 600}}>📍 {post.location}</span>
                       </div>
                     )}
-                    <div style={{padding: "0 16px 10px", fontSize: "0.9rem", color: "#1A1A1A", lineHeight: 1.5}}>{post.content}</div>
+                    <div style={{padding: "0 16px 12px", fontSize: "0.92rem", color: "#1A1A1A", lineHeight: 1.6}}>{post.content}</div>
                     {post.images && post.images.length > 0 && (
                       <div style={{marginBottom: "8px"}}>
                         <img src={post.images[0]} alt="" style={{width: "100%", maxHeight: "300px", objectFit: "cover"}} />
