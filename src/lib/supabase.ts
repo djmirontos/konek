@@ -11,11 +11,9 @@ const capacitorStorage = {
     try {
       const { Preferences } = await import("@capacitor/preferences");
       const { value } = await Preferences.get({ key });
-      if (value) return value;
-      // Fallback to localStorage
-      return localStorage.getItem(key);
+      return value ?? null;
     } catch {
-      try { return localStorage.getItem(key); } catch { return null; }
+      return null;
     }
   },
   async setItem(key: string, value: string): Promise<void> {
@@ -24,8 +22,6 @@ const capacitorStorage = {
       const { Preferences } = await import("@capacitor/preferences");
       await Preferences.set({ key, value });
     } catch {}
-    // Always also save to localStorage as backup
-    try { localStorage.setItem(key, value); } catch {}
   },
   async removeItem(key: string): Promise<void> {
     if (typeof window === "undefined") return;
@@ -33,13 +29,11 @@ const capacitorStorage = {
       const { Preferences } = await import("@capacitor/preferences");
       await Preferences.remove({ key });
     } catch {}
-    try { localStorage.removeItem(key); } catch {}
   },
 };
 
 export function createClient() {
   if (supabaseInstance) return supabaseInstance;
-
   supabaseInstance = createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: {
       storage: capacitorStorage as any,
@@ -47,8 +41,8 @@ export function createClient() {
       persistSession: true,
       detectSessionInUrl: false,
       storageKey: "klasmeyt-auth-token",
+      flowType: "pkce",
     },
   });
-
   return supabaseInstance;
 }
