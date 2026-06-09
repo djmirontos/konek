@@ -11,6 +11,7 @@ type SchoolChangeRequest = {
   status: string;
   created_at: string;
   rejection_reason: string | null;
+  requested_school_id: string;
   users: { full_name: string; avatar_url: string | null; } | null;
   current_school: { name: string; abbreviation: string; } | null;
   requested_school: { name: string; abbreviation: string; } | null;
