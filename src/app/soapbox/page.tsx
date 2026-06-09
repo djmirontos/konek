@@ -41,6 +41,7 @@ let ADJECTIVES: string[] = [];
 let NOUNS: string[] = [];
 
 function generatePseudonym(userId: string, postSeed: string): string {
+  if (ADJECTIVES.length === 0 || NOUNS.length === 0) return "Anonymous";
   let hash = 0;
   const str = userId + postSeed;
   for (let i = 0; i < str.length; i++) {
@@ -143,13 +144,19 @@ export default function SoapboxPage() {
     if (currentUser) {
       if (activeTab === "soapbox") {
         fetchPosts();
-        setMyPseudonym(generatePseudonym(currentUser.id, postSeed));
+        // Only generate pseudonym if words are loaded
+        if (pseudonymWordsLoaded) {
+          setMyPseudonym(generatePseudonym(currentUser.id, postSeed));
+        }
       } else {
         fetchConfessions();
-        setMyConfessionPseudonym(generatePseudonym(currentUser.id, confessionSeed));
+        // Only generate pseudonym if words are loaded
+        if (pseudonymWordsLoaded) {
+          setMyConfessionPseudonym(generatePseudonym(currentUser.id, confessionSeed));
+        }
       }
     }
-  }, [currentUser, selectedSchool, activeTab]);
+  }, [currentUser, selectedSchool, activeTab, pseudonymWordsLoaded]);
 
   useEffect(() => {
     async function fetchUnreadMessages(userId: string) {
@@ -184,7 +191,7 @@ export default function SoapboxPage() {
     if (userData) setCurrentUser(userData);
     const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
     if (schoolData) setSchools(schoolData);
-    fetchPseudonymWords();
+    fetchPseudonymWords(userData?.id);
     fetchUnreadCount(userData);
   }
 
@@ -194,7 +201,7 @@ export default function SoapboxPage() {
     setUnreadCount(count || 0);
   }
 
-  async function fetchPseudonymWords() {
+  async function fetchPseudonymWords(userId?: string) {
     const { data } = await supabase
       .from("pseudonym_words")
       .select("word, type")
@@ -204,6 +211,11 @@ export default function SoapboxPage() {
       ADJECTIVES = data.filter((w: any) => w.type === "adjective").map((w: any) => w.word);
       NOUNS = data.filter((w: any) => w.type === "noun").map((w: any) => w.word);
       setPseudonymWordsLoaded(true);
+      // Now generate pseudonyms with loaded words
+      if (userId) {
+        setMyPseudonym(generatePseudonym(userId, postSeed));
+        setMyConfessionPseudonym(generatePseudonym(userId, confessionSeed));
+      }
     }
   }
 
