@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { startConversation } from "@/lib/startConversation";
 
 type User = { id: string; full_name: string; avatar_url: string | null; role: string; };
 type SchoolRequest = {
@@ -63,7 +64,36 @@ export default function AdminSchoolsPage() {
     const { error } = await supabase.from("schools").insert({ name: req.school_name, abbreviation });
     if (error) { showToast("Error adding school: " + error.message); setActing(null); return; }
     await supabase.from("school_requests").update({ status: "approved" }).eq("id", req.id);
-    showToast("School approved and added!");
+
+    // Notify requester if known
+    if (req.requested_by_user_id) {
+      // Get admin account
+      const { data: adminUser } = await supabase
+        .from("users").select("id").eq("ign", "admin").maybeSingle();
+
+      const notifMessage = "🎉 Your school request has been approved! The school you requested (" + req.school_name + ") has been reviewed and approved by the Klasmeyt team. You can now update your school by going to Settings → School Information and selecting it from the available schools list. Thank you for helping us expand the Klasmeyt community!";
+
+      // Insert notification
+      await supabase.from("notifications").insert({
+        recipient_id: req.requested_by_user_id,
+        sender_id: adminUser?.id || null,
+        type: "school_approved",
+        message: notifMessage,
+        is_read: false,
+        created_at: new Date().toISOString(),
+      });
+
+      // Send direct message from admin
+      if (adminUser?.id) {
+        const convId = await startConversation(
+          adminUser.id,
+          req.requested_by_user_id,
+          notifMessage
+        );
+      }
+    }
+
+    showToast("School approved and user notified!");
     fetchRequests();
     setActing(null);
   }
