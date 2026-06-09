@@ -85,8 +85,8 @@ export default function FeedsPage() {
   // Shared state
   const [activeTab, setActiveTab] = useState<"feeds" | "quad">("feeds");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [schools, setSchools] = useState<School[]>([]);
-  const { selectedSchool, setSelectedSchool } = useSchool();
+
+  const { selectedSchool, setSelectedSchool, schools } = useSchool();
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
@@ -103,6 +103,7 @@ export default function FeedsPage() {
   const [showScrollPill, setShowScrollPill] = useState(false);
   const [scrollingDown, setScrollingDown] = useState(true);
   const lastScrollY = useRef(0);
+  const scrollThrottle = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Verified users
   const [verifiedUsers, setVerifiedUsers] = useState<Set<string>>(new Set());
@@ -172,13 +173,20 @@ export default function FeedsPage() {
 
   useEffect(() => {
     function handleScroll() {
+      if (scrollThrottle.current) return;
       const currentY = window.scrollY;
       setScrollingDown(currentY > lastScrollY.current);
       lastScrollY.current = currentY;
       setShowScrollPill(currentY > 500);
+      scrollThrottle.current = setTimeout(() => {
+        scrollThrottle.current = null;
+      }, 100);
     }
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollThrottle.current) clearTimeout(scrollThrottle.current);
+    };
   }, []);
 
   useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool]);
@@ -259,8 +267,7 @@ export default function FeedsPage() {
       // Register FCM token for native Android app
       registerFCMToken(userData.id).catch(() => {});
     }
-    const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
-    if (schoolData) setSchools(schoolData);
+
     fetchUnreadCount(userData);
     if (userData) fetchUnreadMessages(userData.id);
     if (userData) fetchTodayQuestion(userData.school_id);

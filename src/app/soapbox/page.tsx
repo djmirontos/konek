@@ -91,8 +91,8 @@ export default function SoapboxPage() {
   const [activeTab, setActiveTab] = useState<"soapbox" | "confession">("soapbox");
   const [pseudonymWordsLoaded, setPseudonymWordsLoaded] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [schools, setSchools] = useState<School[]>([]);
-  const { selectedSchool, setSelectedSchool } = useSchool();
+
+  const { selectedSchool, setSelectedSchool, schools } = useSchool();
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
@@ -169,8 +169,6 @@ export default function SoapboxPage() {
     if (!user) { router.push("/login"); return; }
     const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (userData) setCurrentUser(userData);
-    const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
-    if (schoolData) setSchools(schoolData);
     fetchPseudonymWords(userData?.id);
     fetchUnreadCount(userData);
   }

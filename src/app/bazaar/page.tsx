@@ -37,11 +37,11 @@ export default function BazaarPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [schools, setSchools] = useState<School[]>([]);
+
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [posting, setPosting] = useState(false);
-  const { selectedSchool, setSelectedSchool } = useSchool();
+  const { selectedSchool, setSelectedSchool, schools } = useSchool();
   const [showSchoolPicker, setShowSchoolPicker] = useState(false);
   const [showComposer, setShowComposer] = useState(false);
   const [title, setTitle] = useState("");
@@ -68,15 +68,8 @@ export default function BazaarPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const [
-      { data: userData },
-      { data: schoolData }
-    ] = await Promise.all([
-      supabase.from("users").select("*").eq("id", user.id).single(),
-      supabase.from("schools").select("id, name, abbreviation").order("name")
-    ]);
+    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
     if (userData) setCurrentUser(userData);
-    if (schoolData) setSchools(schoolData);
     fetchUnreadCount(userData);
   }
 
