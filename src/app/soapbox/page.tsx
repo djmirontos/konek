@@ -36,33 +36,9 @@ function getMood(value: string | null | undefined) {
   return MOODS.find(m => m.value === value) || null;
 }
 
-const ADJECTIVES = [
-  "Tamad", "Sungit", "Buang", "Maldito", "Gigante", "Liit", "Paborito", "Bantog", "Tapang", "Matabil",
-  "Malandi", "Makulit", "Matigas", "Mahirap", "Mayaman", "Bibo", "Torpe", "Bungog", "Ambisyoso", "Desperado",
-  "Loko", "Siraulo", "Gwapo", "Pangit", "Mabait", "Maingay", "Tahimik", "Inggitero", "Palahubog", "Sigurista",
-  "Paaway", "Romantiko", "Traydor", "Loyalista", "Mapanghusga", "Chismoso", "Interesado", "Confusado", "Suplado", "Friendly",
-  "Makulay", "Malungkot", "Masaya", "Mainit", "Malamig", "Mabango", "Mabaho", "Matamis", "Mapait", "Maalat",
-  "Gutom", "Busog", "Tulog", "Gising", "Nerbiyoso", "Excited", "Abala", "Libre", "Kuripot", "Gastador",
-  "Matalino", "Bobo", "Mausisa", "Balimbing", "Mapagkumpitensya", "Makasarili", "Mapagbigay", "Mahilig", "Mainggitin", "Mapagtaka",
-  "Walang-Kwenta", "Palaaway", "Palamura", "Palakibo", "Palainom", "Palikero", "Palaengot", "Palaisip", "Pabibo",
-  "Kwela", "Petiks", "Arte", "Landian", "Marupok", "Fragile", "Savage", "Chill", "Kilig",
-  "Bitter", "Petmalu", "Lodi", "Beshie", "Selos", "Manhid", "Feelingero", "Deadma", "Jologs", "Baduy",
-  "Tambaloslos", "Bigaon", "Batignawong"
-];
-
-const NOUNS = [
-  "Kalabaw", "Pusit", "Bangus", "Kamote", "Baboy", "Manok", "Isda", "Bato", "Payong", "Kutsilyo",
-  "Tilapia", "Tulingan", "Galunggong", "Daing", "Tinapa", "Sardinas", "Danggit", "Hito", "Palaka", "Butiki",
-  "Ipis", "Langgam", "Lamok", "Daga", "Pusa", "Aso", "Kabayo", "Baka", "Kambing",
-  "Itlog", "Saging", "Mangga", "Kaimito", "Bayabas", "Siniguelas", "Atis", "Langka",
-  "Durian", "Lanzones", "Rambutan", "Santol", "Papaya", "Melon", "Pipino", "Ampalaya", "Sibuyas", "Bawang",
-  "Luya", "Paminta", "Asin", "Asukal", "Kanin", "Bigas", "Lugaw", "Pancit", "Mami",
-  "Siopao", "Turon", "Bibingka", "Puto", "Kutsinta", "Palitaw", "Biko", "Suman", "Halo-halo",
-  "Buko", "Taho", "Balut", "Penoy", "Isaw", "Betamax", "Kikiam", "Kwek-kwek", "Fishball", "Tempura",
-  "Jeepney", "Tricycle", "Pedicab", "Tsinelas", "Sombrero", "Salakot", "Baro", "Saya", "Kamison", "Tapis",
-  "Banga", "Palayok", "Kawali", "Kutsara", "Tinidor", "Sandok", "Walis", "Pugon", "Kalan", "Banig",
-  "Tinabal", "Balbacua"
-];
+// Pseudonym words loaded from DB — see fetchPseudonymWords()
+let ADJECTIVES: string[] = [];
+let NOUNS: string[] = [];
 
 function generatePseudonym(userId: string, postSeed: string): string {
   let hash = 0;
@@ -112,6 +88,7 @@ export default function SoapboxPage() {
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [activeTab, setActiveTab] = useState<"soapbox" | "confession">("soapbox");
+  const [pseudonymWordsLoaded, setPseudonymWordsLoaded] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [schools, setSchools] = useState<School[]>([]);
   const { selectedSchool, setSelectedSchool } = useSchool();
@@ -207,6 +184,7 @@ export default function SoapboxPage() {
     if (userData) setCurrentUser(userData);
     const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
     if (schoolData) setSchools(schoolData);
+    fetchPseudonymWords();
     fetchUnreadCount(userData);
   }
 
@@ -214,6 +192,19 @@ export default function SoapboxPage() {
     if (!user) return;
     const { count } = await supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_id", user.id).eq("is_read", false);
     setUnreadCount(count || 0);
+  }
+
+  async function fetchPseudonymWords() {
+    const { data } = await supabase
+      .from("pseudonym_words")
+      .select("word, type")
+      .eq("is_active", true)
+      .order("word");
+    if (data) {
+      ADJECTIVES = data.filter((w: any) => w.type === "adjective").map((w: any) => w.word);
+      NOUNS = data.filter((w: any) => w.type === "noun").map((w: any) => w.word);
+      setPseudonymWordsLoaded(true);
+    }
   }
 
   async function fetchPosts() {
