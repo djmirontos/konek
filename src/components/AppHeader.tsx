@@ -134,6 +134,17 @@ export default function AppHeader({
           {/* Divider */}
           <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 24px"}} />
 
+          {/* Admin Panel — admin/mod only */}
+          {(currentUser?.role === "admin" || currentUser?.role === "moderator") && (
+            <>
+              <button onClick={() => { setMenuOpen(false); router.push("/admin"); }} style={{display: "flex", alignItems: "center", gap: "14px", padding: "16px 24px", background: "none", border: "none", cursor: "pointer", width: "100%", textAlign: "left"}}>
+                <Image src="/icon/settings_black.png" alt="admin" width={22} height={22} style={{opacity: 0.7}} />
+                <span style={{fontSize: "0.95rem", fontWeight: 600, color: "#2BB39A"}}>Admin Panel</span>
+              </button>
+              <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 24px"}} />
+            </>
+          )}
+
           {/* Logout */}
           <button onClick={() => { setMenuOpen(false); setShowLogoutConfirm(true); }} style={{display: "flex", alignItems: "center", gap: "14px", padding: "16px 24px", background: "none", border: "none", cursor: "pointer", width: "100%", textAlign: "left"}}>
             <Image src="/icon/logout_black.png" alt="logout" width={22} height={22} style={{opacity: 0.7}} />

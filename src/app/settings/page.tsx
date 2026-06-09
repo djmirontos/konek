@@ -321,19 +321,6 @@ export default function SettingsPage() {
             onClick={() => router.push("/privacy")} />
         </Card>
 
-        {/* ADMIN PANEL — admin/mod only */}
-        {(currentUser?.role === "admin" || currentUser?.role === "moderator") && (
-          <>
-            <SectionLabel text="Admin" />
-            <div style={{margin: "0 16px"}}>
-              <button onClick={() => router.push("/admin")}
-                style={{width: "100%", padding: "14px", borderRadius: "14px", border: "1.5px solid #2BB39A", backgroundColor: "#E1F5EE", color: "#2BB39A", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
-                <img src="/icon/settings_black.png" alt="" style={{width: "20px", height: "20px", objectFit: "contain"}} /> Admin Panel
-              </button>
-            </div>
-          </>
-        )}
-
         {/* DANGER ZONE */}
         <SectionLabel text="Danger zone" />
         <Card>
