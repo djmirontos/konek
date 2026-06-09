@@ -540,7 +540,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+      <div style={{minHeight: "100vh", background: "#F0F2F5", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
         <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
         <div style={{backgroundColor: "#2BB39A", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px"}}>
           <div style={{width: "28px", height: "28px", borderRadius: "50%", background: "rgba(255,255,255,0.3)"}} />
@@ -558,7 +558,7 @@ export default function ProfilePage() {
 
   if (!profileUser) {
     return (
-      <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", alignItems: "center", justifyContent: "center"}}>
+      <div style={{minHeight: "100vh", background: "#F0F2F5", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif", alignItems: "center", justifyContent: "center"}}>
         <div style={{fontSize: "3rem", marginBottom: "12px"}}>😕</div>
         <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem"}}>User not found</div>
         <button onClick={() => router.back()} style={{marginTop: "16px", padding: "10px 24px", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "20px", fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Go Back</button>
@@ -582,7 +582,7 @@ export default function ProfilePage() {
         posterAvatar={viewAvatar.src}
       />
     )}
-    <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", background: "#F0F2F5", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       <div style={{backgroundColor: "#2BB39A", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px", position: "sticky", top: 0, zIndex: 100}}>
         <button onClick={() => router.back()} style={{background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: "1.4rem", padding: "2px 4px", display: "flex", alignItems: "center", lineHeight: 1}}>&#8249;</button>
@@ -591,15 +591,15 @@ export default function ProfilePage() {
       </div>
 
       {/* ===== HERO SECTION ===== */}
-      <div style={{backgroundColor: "#fff", padding: "16px 16px 12px", borderBottom: "1px solid #F0F0F0"}}>
+      <div style={{background: "linear-gradient(180deg, #E8F8F3 0%, #fff 60%)", padding: "20px 16px 14px", borderBottom: "1px solid #F0F0F0"}}>
         <div style={{display: "flex", gap: "14px", alignItems: "flex-start"}}>
 
           {/* LEFT — Avatar + Trust Badge */}
           <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", flexShrink: 0}}>
             <div style={{position: "relative"}}>
               {profileUser.avatar_url
-                ? <img src={profileUser.avatar_url} alt="avatar" onClick={() => setViewAvatar({src: profileUser.avatar_original_url || profileUser.avatar_url || "", name: profileUser.full_name})} style={{cursor: "pointer", width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", border: "2.5px solid #2BB39A"}} />
-                : <div style={{width: "80px", height: "80px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2.5px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.8rem"}}>{profileUser.full_name?.charAt(0).toUpperCase()}</div>
+                ? <img src={profileUser.avatar_url} alt="avatar" onClick={() => setViewAvatar({src: profileUser.avatar_original_url || profileUser.avatar_url || "", name: profileUser.full_name})} style={{cursor: "pointer", width: "90px", height: "90px", borderRadius: "50%", objectFit: "cover", border: "3px solid #2BB39A", boxShadow: "0 4px 16px rgba(43,179,154,0.25)"}}/>
+                : <div style={{width: "90px", height: "90px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "3px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "2rem", boxShadow: "0 4px 16px rgba(43,179,154,0.2)"}}>{profileUser.full_name?.charAt(0).toUpperCase()}</div>
               }
               {isVerified && (
                 <div style={{position: "absolute", bottom: "2px", right: "2px", width: "20px", height: "20px", backgroundColor: "#2BB39A", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center"}}>
@@ -629,7 +629,7 @@ export default function ProfilePage() {
 
             {/* Full Name + Follow Button */}
             <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "2px", flexWrap: "wrap"}}>
-              <span style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", lineHeight: 1.2}}>{profileUser.full_name}</span>
+              <span style={{fontWeight: 800, fontSize: "1.05rem", color: "#1A1A1A", lineHeight: 1.2}}>{profileUser.full_name}</span>
               {!isOwnProfile && (
                 <button onClick={handleFollow} disabled={followLoading}
                   style={{padding: "4px 12px", borderRadius: "20px", border: isFollowing ? "1.5px solid #2BB39A" : "none", backgroundColor: isFollowing ? "#fff" : "#2BB39A", color: isFollowing ? "#2BB39A" : "#fff", fontWeight: 700, fontSize: "0.7rem", cursor: followLoading ? "not-allowed" : "pointer", fontFamily: "inherit", flexShrink: 0}}>
@@ -663,9 +663,9 @@ export default function ProfilePage() {
                 { label: "Followers", value: followerCount, tap: "followers" as const },
               ].map(stat => (
                 <div key={stat.label} onClick={() => stat.tap && fetchFollowList(stat.tap)}
-                  style={{textAlign: "center", padding: "6px 2px", cursor: stat.tap ? "pointer" : "default"}}>
-                  <div style={{fontWeight: 700, fontSize: "1rem", color: stat.tap ? "#2BB39A" : "#1A1A1A"}}>{stat.value.toLocaleString()}</div>
-                  <div style={{fontSize: "0.6rem", color: "#888", marginTop: "1px"}}>{stat.label}</div>
+                  style={{textAlign: "center", padding: "8px 4px", cursor: stat.tap ? "pointer" : "default"}}>
+                  <div style={{fontWeight: 800, fontSize: "1.1rem", color: stat.tap ? "#2BB39A" : "#1A1A1A"}}>{stat.value.toLocaleString()}</div>
+                  <div style={{fontSize: "0.62rem", color: "#888", marginTop: "2px", fontWeight: 500}}>{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -674,7 +674,7 @@ export default function ProfilePage() {
             {!isOwnProfile && (
               <div style={{display: "flex", gap: "8px", marginTop: "10px"}}>
                 <button onClick={handleMessageUser} disabled={messagingUser}
-                  style={{flex: 1, padding: "8px 10px", borderRadius: "20px", border: "none", backgroundColor: messagingUser ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.78rem", cursor: messagingUser ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                  style={{flex: 1, padding: "8px 10px", borderRadius: "20px", border: "none", backgroundColor: messagingUser ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.78rem", cursor: messagingUser ? "not-allowed" : "pointer", fontFamily: "inherit", boxShadow: messagingUser ? "none" : "0 2px 8px rgba(43,179,154,0.3)"}}>
                   {messagingUser ? "Opening..." : "💬 Message"}
                 </button>
                 <button style={{padding: "8px 14px", borderRadius: "20px", border: "1.5px solid #EF4444", backgroundColor: "#fff", color: "#EF4444", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit"}}>🚩</button>
@@ -697,7 +697,7 @@ export default function ProfilePage() {
 
 
       <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "8px 16px", position: "sticky", top: "48px", zIndex: 90}}>
-        <div style={{display: "flex", backgroundColor: "#F7F7F7", borderRadius: "10px", padding: "3px", gap: "3px"}}>
+        <div style={{display: "flex", backgroundColor: "#E8F0EE", borderRadius: "10px", padding: "3px", gap: "3px"}}>
           {visibleTabs.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               style={{flex: 1, padding: "8px 4px", border: "none", borderRadius: "8px",
@@ -730,7 +730,7 @@ export default function ProfilePage() {
                 <div>
                   {posts.map(post => (
                     <div key={post.id} onClick={() => router.push(post.type === "quad" ? `/quad/${post.id}` : `/feeds/${post.id}`)}
-                      style={{backgroundColor: "#fff", marginBottom: "8px", padding: "14px 16px", cursor: "pointer", borderBottom: "1px solid #F0F0F0"}}>
+                      style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", padding: "14px 16px", cursor: "pointer"}}>
                       <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px"}}>
                         {post.type === "quad"
                           ? <span style={{fontSize: "0.65rem", backgroundColor: "#E1F5EE", color: "#2BB39A", fontWeight: 700, padding: "2px 8px", borderRadius: "10px"}}>QUAD</span>
@@ -767,7 +767,7 @@ export default function ProfilePage() {
                 <div style={{padding: "8px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px"}}>
                   {listings.map(listing => (
                     <div key={listing.id} onClick={() => router.push(`/bazaar/${listing.id}`)}
-                      style={{backgroundColor: "#fff", borderRadius: "12px", overflow: "hidden", cursor: "pointer", border: "1px solid #F0F0F0"}}>
+                      style={{backgroundColor: "#fff", borderRadius: "14px", overflow: "hidden", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.08)"}}>
                       <div style={{position: "relative"}}>
                         {listing.images && listing.images.length > 0
                           ? <img src={listing.images[0]} alt="" style={{width: "100%", height: "120px", objectFit: "cover", display: "block"}} />
@@ -799,7 +799,7 @@ export default function ProfilePage() {
                 <div>
                   {livingPosts.map(lp => (
                     <div key={lp.id} onClick={() => router.push(`/living/${lp.id}`)}
-                      style={{backgroundColor: "#fff", marginBottom: "8px", borderBottom: "1px solid #F0F0F0", cursor: "pointer", display: "flex", gap: "12px", padding: "12px 16px", alignItems: "flex-start"}}>
+                      style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", cursor: "pointer", display: "flex", gap: "12px", padding: "12px 16px", alignItems: "flex-start"}}>
                       {lp.images && lp.images.length > 0
                         ? <img src={lp.images[0]} alt="" style={{width: "72px", height: "72px", objectFit: "cover", borderRadius: "10px", flexShrink: 0}} />
                         : <div style={{width: "72px", height: "72px", backgroundColor: "#F0F0F0", borderRadius: "10px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem"}}>🏠</div>
@@ -823,14 +823,14 @@ export default function ProfilePage() {
             )}
 
             {activeTab === "About" && (
-              <div style={{padding: "16px", display: "flex", flexDirection: "column", gap: "12px"}}>
+              <div style={{padding: "16px", display: "flex", flexDirection: "column", gap: "14px"}}>
 
                 {/* INFO CARD */}
-                <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", border: "1px solid #F0F0F0"}}>
-                  <div style={{fontWeight: 700, fontSize: "0.72rem", color: "#aaa", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Info</div>
+                <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", border: "none", boxShadow: "0 2px 10px rgba(0,0,0,0.07)"}}>
+                  <div style={{fontWeight: 700, fontSize: "0.72rem", color: "#2BB39A", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Info</div>
                   <div style={{display: "flex", flexDirection: "column", gap: "12px"}}>
                     <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                      <img src="/icon/school.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
+                      <img src="/icon/school.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.75}} />
                       <div>
                         <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>School</div>
                         <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{school?.name || "Unknown"}</div>
@@ -838,7 +838,7 @@ export default function ProfilePage() {
                     </div>
                     {(profileUser.course || profileUser.year_level) && canView("course") && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                        <img src="/icon/course_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
+                        <img src="/icon/course_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.75}} />
                         <div>
                           <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Course</div>
                           <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{profileUser.course}{profileUser.course && profileUser.year_level ? " · " : ""}{profileUser.year_level}</div>
@@ -847,7 +847,7 @@ export default function ProfilePage() {
                     )}
                     {profileUser.hometown && canView("hometown") && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                        <img src="/icon/living_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
+                        <img src="/icon/living_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.75}} />
                         <div>
                           <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Hometown</div>
                           <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{profileUser.hometown}</div>
@@ -856,7 +856,7 @@ export default function ProfilePage() {
                     )}
                     {profileUser.birthdate && canView("birthdate") && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                        <img src="/icon/birthday_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
+                        <img src="/icon/birthday_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.75}} />
                         <div>
                           <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Birthday</div>
                           <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{new Date(profileUser.birthdate).toLocaleDateString("en-PH", {month: "long", day: "numeric", year: "numeric"})}</div>
@@ -865,7 +865,7 @@ export default function ProfilePage() {
                     )}
                     {profileUser.phone_number && canView("phone") && (
                       <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                        <img src="/icon/phone_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
+                        <img src="/icon/phone_black.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.75}} />
                         <div>
                           <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Phone</div>
                           <a href={"tel:" + profileUser.phone_number} style={{fontSize: "0.85rem", fontWeight: 600, color: "#2BB39A", textDecoration: "none"}}>{profileUser.phone_number}</a>
@@ -873,7 +873,7 @@ export default function ProfilePage() {
                       </div>
                     )}
                     <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
-                      <img src="/icon/member.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.6}} />
+                      <img src="/icon/member.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.75}} />
                       <div>
                         <div style={{fontSize: "0.68rem", color: "#aaa", marginBottom: "1px"}}>Member since</div>
                         <div style={{fontSize: "0.85rem", fontWeight: 600, color: "#1A1A1A"}}>{formatMemberSince(profileUser.created_at)}</div>
@@ -890,7 +890,7 @@ export default function ProfilePage() {
                   const prevThreshold = xp >= 1000 ? 1000 : xp >= 500 ? 500 : xp >= 100 ? 100 : 0;
                   const pct = xp >= 1000 ? 100 : Math.round(((xp - prevThreshold) / (next.threshold - prevThreshold)) * 100);
                   return (
-                    <div style={{backgroundColor: tl ? tl.bg : "#F1EFE8", borderRadius: "14px", padding: "16px", border: "1px solid " + (tl ? tl.border : "#D3D1C7")}}>
+                    <div style={{backgroundColor: tl ? tl.bg : "#F1EFE8", borderRadius: "14px", padding: "16px", border: "1px solid " + (tl ? tl.border : "#D3D1C7"), boxShadow: "0 2px 10px rgba(0,0,0,0.06)"}}>
                       <div style={{fontWeight: 700, fontSize: "0.72rem", color: tl ? tl.color : "#888", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Trust Level</div>
                       <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px"}}>
                         <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
@@ -928,7 +928,7 @@ export default function ProfilePage() {
 
                 {/* INVITE CARD — own profile only */}
                 {isOwnProfile && profileUser.invite_code && (
-                  <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", border: "1px solid #F0F0F0"}}>
+                  <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", border: "none", boxShadow: "0 2px 10px rgba(0,0,0,0.07)"}}>
                     <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px"}}>
                       <span style={{fontSize: "1rem"}}>🎁</span>
                       <span style={{fontWeight: 700, fontSize: "0.88rem", color: "#1A1A1A"}}>Your Invite Code</span>
@@ -969,8 +969,8 @@ export default function ProfilePage() {
 
                 {/* STUDENT VERIFICATION — own profile only */}
                 {isOwnProfile && (
-                  <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", border: "1px solid #F0F0F0"}}>
-                    <div style={{fontWeight: 700, fontSize: "0.72rem", color: "#aaa", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Student Verification</div>
+                  <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", border: "none", boxShadow: "0 2px 10px rgba(0,0,0,0.07)"}}>
+                    <div style={{fontWeight: 700, fontSize: "0.72rem", color: "#2BB39A", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Student Verification</div>
                     {profileUser?.verification_status === "approved" && (
                       <div style={{display: "flex", alignItems: "center", gap: "10px", backgroundColor: "#E1F5EE", borderRadius: "12px", padding: "14px"}}>
                         <span style={{fontSize: "1.6rem"}}>✅</span>
