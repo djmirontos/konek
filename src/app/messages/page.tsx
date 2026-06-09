@@ -209,7 +209,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", background: "#F0F2F5", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {/* HEADER */}
       <div style={{backgroundColor: "#2BB39A", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between"}}>
@@ -233,7 +233,7 @@ export default function MessagesPage() {
       {/* ONLINE STUDENTS */}
       {onlineUsers.length > 0 && (
         <div style={{backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", padding: "12px 0 12px 16px"}}>
-          <div style={{fontSize: "0.72rem", fontWeight: 700, color: "#888", letterSpacing: "0.06em", marginBottom: "10px", textTransform: "uppercase"}}>
+          <div style={{fontSize: "0.72rem", fontWeight: 700, color: "#2BB39A", letterSpacing: "0.06em", marginBottom: "10px", textTransform: "uppercase"}}>
             Online Now — {onlineUsers.length}
           </div>
           <div style={{display: "flex", gap: "16px", overflowX: "auto", scrollbarWidth: "none", paddingRight: "16px"}}>
@@ -280,15 +280,15 @@ export default function MessagesPage() {
         ) : activeTab === "chats" ? (
           sent.length === 0 && chats.length === 0 ? (
             <div style={{textAlign: "center", padding: "64px 24px"}}>
-              <div style={{fontSize: "3rem", marginBottom: "12px"}}>💬</div>
-              <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "6px"}}>No messages yet</div>
-              <div style={{fontSize: "0.82rem", color: "#888"}}>Start a conversation from a seller or poster profile.</div>
+              <div style={{fontSize: "4rem", marginBottom: "16px", lineHeight: 1}}>💬</div>
+              <div style={{fontWeight: 800, fontSize: "1.1rem", color: "#1A1A1A", marginBottom: "8px"}}>No messages yet</div>
+              <div style={{fontSize: "0.85rem", color: "#2BB39A", fontWeight: 600}}>Start a conversation from a profile!</div>
             </div>
           ) : (
             <>
             {sent.map(conv => (
               <div key={conv.id} onClick={() => router.push("/messages/" + conv.id)}
-                style={{backgroundColor: "#fff", padding: "14px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "12px", cursor: "pointer", opacity: 0.85}}>
+                style={{backgroundColor: "#fff", padding: "14px 16px", borderBottom: "1px solid #F5F5F5", display: "flex", alignItems: "center", gap: "12px", cursor: "pointer", opacity: 0.85, borderLeft: "3px solid #F59E0B"}}>
                 <div style={{position: "relative", flexShrink: 0}}>
                   <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem"}}>
                     {conv.otherUser?.avatar_url
@@ -312,7 +312,7 @@ export default function MessagesPage() {
             ))}
             {chats.map(conv => (
               <div key={conv.id} onClick={() => router.push("/messages/" + conv.id)}
-                style={{backgroundColor: "#fff", padding: "14px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "12px", cursor: "pointer"}}>
+                style={{backgroundColor: "#fff", padding: "14px 16px", borderBottom: "1px solid #F5F5F5", display: "flex", alignItems: "center", gap: "12px", cursor: "pointer"}}>
                 <div style={{position: "relative", flexShrink: 0}}>
                   <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem"}}>
                     {conv.otherUser?.avatar_url
@@ -341,9 +341,9 @@ export default function MessagesPage() {
         ) : (
           requests.length === 0 ? (
             <div style={{textAlign: "center", padding: "64px 24px"}}>
-              <div style={{fontSize: "3rem", marginBottom: "12px"}}>📭</div>
-              <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "6px"}}>No message requests</div>
-              <div style={{fontSize: "0.82rem", color: "#888"}}>Message requests from other students will appear here.</div>
+              <div style={{fontSize: "4rem", marginBottom: "16px", lineHeight: 1}}>📭</div>
+              <div style={{fontWeight: 800, fontSize: "1.1rem", color: "#1A1A1A", marginBottom: "8px"}}>No message requests</div>
+              <div style={{fontSize: "0.85rem", color: "#2BB39A", fontWeight: 600}}>Message requests will appear here.</div>
             </div>
           ) : (
             requests.map(conv => (
@@ -361,7 +361,7 @@ export default function MessagesPage() {
                   <div style={{fontSize: "0.68rem", color: "#888"}}>{formatTime(conv.last_message_at)}</div>
                 </div>
                 {conv.last_message && (
-                  <div style={{backgroundColor: "#F7F7F7", borderRadius: "10px", padding: "10px 12px", fontSize: "0.82rem", color: "#555", marginBottom: "10px", lineHeight: 1.4}}>
+                  <div style={{backgroundColor: "#F0FAF6", borderRadius: "10px", padding: "10px 12px", fontSize: "0.82rem", color: "#444", marginBottom: "10px", lineHeight: 1.4, border: "1px solid #E1F5EE"}}>
                     "{conv.last_message}"
                   </div>
                 )}
@@ -371,7 +371,7 @@ export default function MessagesPage() {
                     Decline
                   </button>
                   <button onClick={() => handleAcceptRequest(conv.id)}
-                    style={{flex: 2, padding: "10px", borderRadius: "10px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit"}}>
+                    style={{flex: 2, padding: "10px", borderRadius: "10px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.8rem", cursor: "pointer", fontFamily: "inherit", boxShadow: "0 2px 8px rgba(43,179,154,0.2)"}}>
                     Accept
                   </button>
                 </div>

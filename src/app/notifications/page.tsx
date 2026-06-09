@@ -193,7 +193,7 @@ export default function NotificationsPage() {
   const isSystemNotif = (type: string) => ["system", "verification", "school_approved", "badge"].includes(type);
 
   return (
-    <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", background: "#F0F2F5", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       <AppHeader
         currentUser={currentUser}
@@ -226,7 +226,7 @@ export default function NotificationsPage() {
           <div>
             <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
             {[1,2,3,4,5].map(i => (
-              <div key={i} style={{backgroundColor: "#fff", marginBottom: "1px", padding: "14px 16px", display: "flex", gap: "12px", alignItems: "center"}}>
+              <div key={i} style={{backgroundColor: "#fff", marginBottom: "2px", padding: "14px 16px", display: "flex", gap: "12px", alignItems: "center", borderBottom: "1px solid #F5F5F5"}}>
                 <div style={{width: "46px", height: "46px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
                 <div style={{flex: 1}}>
                   <div style={{height: "12px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", marginBottom: "8px", width: "80%"}} />
@@ -237,8 +237,8 @@ export default function NotificationsPage() {
           </div>
         ) : notifications.length === 0 ? (
           <div style={{textAlign: "center", padding: "64px 16px"}}>
-            <div style={{fontSize: "3.5rem", marginBottom: "12px"}}>🔔</div>
-            <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>No notifications yet.</div>
+            <div style={{fontSize: "4rem", marginBottom: "16px", lineHeight: 1}}>🔔</div>
+            <div style={{fontWeight: 800, color: "#1A1A1A", fontSize: "1.1rem", marginBottom: "8px"}}>No notifications yet.</div>
             <div style={{color: "#888", fontSize: "0.82rem"}}>When someone reacts or comments, it shows up here.</div>
           </div>
         ) : (
@@ -246,12 +246,12 @@ export default function NotificationsPage() {
             {GROUP_ORDER.filter(g => groupNotifications()[g]).map(group => (
               <div key={group}>
                 {/* Group Label */}
-                <div style={{padding: "10px 16px 6px", backgroundColor: "#F7F7F7"}}>
+                <div style={{padding: "10px 16px 6px", backgroundColor: "#F0F2F5"}}>
                   <span style={{fontSize: "0.72rem", fontWeight: 700, color: "#888", letterSpacing: "0.05em", textTransform: "uppercase"}}>{group}</span>
                 </div>
                 {groupNotifications()[group].map(notif => (
                   <div key={notif.id} onClick={() => markAsRead(notif)}
-                    style={{backgroundColor: notif.is_read ? "#fff" : "#E1F5EE", padding: "12px 16px", borderBottom: "1px solid #F0F0F0", display: "flex", alignItems: "center", gap: "12px", cursor: notif.post_id ? "pointer" : "default", transition: "background 0.15s"}}
+                    style={{backgroundColor: notif.is_read ? "#fff" : "#EAF8F3", padding: "13px 16px", borderBottom: "1px solid #F5F5F5", display: "flex", alignItems: "center", gap: "12px", cursor: notif.post_id ? "pointer" : "default", transition: "background 0.15s", borderLeft: notif.is_read ? "none" : "3px solid #2BB39A"}}
                     onMouseEnter={e => { if (notif.post_id) e.currentTarget.style.backgroundColor = notif.is_read ? "#F7F7F7" : "#d4ede3"; }}
                     onMouseLeave={e => { e.currentTarget.style.backgroundColor = notif.is_read ? "#fff" : "#E1F5EE"; }}>
 
@@ -295,7 +295,7 @@ export default function NotificationsPage() {
             {hasMore && (
               <div style={{padding: "16px", textAlign: "center"}}>
                 <button onClick={loadMore} disabled={loadingMore}
-                  style={{backgroundColor: "#F7F7F7", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "10px 24px", fontSize: "0.82rem", fontWeight: 600, color: "#888", cursor: loadingMore ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                  style={{backgroundColor: "#fff", border: "1.5px solid #2BB39A", borderRadius: "20px", padding: "10px 24px", fontSize: "0.82rem", fontWeight: 600, color: "#2BB39A", cursor: loadingMore ? "not-allowed" : "pointer", fontFamily: "inherit", boxShadow: "0 2px 8px rgba(43,179,154,0.1)"}}>
                   {loadingMore ? "Loading..." : "Load more"}
                 </button>
               </div>
