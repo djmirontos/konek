@@ -258,7 +258,7 @@ export default function NotificationsPage() {
                           {getNotifIcon(notif.type)}
                         </div>
                       ) : notif.sender.avatar_url ? (
-                        <img src={notif.sender.avatar_url} alt="" style={{width: "46px", height: "46px", borderRadius: "50%", objectFit: "cover"}} />
+                        <img src={notif.sender.avatar_url} alt="" loading="lazy" style={{width: "46px", height: "46px", borderRadius: "50%", objectFit: "cover"}} />
                       ) : (
                         <div style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.1rem"}}>
                           {notif.sender.full_name?.charAt(0).toUpperCase()}

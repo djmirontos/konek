@@ -330,7 +330,7 @@ export default function BazaarPage() {
                 {/* Image */}
                 <div style={{position: "relative", width: "100%", aspectRatio: "1 / 1", overflow: "hidden"}}>
                   {listing.images && listing.images.length > 0
-                    ? <img src={listing.images[0]} alt="" style={{width: "100%", height: "100%", objectFit: "cover", display: "block"}} />
+                    ? <img src={listing.images[0]} alt="" loading="lazy" style={{width: "100%", height: "100%", objectFit: "cover", display: "block"}} />
                     : <div style={{width: "100%", height: "100%", backgroundColor: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2.5rem"}}>{CATEGORY_ICONS[listing.category] || "📦"}</div>
                   }
                   {listing.is_sold && (
@@ -360,7 +360,7 @@ export default function BazaarPage() {
                   </div>
                   <div style={{display: "flex", alignItems: "center", gap: "4px"}}>
                     {listing.users?.avatar_url
-                      ? <img src={listing.users.avatar_url} alt="" style={{width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.1)"}} />
+                      ? <img src={listing.users.avatar_url} alt="" loading="lazy" style={{width: "20px", height: "20px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.1)"}} />
                       : <div style={{width: "20px", height: "20px", borderRadius: "50%", backgroundColor: "#C0DD97", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px", color: "#27500A", fontWeight: 700, flexShrink: 0}}>{listing.users?.full_name?.charAt(0).toUpperCase()}</div>
                     }
                     <span style={{fontSize: "10px", color: "#aaa", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{listing.users?.full_name}</span>

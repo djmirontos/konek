@@ -766,7 +766,7 @@ export default function FeedsPage() {
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
                     <div onClick={() => router.push(`/profile/${r.user_id}`)} style={{position: "relative", flexShrink: 0, cursor: "pointer"}}>
                       {r.users?.avatar_url
-                        ? <img src={r.users.avatar_url} alt="" style={{width: "46px", height: "46px", borderRadius: "50%", objectFit: "cover"}} />
+                        ? <img src={r.users.avatar_url} alt="" loading="lazy" style={{width: "46px", height: "46px", borderRadius: "50%", objectFit: "cover"}} />
                         : <div style={{width: "46px", height: "46px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.1rem"}}>{r.users?.full_name?.charAt(0).toUpperCase()}</div>
                       }
                       <div style={{position: "absolute", bottom: "-2px", right: "-2px", backgroundColor: "#fff", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.15)"}}><img src={reactionImg} alt="" style={{width: "16px", height: "16px"}} /></div>
@@ -825,7 +825,7 @@ export default function FeedsPage() {
                         return (
                           <div key={a.id} style={{display: "flex", gap: "8px", alignItems: "flex-start"}}>
                             {a.users?.avatar_url
-                              ? <img src={a.users.avatar_url} alt="" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: isMe ? "2px solid #2BB39A" : "none"}} />
+                              ? <img src={a.users.avatar_url} alt="" loading="lazy" style={{width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: isMe ? "2px solid #2BB39A" : "none"}} />
                               : <div style={{width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.65rem", fontWeight: 700, color: "#2BB39A", flexShrink: 0, border: isMe ? "2px solid #2BB39A" : "none"}}>{a.users?.full_name?.charAt(0).toUpperCase()}</div>
                             }
                             <div style={{backgroundColor: isMe ? "#E8F8F5" : "#F7F7F7", borderRadius: "10px", padding: "7px 10px", flex: 1, border: isMe ? "1px solid #CBF7E5" : "none"}}>
@@ -972,7 +972,7 @@ export default function FeedsPage() {
                 <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
                   <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} style={{cursor: "pointer"}}>
                     {post.users?.avatar_url
-                      ? <img src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
+                      ? <img src={post.users.avatar_url} alt="" loading="lazy" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover"}} />
                       : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                     }
                   </div>
@@ -1176,7 +1176,7 @@ export default function FeedsPage() {
                   {post.isExpired ? (
                     <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E0E0E0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0}}>⏰</div>
                   ) : post.users?.avatar_url ? (
-                    <img onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} src={post.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
+                    <img onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} src={post.users.avatar_url} alt="" loading="lazy" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", cursor: "pointer"}} />
                   ) : (
                     <div onClick={() => setAvatarMenu({id: post.user_id, full_name: post.users?.full_name || "", avatar_url: post.users?.avatar_url || null})} style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem", cursor: "pointer"}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                   )}
@@ -1211,7 +1211,7 @@ export default function FeedsPage() {
                     <div style={{padding: "0 16px 12px", fontSize: "0.92rem", color: "#1A1A1A", lineHeight: 1.6}}>{post.content}</div>
                     {post.images && post.images.length > 0 && (
                       <div style={{marginBottom: "8px"}}>
-                        <img src={post.images[0]} alt="" style={{width: "100%", maxHeight: "300px", objectFit: "cover"}} />
+                        <img src={post.images[0]} alt="" loading="lazy" style={{width: "100%", maxHeight: "300px", objectFit: "cover"}} />
                       </div>
                     )}
                     <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>

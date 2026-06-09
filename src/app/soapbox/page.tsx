@@ -619,7 +619,7 @@ export default function SoapboxPage() {
               return (
                 <div key={post.id} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px"}}>
                   <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
-                    <img src="/icon/anonymous.png" alt="anonymous" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}} />
+                    <img src="/icon/anonymous.png" alt="anonymous" loading="lazy" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}} />
                     <div style={{flex: 1}}>
                       <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#2BB39A"}}>{post.pseudonym}</div>
                       <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
@@ -841,7 +841,7 @@ export default function SoapboxPage() {
               return (
                 <div key={confession.id} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px"}}>
                   <div style={{padding: "12px 16px 8px", display: "flex", alignItems: "center", gap: "10px"}}>
-                    <img src="/icon/confess.png" alt="confession" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}} />
+                    <img src="/icon/confess.png" alt="confession" loading="lazy" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}} />
                     <div style={{flex: 1}}>
                       <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#6B4C9A"}}>{confession.pseudonym}</div>
                       <div style={{fontSize: "0.72rem", color: "#888", marginTop: "1px", display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap"}}>
@@ -863,7 +863,7 @@ export default function SoapboxPage() {
                   <div style={{padding: "0 16px 10px", fontSize: "0.9rem", color: "#1A1A1A", lineHeight: 1.5}}>{confession.content}</div>
                   {confession.images && confession.images.length > 0 && (
                     <div style={{marginBottom: "8px"}}>
-                      <img src={confession.images[0]} alt="" style={{width: "100%", maxHeight: "300px", objectFit: "contain"}} />
+                      <img src={confession.images[0]} alt="" loading="lazy" style={{width: "100%", maxHeight: "300px", objectFit: "contain"}} />
                     </div>
                   )}
                   <div style={{height: "1px", backgroundColor: "#F0F0F0", margin: "0 16px"}}></div>

@@ -305,7 +305,7 @@ export default function LivingPage() {
 
                 {/* Image */}
                 {post.images && post.images.length > 0 ? (
-                  <img src={post.images[0]} alt="" style={{width: "100%", height: "180px", objectFit: "cover", display: "block"}} />
+                  <img src={post.images[0]} alt="" loading="lazy" style={{width: "100%", height: "180px", objectFit: "cover", display: "block"}} />
                 ) : (
                   <div style={{width: "100%", height: "100px", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "3rem"}}>
                     {post.post_type === "looking" ? "🔍" : "🏠"}
@@ -349,7 +349,7 @@ export default function LivingPage() {
                   <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px"}}>
                     <div style={{display: "flex", alignItems: "center", gap: "5px"}}>
                       {post.users?.avatar_url
-                        ? <img src={post.users.avatar_url} alt="" style={{width: "22px", height: "22px", borderRadius: "50%", objectFit: "cover", boxShadow: "0 1px 3px rgba(0,0,0,0.1)"}} />
+                        ? <img src={post.users.avatar_url} alt="" loading="lazy" style={{width: "22px", height: "22px", borderRadius: "50%", objectFit: "cover", boxShadow: "0 1px 3px rgba(0,0,0,0.1)"}} />
                         : <div style={{width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: "#2BB39A", fontWeight: 700}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                       }
                       <span style={{fontSize: "0.72rem", color: "#888"}}>{post.users?.full_name}</span>

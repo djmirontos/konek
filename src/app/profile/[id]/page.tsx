@@ -805,7 +805,7 @@ export default function ProfilePage() {
                       {post.images && post.images.length > 0 && (
                         <div style={{display: "flex", gap: "4px", marginTop: "8px"}}>
                           {post.images.slice(0, 3).map((url, i) => (
-                            <img key={i} src={url} alt="" style={{width: "72px", height: "72px", objectFit: "cover", borderRadius: "8px"}} />
+                            <img key={i} src={url} alt="" loading="lazy" style={{width: "72px", height: "72px", objectFit: "cover", borderRadius: "8px"}} />
                           ))}
                           {post.images.length > 3 && (
                             <div style={{width: "72px", height: "72px", borderRadius: "8px", backgroundColor: "#F0F0F0", display: "flex", alignItems: "center", justifyContent: "center", color: "#888", fontWeight: 700, fontSize: "0.85rem"}}>+{post.images.length - 3}</div>
@@ -832,7 +832,7 @@ export default function ProfilePage() {
                       style={{backgroundColor: "#fff", borderRadius: "14px", overflow: "hidden", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.08)"}}>
                       <div style={{position: "relative"}}>
                         {listing.images && listing.images.length > 0
-                          ? <img src={listing.images[0]} alt="" style={{width: "100%", height: "120px", objectFit: "cover", display: "block"}} />
+                          ? <img src={listing.images[0]} alt="" loading="lazy" style={{width: "100%", height: "120px", objectFit: "cover", display: "block"}} />
                           : <div style={{width: "100%", height: "120px", backgroundColor: "#F7F7F7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem"}}>🛍️</div>
                         }
                         {listing.is_sold && (
@@ -863,7 +863,7 @@ export default function ProfilePage() {
                     <div key={lp.id} onClick={() => router.push(`/living/${lp.id}`)}
                       style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", cursor: "pointer", display: "flex", gap: "12px", padding: "12px 16px", alignItems: "flex-start"}}>
                       {lp.images && lp.images.length > 0
-                        ? <img src={lp.images[0]} alt="" style={{width: "72px", height: "72px", objectFit: "cover", borderRadius: "10px", flexShrink: 0}} />
+                        ? <img src={lp.images[0]} alt="" loading="lazy" style={{width: "72px", height: "72px", objectFit: "cover", borderRadius: "10px", flexShrink: 0}} />
                         : <div style={{width: "72px", height: "72px", backgroundColor: "#F0F0F0", borderRadius: "10px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.8rem"}}>🏠</div>
                       }
                       <div style={{flex: 1, minWidth: 0}}>
@@ -1384,7 +1384,7 @@ export default function ProfilePage() {
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F7F7F7")}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#fff")}>
                     {u.avatar_url
-                      ? <img src={u.avatar_url} alt="" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                      ? <img src={u.avatar_url} alt="" loading="lazy" style={{width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
                       : <div style={{width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem", flexShrink: 0}}>{u.full_name?.charAt(0).toUpperCase()}</div>
                     }
                     <div style={{flex: 1, minWidth: 0}}>

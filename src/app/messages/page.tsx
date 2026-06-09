@@ -239,7 +239,7 @@ export default function MessagesPage() {
                 style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", cursor: "pointer", flexShrink: 0, opacity: startingChat === user.id ? 0.5 : 1}}>
                 <div style={{position: "relative"}}>
                   {user.avatar_url
-                    ? <img src={user.avatar_url} alt="" style={{width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}} />
+                    ? <img src={user.avatar_url} alt="" loading="lazy" style={{width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}} />
                     : <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem", border: "2px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.1)"}}>{user.full_name?.charAt(0).toUpperCase()}</div>
                   }
                   <div style={{position: "absolute", bottom: "1px", right: "1px", width: "12px", height: "12px", backgroundColor: "#22C55E", borderRadius: "50%", border: "2px solid #fff"}} />
@@ -289,7 +289,7 @@ export default function MessagesPage() {
                 <div style={{position: "relative", flexShrink: 0}}>
                   <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem"}}>
                     {conv.otherUser?.avatar_url
-                      ? <img src={conv.otherUser.avatar_url} alt="" style={{width: "100%", height: "100%", objectFit: "cover"}} />
+                      ? <img src={conv.otherUser.avatar_url} alt="" loading="lazy" style={{width: "100%", height: "100%", objectFit: "cover"}} />
                       : "👤"}
                   </div>
                 </div>
@@ -313,7 +313,7 @@ export default function MessagesPage() {
                 <div style={{position: "relative", flexShrink: 0}}>
                   <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem"}}>
                     {conv.otherUser?.avatar_url
-                      ? <img src={conv.otherUser.avatar_url} alt="" style={{width: "100%", height: "100%", objectFit: "cover"}} />
+                      ? <img src={conv.otherUser.avatar_url} alt="" loading="lazy" style={{width: "100%", height: "100%", objectFit: "cover"}} />
                       : "👤"}
                   </div>
                   {(conv.unreadCount || 0) > 0 && (
@@ -348,7 +348,7 @@ export default function MessagesPage() {
                 <div style={{display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px"}}>
                   <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.4rem", flexShrink: 0}}>
                     {conv.otherUser?.avatar_url
-                      ? <img src={conv.otherUser.avatar_url} alt="" style={{width: "100%", height: "100%", objectFit: "cover"}} />
+                      ? <img src={conv.otherUser.avatar_url} alt="" loading="lazy" style={{width: "100%", height: "100%", objectFit: "cover"}} />
                       : "👤"}
                   </div>
                   <div style={{flex: 1}}>
