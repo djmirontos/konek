@@ -251,7 +251,7 @@ export default function LivingPage() {
   }
 
   return (
-    <div style={{minHeight: "100vh", background: "#F7F7F7", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
+    <div style={{minHeight: "100vh", background: "#F0F2F5", display: "flex", flexDirection: "column", maxWidth: "480px", margin: "0 auto", fontFamily: "'Plus Jakarta Sans', sans-serif"}}>
 
       {toast && (
         <div style={{position: "fixed", top: "70px", left: "50%", transform: "translateX(-50%)", backgroundColor: "#1A1A1A", color: "#fff", padding: "10px 20px", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 600, zIndex: 1000, whiteSpace: "nowrap"}}>{toast}</div>
@@ -276,7 +276,7 @@ export default function LivingPage() {
         <div style={{display: "flex", gap: "8px", paddingLeft: "12px", overflowX: "auto", scrollbarWidth: "none"}}>
           {["All", "Room for Rent", "Looking"].map(tab => (
             <button key={tab} onClick={() => setFilterType(tab)}
-              style={{padding: "6px 14px", borderRadius: "20px", border: "none", backgroundColor: filterType === tab ? "#2BB39A" : "#F7F7F7", color: filterType === tab ? "#fff" : "#888", fontWeight: filterType === tab ? 700 : 400, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0}}>
+              style={{padding: "7px 14px", borderRadius: "20px", border: "1px solid " + (filterType === tab ? "#2BB39A" : "#E8F8F5"), backgroundColor: filterType === tab ? "#2BB39A" : "#F0FAF6", color: filterType === tab ? "#fff" : "#2BB39A", fontWeight: filterType === tab ? 700 : 500, fontSize: "0.78rem", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0, opacity: filterType === tab ? 1 : 0.75}}>
               {tab === "All" ? "🏘️ All" : tab === "Room for Rent" ? "🏠 Room for Rent" : "🔍 Looking"}
             </button>
           ))}
@@ -284,9 +284,9 @@ export default function LivingPage() {
       </div>
 
       {/* Post Button */}
-      <div style={{padding: "12px 16px", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0"}}>
+      <div style={{padding: "12px 16px 14px", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)"}}>
         <button onClick={() => setShowComposer(true)}
-          style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "12px", padding: "12px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"}}>
+          style={{width: "100%", backgroundColor: "#2BB39A", color: "#fff", border: "none", borderRadius: "14px", padding: "13px", fontWeight: 700, fontSize: "0.9rem", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 4px 12px rgba(43,179,154,0.3)"}}>
           + Post a Listing
         </button>
       </div>
@@ -297,7 +297,7 @@ export default function LivingPage() {
                     <div>
             <style>{`@keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }`}</style>
             {[1,2,3].map(i => (
-              <div key={i} style={{backgroundColor: "#fff", marginBottom: "8px", padding: "12px 16px"}}>
+              <div key={i} style={{backgroundColor: "#fff", marginBottom: "10px", borderRadius: "14px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden", margin: "0 8px 10px", padding: "12px 16px"}}>
                 <div style={{display: "flex", gap: "10px", alignItems: "center", marginBottom: "12px"}}>
                   <div style={{width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear", flexShrink: 0}} />
                   <div style={{flex: 1}}>
@@ -313,15 +313,15 @@ export default function LivingPage() {
           </div>
         ) : posts.length === 0 ? (
           <div style={{textAlign: "center", padding: "48px 16px"}}>
-            <div style={{fontSize: "3rem", marginBottom: "12px"}}>🏘️</div>
-            <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem", marginBottom: "6px"}}>No listings yet!</div>
+            <div style={{fontSize: "4rem", marginBottom: "16px", lineHeight: 1}}>🏘️</div>
+            <div style={{fontWeight: 800, color: "#1A1A1A", fontSize: "1.1rem", marginBottom: "8px"}}>No listings yet!</div>
             <div style={{color: "#888", fontSize: "0.8rem"}}>Be the first to post a listing.</div>
           </div>
         ) : (
           <div style={{display: "flex", flexDirection: "column", gap: "8px", padding: "12px"}}>
             {posts.map(post => (
               <div key={post.id} onClick={() => router.push("/living/" + post.id)}
-                style={{backgroundColor: "#fff", borderRadius: "14px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", cursor: "pointer", overflow: "hidden", position: "relative"}}>
+                style={{backgroundColor: "#fff", borderRadius: "14px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", cursor: "pointer", overflow: "hidden", position: "relative", margin: "0 0 2px"}}>
 
                 {/* Badges */}
                 <div style={{position: "absolute", top: "10px", left: "10px", display: "flex", gap: "6px", zIndex: 2, flexWrap: "wrap"}}>
@@ -390,8 +390,8 @@ export default function LivingPage() {
                   <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "6px"}}>
                     <div style={{display: "flex", alignItems: "center", gap: "5px"}}>
                       {post.users?.avatar_url
-                        ? <img src={post.users.avatar_url} alt="" style={{width: "18px", height: "18px", borderRadius: "50%", objectFit: "cover"}} />
-                        : <div style={{width: "18px", height: "18px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.55rem", color: "#2BB39A", fontWeight: 700}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
+                        ? <img src={post.users.avatar_url} alt="" style={{width: "22px", height: "22px", borderRadius: "50%", objectFit: "cover", boxShadow: "0 1px 3px rgba(0,0,0,0.1)"}} />
+                        : <div style={{width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: "#2BB39A", fontWeight: 700}}>{post.users?.full_name?.charAt(0).toUpperCase()}</div>
                       }
                       <span style={{fontSize: "0.72rem", color: "#888"}}>{post.users?.full_name}</span>
                     </div>
