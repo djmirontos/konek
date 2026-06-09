@@ -4,6 +4,17 @@ import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
 type User = { id: string; full_name: string; avatar_url: string | null; role: string; };
+type SchoolChangeRequest = {
+  id: string;
+  user_id: string;
+  reason: string;
+  status: string;
+  created_at: string;
+  rejection_reason: string | null;
+  users: { full_name: string; avatar_url: string | null; } | null;
+  current_school: { name: string; abbreviation: string; } | null;
+  requested_school: { name: string; abbreviation: string; } | null;
+};
 type ManagedUser = {
   id: string;
   full_name: string;
@@ -24,15 +35,24 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<ManagedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<"all" | "banned" | "pending">("all");
+  const [filter, setFilter] = useState<"all" | "banned" | "pending" | "school_changes">("all");
   const [toast, setToast] = useState("");
   const [acting, setActing] = useState<string | null>(null);
   const [showMenu, setShowMenu] = useState<string | null>(null);
   const [showRoleModal, setShowRoleModal] = useState<string | null>(null);
   const [newRole, setNewRole] = useState("");
+  const [schoolChanges, setSchoolChanges] = useState<SchoolChangeRequest[]>([]);
+  const [schoolChangesLoading, setSchoolChangesLoading] = useState(false);
+  const [showRejectSheet, setShowRejectSheet] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   useEffect(() => { initPage(); }, []);
-  useEffect(() => { if (currentUser) fetchUsers(); }, [filter, currentUser]);
+  useEffect(() => {
+    if (currentUser) {
+      if (filter === "school_changes") fetchSchoolChanges();
+      else fetchUsers();
+    }
+  }, [filter, currentUser]);
 
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -50,6 +70,62 @@ export default function AdminUsersPage() {
     const { data } = await query;
     if (data) setUsers(data.map((u: any) => ({ ...u, school: Array.isArray(u.schools) ? u.schools[0] ?? null : u.schools })));
     setLoading(false);
+  }
+
+  async function fetchSchoolChanges() {
+    setSchoolChangesLoading(true);
+    const { data } = await supabase
+      .from("school_change_requests")
+      .select("id, user_id, reason, status, created_at, rejection_reason, users(full_name, avatar_url), current_school:current_school_id(name, abbreviation), requested_school:requested_school_id(name, abbreviation)")
+      .eq("status", "pending")
+      .order("created_at", { ascending: false });
+    if (data) setSchoolChanges(data.map((r: any) => ({
+      ...r,
+      users: Array.isArray(r.users) ? r.users[0] ?? null : r.users,
+      current_school: Array.isArray(r.current_school) ? r.current_school[0] ?? null : r.current_school,
+      requested_school: Array.isArray(r.requested_school) ? r.requested_school[0] ?? null : r.requested_school,
+    })));
+    setSchoolChangesLoading(false);
+  }
+
+  async function handleApproveSchoolChange(req: SchoolChangeRequest) {
+    setActing(req.id);
+    // Update user school
+    await supabase.from("users").update({ school_id: req.requested_school_id }).eq("id", req.user_id);
+    // Update request status
+    await supabase.from("school_change_requests").update({ status: "approved", reviewed_by: currentUser?.id, reviewed_at: new Date().toISOString() }).eq("id", req.id);
+    // Get admin account
+    const { data: adminUser } = await supabase.from("users").select("id").eq("ign", "admin").maybeSingle();
+    // Notify user
+    const msg = "✅ Your school change request to " + (req.requested_school?.name || "your new school") + " has been approved! Your profile has been updated.";
+    await supabase.from("notifications").insert({ recipient_id: req.user_id, sender_id: adminUser?.id || currentUser?.id, type: "school_change_approved", message: msg, is_read: false });
+    if (adminUser?.id) {
+      const { startConversation } = await import("@/lib/startConversation");
+      await startConversation(adminUser.id, req.user_id, msg);
+    }
+    showToast("School change approved!");
+    setActing(null);
+    fetchSchoolChanges();
+  }
+
+  async function handleRejectSchoolChange(req: SchoolChangeRequest) {
+    if (!rejectionReason.trim()) { showToast("Please enter a rejection reason."); return; }
+    setActing(req.id);
+    await supabase.from("school_change_requests").update({ status: "rejected", rejection_reason: rejectionReason.trim(), reviewed_by: currentUser?.id, reviewed_at: new Date().toISOString() }).eq("id", req.id);
+    // Get admin account
+    const { data: adminUser } = await supabase.from("users").select("id").eq("ign", "admin").maybeSingle();
+    // Notify user
+    const msg = "❌ Your school change request to " + (req.requested_school?.name || "your requested school") + " was declined. Reason: " + rejectionReason.trim();
+    await supabase.from("notifications").insert({ recipient_id: req.user_id, sender_id: adminUser?.id || currentUser?.id, type: "school_change_rejected", message: msg, is_read: false });
+    if (adminUser?.id) {
+      const { startConversation } = await import("@/lib/startConversation");
+      await startConversation(adminUser.id, req.user_id, msg);
+    }
+    showToast("School change rejected.");
+    setShowRejectSheet(null);
+    setRejectionReason("");
+    setActing(null);
+    fetchSchoolChanges();
   }
 
   async function handleBan(userId: string) {
@@ -131,11 +207,11 @@ export default function AdminUsersPage() {
           style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "20px", padding: "9px 16px", fontSize: "0.85rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
       </div>
 
-      <div style={{display: "flex", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0"}}>
-        {(["all", "banned", "pending"] as const).map(tab => (
+      <div style={{display: "flex", backgroundColor: "#fff", borderBottom: "1px solid #F0F0F0", overflowX: "auto"}}>
+        {(["all", "banned", "pending", "school_changes"] as const).map(tab => (
           <button key={tab} onClick={() => setFilter(tab)}
-            style={{flex: 1, padding: "10px 0", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.78rem", cursor: "pointer", color: filter === tab ? "#2BB39A" : "#888", borderBottom: filter === tab ? "2px solid #2BB39A" : "2px solid transparent", textTransform: "capitalize"}}>
-            {tab}
+            style={{flexShrink: 0, padding: "10px 12px", border: "none", background: "none", fontFamily: "inherit", fontWeight: 700, fontSize: "0.75rem", cursor: "pointer", color: filter === tab ? "#2BB39A" : "#888", borderBottom: filter === tab ? "2px solid #2BB39A" : "2px solid transparent", whiteSpace: "nowrap"}}>
+            {tab === "school_changes" ? "🏫 School Changes" : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -186,7 +262,85 @@ export default function AdminUsersPage() {
             )}
           </div>
         ))}
+        {filter === "school_changes" && (
+          <div style={{flex: 1, paddingBottom: "32px"}}>
+            {schoolChangesLoading ? (
+              <div style={{textAlign: "center", padding: "48px", color: "#888"}}>Loading...</div>
+            ) : schoolChanges.length === 0 ? (
+              <div style={{textAlign: "center", padding: "64px 16px"}}>
+                <div style={{fontSize: "3rem", marginBottom: "12px"}}>🏫</div>
+                <div style={{fontWeight: 700, color: "#1A1A1A", fontSize: "1rem"}}>No pending school changes</div>
+              </div>
+            ) : schoolChanges.map(req => (
+              <div key={req.id} style={{backgroundColor: "#fff", marginBottom: "8px", borderRadius: "12px", boxShadow: "0 1px 4px rgba(0,0,0,0.07)", margin: "0 8px 10px", padding: "14px 16px"}}>
+                <div style={{display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px"}}>
+                  {req.users?.avatar_url
+                    ? <img src={req.users.avatar_url} alt="" style={{width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", flexShrink: 0}} />
+                    : <div style={{width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#E1F5EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1rem", flexShrink: 0}}>{req.users?.full_name?.charAt(0).toUpperCase()}</div>
+                  }
+                  <div style={{flex: 1}}>
+                    <div style={{fontWeight: 700, fontSize: "0.875rem", color: "#1A1A1A"}}>{req.users?.full_name}</div>
+                    <div style={{fontSize: "0.72rem", color: "#888"}}>{formatDate(req.created_at)}</div>
+                  </div>
+                </div>
+                <div style={{backgroundColor: "#F7F7F7", borderRadius: "10px", padding: "10px 12px", marginBottom: "10px"}}>
+                  <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px"}}>
+                    <span style={{fontSize: "0.72rem", color: "#888", width: "50px", flexShrink: 0}}>From:</span>
+                    <span style={{fontSize: "0.82rem", fontWeight: 600, color: "#1A1A1A"}}>{req.current_school?.name || "Unknown"}</span>
+                  </div>
+                  <div style={{display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px"}}>
+                    <span style={{fontSize: "0.72rem", color: "#888", width: "50px", flexShrink: 0}}>To:</span>
+                    <span style={{fontSize: "0.82rem", fontWeight: 700, color: "#2BB39A"}}>{req.requested_school?.name || "Unknown"}</span>
+                  </div>
+                  <div style={{display: "flex", alignItems: "flex-start", gap: "8px"}}>
+                    <span style={{fontSize: "0.72rem", color: "#888", width: "50px", flexShrink: 0}}>Reason:</span>
+                    <span style={{fontSize: "0.78rem", color: "#555"}}>{req.reason}</span>
+                  </div>
+                </div>
+                <div style={{display: "flex", gap: "8px"}}>
+                  <button onClick={() => { setShowRejectSheet(req.id); setRejectionReason(""); }}
+                    style={{flex: 1, padding: "10px", borderRadius: "10px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#EF4444", fontWeight: 600, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>
+                    Reject
+                  </button>
+                  <button onClick={() => handleApproveSchoolChange(req)} disabled={acting === req.id}
+                    style={{flex: 1, padding: "10px", borderRadius: "10px", border: "none", backgroundColor: "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.82rem", cursor: "pointer", fontFamily: "inherit"}}>
+                    {acting === req.id ? "..." : "Approve ✓"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Reject Sheet */}
+      {showRejectSheet && (
+        <>
+          <div onClick={() => { setShowRejectSheet(null); setRejectionReason(""); }} style={{position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 400}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "20px 16px 40px"}}>
+            <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "0 auto 16px"}} />
+            <div style={{fontWeight: 700, fontSize: "0.95rem", color: "#1A1A1A", marginBottom: "8px"}}>Reject School Change</div>
+            <div style={{fontSize: "0.78rem", color: "#888", marginBottom: "14px"}}>Provide a reason — the user will be notified.</div>
+            <select value={rejectionReason} onChange={e => setRejectionReason(e.target.value)}
+              style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box", marginBottom: "12px", color: rejectionReason ? "#1A1A1A" : "#aaa"}}>
+              <option value="">Select a reason...</option>
+              <option value="The requested school is not yet available on Klasmeyt">The requested school is not yet available on Klasmeyt</option>
+              <option value="Insufficient information provided to verify the transfer">Insufficient information provided to verify the transfer</option>
+              <option value="Your current school appears to be correct based on our records">Your current school appears to be correct based on our records</option>
+              <option value="Please contact support for further assistance">Please contact support for further assistance</option>
+            </select>
+            <div style={{display: "flex", gap: "10px"}}>
+              <button onClick={() => { setShowRejectSheet(null); setRejectionReason(""); }}
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
+              <button onClick={() => { const req = schoolChanges.find(r => r.id === showRejectSheet); if (req) handleRejectSchoolChange(req); }}
+                disabled={!rejectionReason || acting === showRejectSheet}
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: !rejectionReason ? "#ccc" : "#EF4444", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: !rejectionReason ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                {acting === showRejectSheet ? "..." : "Reject"}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

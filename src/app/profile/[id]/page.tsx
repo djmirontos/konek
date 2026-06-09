@@ -99,6 +99,14 @@ export default function ProfilePage() {
   const [hasLiving, setHasLiving] = useState(false);
 
   const [showEditSheet, setShowEditSheet] = useState(false);
+  const [showSchoolChangeSheet, setShowSchoolChangeSheet] = useState(false);
+  const [pendingSchoolChange, setPendingSchoolChange] = useState<{id:string;requested_school_id:string;reason:string;status:string} | null>(null);
+  const [selectedNewSchool, setSelectedNewSchool] = useState<School | null>(null);
+  const [schoolChangeReason, setSchoolChangeReason] = useState("");
+  const [schoolSearch, setSchoolSearch] = useState("");
+  const [showSchoolList, setShowSchoolList] = useState(false);
+  const [submittingSchoolChange, setSubmittingSchoolChange] = useState(false);
+  const [schoolChangeError, setSchoolChangeError] = useState("");
   const [showSharePhotoPrompt, setShowSharePhotoPrompt] = useState(false);
   const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null);
   const [sharingPhoto, setSharingPhoto] = useState(false);
@@ -183,6 +191,7 @@ export default function ProfilePage() {
     setLoading(false);
     fetchStats(targetId);
     fetchFollowData(targetId, user.id);
+    if (own) fetchPendingSchoolChange(user.id);
   }
 
   async function fetchStats(userId: string) {
@@ -209,6 +218,59 @@ export default function ProfilePage() {
     setReactionsToday(rTodayResult.count || 0);
     setCommentsToday(cTodayResult.count || 0);
   }
+  async function fetchPendingSchoolChange(userId: string) {
+    const { data } = await supabase
+      .from("school_change_requests")
+      .select("id, requested_school_id, reason, status")
+      .eq("user_id", userId)
+      .eq("status", "pending")
+      .maybeSingle();
+    setPendingSchoolChange(data || null);
+  }
+
+  async function handleSubmitSchoolChange() {
+    if (!currentUser || !selectedNewSchool || !schoolChangeReason) return;
+    setSubmittingSchoolChange(true);
+    setSchoolChangeError("");
+    try {
+      // Check no existing pending request
+      const { data: existing } = await supabase
+        .from("school_change_requests")
+        .select("id")
+        .eq("user_id", currentUser.id)
+        .eq("status", "pending")
+        .maybeSingle();
+      if (existing) { setSchoolChangeError("You already have a pending school change request."); return; }
+
+      const { error } = await supabase.from("school_change_requests").insert({
+        user_id: currentUser.id,
+        current_school_id: currentUser.school_id,
+        requested_school_id: selectedNewSchool.id,
+        reason: schoolChangeReason,
+        status: "pending",
+      });
+      if (error) throw error;
+
+      setPendingSchoolChange({ id: "", requested_school_id: selectedNewSchool.id, reason: schoolChangeReason, status: "pending" });
+      setShowSchoolChangeSheet(false);
+      setSelectedNewSchool(null);
+      setSchoolChangeReason("");
+      setSchoolSearch("");
+      showToast("School change request submitted!");
+    } catch (err: unknown) {
+      setSchoolChangeError(err instanceof Error ? err.message : "Failed to submit. Try again.");
+    } finally {
+      setSubmittingSchoolChange(false);
+    }
+  }
+
+  async function handleCancelSchoolChange() {
+    if (!pendingSchoolChange || !currentUser) return;
+    await supabase.from("school_change_requests").delete().eq("user_id", currentUser.id).eq("status", "pending");
+    setPendingSchoolChange(null);
+    showToast("School change request cancelled.");
+  }
+
   async function fetchFollowData(profileId: string, currentUserId: string) {
     const [
       { count: followers },
@@ -1110,16 +1172,108 @@ export default function ProfilePage() {
               <input type="text" value={editHometown} onChange={e => setEditHometown(e.target.value)} placeholder="e.g. Cebu City" maxLength={80}
                 style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "12px", padding: "10px 12px", fontSize: "0.875rem", color: "#1A1A1A", backgroundColor: "#F7F7F7", fontFamily: "inherit", outline: "none", boxSizing: "border-box"}} />
             </div>
-            <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "12px 14px", marginBottom: "20px", display: "flex", gap: "10px", alignItems: "flex-start"}}>
-              <span style={{fontSize: "1rem"}}>🔒</span>
-              <div>
-                <div style={{fontSize: "0.78rem", fontWeight: 700, color: "#1A1A1A", marginBottom: "2px"}}>School: {school?.abbreviation}</div>
-                <div style={{fontSize: "0.72rem", color: "#888", lineHeight: 1.4}}>School changes require admin review. Contact support to request a change.</div>
+            <div style={{marginBottom: "20px"}}>
+              <label style={{fontSize: "0.78rem", fontWeight: 600, color: "#888", display: "block", marginBottom: "6px"}}>School</label>
+              <div style={{backgroundColor: "#F7F7F7", borderRadius: "12px", padding: "12px 14px", display: "flex", alignItems: "center", justifyContent: "space-between"}}>
+                <div style={{display: "flex", alignItems: "center", gap: "8px"}}>
+                  <span style={{fontSize: "1rem"}}>🏫</span>
+                  <div>
+                    <div style={{fontSize: "0.85rem", fontWeight: 700, color: "#1A1A1A"}}>{school?.name || "Unknown"}</div>
+                    {pendingSchoolChange && (
+                      <div style={{fontSize: "0.7rem", color: "#F59E0B", fontWeight: 600, marginTop: "2px"}}>
+                        ⏳ Change to {schools.find(s => s.id === pendingSchoolChange.requested_school_id)?.name || "..."} pending
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {pendingSchoolChange ? (
+                  <button onClick={handleCancelSchoolChange}
+                    style={{backgroundColor: "#FEF2F2", color: "#EF4444", border: "none", borderRadius: "8px", padding: "5px 12px", fontSize: "0.72rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                    Cancel Request
+                  </button>
+                ) : (
+                  <button onClick={() => { setShowSchoolChangeSheet(true); setSchoolChangeError(""); }}
+                    style={{backgroundColor: "#E1F5EE", color: "#2BB39A", border: "none", borderRadius: "8px", padding: "5px 12px", fontSize: "0.72rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap"}}>
+                    Request Change
+                  </button>
+                )}
               </div>
             </div>
             <div style={{display: "flex", gap: "10px"}}>
               <button onClick={() => setShowEditSheet(false)} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
               <button onClick={handleSaveProfile} disabled={savingProfile} style={{flex: 1, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: savingProfile ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: savingProfile ? "not-allowed" : "pointer", fontFamily: "inherit"}}>{savingProfile ? "Saving..." : "Save"}</button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* SCHOOL CHANGE SHEET */}
+      {showSchoolChangeSheet && (
+        <>
+          <div onClick={() => { setShowSchoolChangeSheet(false); setSelectedNewSchool(null); setSchoolChangeReason(""); setSchoolSearch(""); setShowSchoolList(false); setSchoolChangeError(""); }}
+            style={{position: "fixed", inset: 0, zIndex: 400, backgroundColor: "rgba(0,0,0,0.4)"}} />
+          <div style={{position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "min(480px, 100vw)", backgroundColor: "#fff", borderRadius: "20px 20px 0 0", zIndex: 500, padding: "20px 20px 40px", maxHeight: "90vh", overflowY: "auto"}}>
+            <div style={{width: "40px", height: "4px", backgroundColor: "#E0E0E0", borderRadius: "2px", margin: "0 auto 16px"}} />
+            <div style={{fontWeight: 700, fontSize: "1rem", color: "#1A1A1A", marginBottom: "4px"}}>Request School Change</div>
+            <div style={{fontSize: "0.78rem", color: "#888", marginBottom: "20px", lineHeight: 1.5}}>Your request will be reviewed by the Klasmeyt team. Your school will show as pending until approved.</div>
+
+            {/* Current School */}
+            <div style={{backgroundColor: "#F7F7F7", borderRadius: "10px", padding: "10px 14px", marginBottom: "16px"}}>
+              <div style={{fontSize: "0.7rem", color: "#888", marginBottom: "2px"}}>Current School</div>
+              <div style={{fontWeight: 700, fontSize: "0.85rem", color: "#1A1A1A"}}>{school?.name}</div>
+            </div>
+
+            {/* New School Picker */}
+            <div style={{marginBottom: "16px", position: "relative"}}>
+              <label style={{fontSize: "0.75rem", fontWeight: 600, color: "#888", display: "block", marginBottom: "6px"}}>New School <span style={{color: "#EF4444"}}>*</span></label>
+              <input
+                type="text"
+                placeholder="Search school..."
+                value={schoolSearch}
+                onChange={e => { setSchoolSearch(e.target.value); setShowSchoolList(true); setSelectedNewSchool(null); }}
+                onFocus={() => setShowSchoolList(true)}
+                style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box"}}
+              />
+              {showSchoolList && (
+                <div style={{position: "absolute", top: "100%", left: 0, right: 0, backgroundColor: "#fff", border: "1px solid #F0F0F0", borderRadius: "10px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", zIndex: 600, maxHeight: "200px", overflowY: "auto", marginTop: "4px"}}>
+                  {schools.filter(s => s.id !== currentUser?.school_id && (s.name.toLowerCase().includes(schoolSearch.toLowerCase()) || s.abbreviation.toLowerCase().includes(schoolSearch.toLowerCase()))).map(s => (
+                    <div key={s.id} onClick={() => { setSelectedNewSchool(s); setSchoolSearch(s.name); setShowSchoolList(false); }}
+                      style={{padding: "10px 14px", cursor: "pointer", borderBottom: "1px solid #F0F0F0", fontSize: "0.85rem", color: "#1A1A1A", backgroundColor: selectedNewSchool?.id === s.id ? "#E1F5EE" : "#fff"}}>
+                      <div style={{fontWeight: 600}}>{s.name}</div>
+                      <div style={{fontSize: "0.7rem", color: "#888"}}>{s.abbreviation}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Reason Dropdown */}
+            <div style={{marginBottom: "16px"}}>
+              <label style={{fontSize: "0.75rem", fontWeight: 600, color: "#888", display: "block", marginBottom: "6px"}}>Reason <span style={{color: "#EF4444"}}>*</span></label>
+              <select value={schoolChangeReason} onChange={e => setSchoolChangeReason(e.target.value)}
+                style={{width: "100%", border: "1px solid #F0F0F0", borderRadius: "10px", padding: "10px 12px", fontSize: "0.875rem", fontFamily: "inherit", outline: "none", backgroundColor: "#F7F7F7", boxSizing: "border-box", color: schoolChangeReason ? "#1A1A1A" : "#aaa"}}>
+                <option value="">Select a reason...</option>
+                <option value="I transferred to this school">I transferred to this school</option>
+                <option value="I selected the wrong school during signup">I selected the wrong school during signup</option>
+                <option value="I graduated and enrolled in a new school">I graduated and enrolled in a new school</option>
+                <option value="I am now attending a different campus">I am now attending a different campus</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            {schoolChangeError && <div style={{color: "#EF4444", fontSize: "0.78rem", marginBottom: "12px"}}>{schoolChangeError}</div>}
+
+            <div style={{backgroundColor: "#FFF8E1", borderRadius: "10px", padding: "10px 14px", marginBottom: "16px", fontSize: "0.74rem", color: "#92400E", lineHeight: 1.5}}>
+              ⚠️ Your school will show as pending until approved. The review usually takes 1-2 days.
+            </div>
+
+            <div style={{display: "flex", gap: "10px"}}>
+              <button onClick={() => { setShowSchoolChangeSheet(false); setSelectedNewSchool(null); setSchoolChangeReason(""); setSchoolSearch(""); setSchoolChangeError(""); }}
+                style={{flex: 1, padding: "12px", borderRadius: "12px", border: "1px solid #F0F0F0", backgroundColor: "#fff", color: "#888", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", fontFamily: "inherit"}}>Cancel</button>
+              <button onClick={handleSubmitSchoolChange} disabled={submittingSchoolChange || !selectedNewSchool || !schoolChangeReason}
+                style={{flex: 2, padding: "12px", borderRadius: "12px", border: "none", backgroundColor: submittingSchoolChange || !selectedNewSchool || !schoolChangeReason ? "#ccc" : "#2BB39A", color: "#fff", fontWeight: 700, fontSize: "0.85rem", cursor: submittingSchoolChange || !selectedNewSchool || !schoolChangeReason ? "not-allowed" : "pointer", fontFamily: "inherit"}}>
+                {submittingSchoolChange ? "Submitting..." : "Submit Request"}
+              </button>
             </div>
           </div>
         </>
