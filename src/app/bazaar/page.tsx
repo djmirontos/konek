@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useSchool } from "@/context/SchoolContext";
 import imageCompression from "browser-image-compression";
 
+const PAGE_SIZE = 20;
 const CATEGORIES = ["Textbooks", "Uniforms", "Gadgets", "School Supplies", "Dorm Essentials", "Food", "Entertainment", "Sports", "Others"];
 const CONDITIONS = ["Brand New", "Like New", "Slightly Used", "Good"];
 const CATEGORY_ICONS: Record<string, string> = {
@@ -61,9 +62,12 @@ export default function BazaarPage() {
   const [showMenu, setShowMenu] = useState<string | null>(null);
   const [toast, setToast] = useState("");
   const [bumping, setBumping] = useState<string | null>(null);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => { initPage(); }, []);
-  useEffect(() => { if (currentUser) fetchListings(); }, [currentUser, selectedSchool, filterCategory]);
+  useEffect(() => { if (currentUser) { setOffset(0); fetchListings(false, 0); } }, [currentUser, selectedSchool, filterCategory]);
 
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -81,15 +85,15 @@ export default function BazaarPage() {
 
 
 
-  async function fetchListings() {
+  async function fetchListings(append = false, currentOffset = 0) {
     if (!currentUser) return;
-    setLoading(true);
+    if (append) setLoadingMore(true); else setLoading(true);
     let query = supabase
       .from("listings")
       .select("id, user_id, title, description, price, is_negotiable, is_rental, rental_period, category, condition, images, is_sold, created_at, bumped_at, school_id, users(full_name, avatar_url)")
       .eq("is_hidden", false)
       .order("bumped_at", { ascending: false })
-      .limit(30);
+      .range(currentOffset, currentOffset + PAGE_SIZE - 1);
     if (selectedSchool === "own") query = query.eq("school_id", currentUser.school_id);
     else if (selectedSchool !== "all") query = query.eq("school_id", selectedSchool);
     if (filterCategory !== "All") query = query.eq("category", filterCategory);
@@ -108,9 +112,20 @@ export default function BazaarPage() {
         commentCount: commentMap[listing.id] || 0,
         users: Array.isArray(listing.users) ? listing.users[0] ?? null : listing.users
       }));
-      setListings(enriched);
+      if (append) setListings(prev => [...prev, ...enriched]); else setListings(enriched);
+      setHasMore(data.length === PAGE_SIZE);
+    } else {
+      if (!append) setListings([]);
+      setHasMore(false);
     }
-    setLoading(false);
+    if (append) setLoadingMore(false); else setLoading(false);
+  }
+
+  async function loadMore() {
+    if (loadingMore || !hasMore || !currentUser) return;
+    const nextOffset = offset + PAGE_SIZE;
+    setOffset(nextOffset);
+    await fetchListings(true, nextOffset);
   }
 
   async function handlePost() {
@@ -323,6 +338,7 @@ export default function BazaarPage() {
             <div style={{color: "#2BB39A", fontSize: "0.85rem", fontWeight: 600}}>Be the first to sell something!</div>
           </div>
         ) : (
+          <>
           <div style={{display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px", padding: "12px 10px", background: "#F0F2F5"}}>
             {listings.map(listing => (
               <div key={listing.id} onClick={() => router.push("/bazaar/" + listing.id)}
@@ -369,6 +385,15 @@ export default function BazaarPage() {
               </div>
             ))}
           </div>
+          {hasMore && (
+            <div style={{padding: "16px", textAlign: "center"}}>
+              <button onClick={loadMore} disabled={loadingMore}
+                style={{backgroundColor: "#fff", border: "1.5px solid #2BB39A", borderRadius: "20px", padding: "10px 24px", fontSize: "0.82rem", fontWeight: 600, color: "#2BB39A", cursor: loadingMore ? "not-allowed" : "pointer", fontFamily: "inherit", boxShadow: "0 2px 8px rgba(43,179,154,0.1)"}}>
+                {loadingMore ? "Loading..." : "Load more"}
+              </button>
+            </div>
+          )}
+          </>
         )}
       </div>
 

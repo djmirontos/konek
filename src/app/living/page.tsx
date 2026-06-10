@@ -9,6 +9,7 @@ import SchoolPicker from "@/components/SchoolPicker";
 import { useRouter } from "next/navigation";
 import { useSchool } from "@/context/SchoolContext";
 
+const PAGE_SIZE = 20;
 const AMENITIES = ["WiFi", "Water", "Electricity", "Private CR", "Shared CR", "Kitchen", "Laundry", "Aircon", "Furnished", "With meals"];
 
 type School = { id: string; name: string; abbreviation: string; };
@@ -59,9 +60,12 @@ export default function LivingPage() {
   const [showMenu, setShowMenu] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [toast, setToast] = useState("");
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => { initPage(); }, []);
-  useEffect(() => { if (currentUser) fetchPosts(); }, [currentUser, selectedSchool, filterType]);
+  useEffect(() => { if (currentUser) { setOffset(0); fetchPosts(false, 0); } }, [currentUser, selectedSchool, filterType]);
 
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -79,23 +83,37 @@ export default function LivingPage() {
 
 
 
-  async function fetchPosts() {
+  async function fetchPosts(append = false, currentOffset = 0) {
     if (!currentUser) return;
-    setLoading(true);
+    if (append) setLoadingMore(true); else setLoading(true);
     let query = supabase
       .from("boarding_houses")
       .select("id, user_id, post_type, name, description, address, price_per_month, is_negotiable, available_slots, is_fully_booked, contact_number, amenities, images, school_id, created_at, edited_at, comment_count, users(full_name, avatar_url)")
       .eq("is_hidden", false)
       .order("created_at", { ascending: false })
-      .limit(30);
+      .range(currentOffset, currentOffset + PAGE_SIZE - 1);
     if (selectedSchool === "own") query = query.eq("school_id", currentUser.school_id);
     else if (selectedSchool !== "all") query = query.eq("school_id", selectedSchool);
     if (filterType === "Room for Rent") query = query.eq("post_type", "listing");
     else if (filterType === "Looking") query = query.eq("post_type", "looking");
     const { data, error } = await query;
-    if (data) setPosts(data.map((p: any) => ({...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users})));
+    if (data) {
+      const mapped = data.map((p: any) => ({...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users}));
+      if (append) setPosts(prev => [...prev, ...mapped]); else setPosts(mapped);
+      setHasMore(data.length === PAGE_SIZE);
+    } else {
+      if (!append) setPosts([]);
+      setHasMore(false);
+    }
     if (error) console.error(error);
-    setLoading(false);
+    if (append) setLoadingMore(false); else setLoading(false);
+  }
+
+  async function loadMore() {
+    if (loadingMore || !hasMore || !currentUser) return;
+    const nextOffset = offset + PAGE_SIZE;
+    setOffset(nextOffset);
+    await fetchPosts(true, nextOffset);
   }
 
   async function handlePost() {
@@ -277,6 +295,7 @@ export default function LivingPage() {
             <div style={{color: "#888", fontSize: "0.8rem"}}>Be the first to post a listing.</div>
           </div>
         ) : (
+          <>
           <div style={{display: "flex", flexDirection: "column", gap: "8px", padding: "12px"}}>
             {posts.map(post => (
               <div key={post.id} onClick={() => router.push("/living/" + post.id)}
@@ -363,6 +382,15 @@ export default function LivingPage() {
               </div>
             ))}
           </div>
+          {hasMore && (
+            <div style={{padding: "16px", textAlign: "center"}}>
+              <button onClick={loadMore} disabled={loadingMore}
+                style={{backgroundColor: "#fff", border: "1.5px solid #2BB39A", borderRadius: "20px", padding: "10px 24px", fontSize: "0.82rem", fontWeight: 600, color: "#2BB39A", cursor: loadingMore ? "not-allowed" : "pointer", fontFamily: "inherit", boxShadow: "0 2px 8px rgba(43,179,154,0.1)"}}>
+                {loadingMore ? "Loading..." : "Load more"}
+              </button>
+            </div>
+          )}
+          </>
         )}
       </div>
 
