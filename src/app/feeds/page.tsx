@@ -145,6 +145,8 @@ export default function FeedsPage() {
   const [showFeedsComposer, setShowFeedsComposer] = useState(false);
   const [showQuadComposer, setShowQuadComposer] = useState(false);
   const [todayQuestion, setTodayQuestion] = useState<{id:string;question:string;asked_date:string;school_id:string} | null>(null);
+  const [activeKlasmeyts, setActiveKlasmeyts] = useState<{id:string;full_name:string;avatar_url:string|null;ign:string|null;school_id:string;last_seen_at:string|null;show_online_status:boolean;trust_xp:number;activity_label:string}[]>([]);
+  const [aktRefreshTimer, setAktRefreshTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [questionAnswers, setQuestionAnswers] = useState<{id:string;answer:string;user_id:string;created_at:string;users:{full_name:string;avatar_url:string|null}}[]>([]);
   const [myAnswer, setMyAnswer] = useState<string | null>(null);
   const [showAnswerSheet, setShowAnswerSheet] = useState(false);
@@ -271,6 +273,7 @@ export default function FeedsPage() {
     fetchUnreadCount(userData);
     if (userData) fetchUnreadMessages(userData.id);
     if (userData) fetchTodayQuestion(userData.school_id);
+    if (userData) fetchActiveKlasmeyts();
     const { data: badges } = await supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student");
     if (badges) setVerifiedUsers(new Set(badges.map((b: {user_id: string}) => b.user_id)));
   }
@@ -299,6 +302,17 @@ export default function FeedsPage() {
     } else {
       setTodayQuestion(null);
     }
+  }
+
+  async function fetchActiveKlasmeyts() {
+    if (!currentUser) return;
+    const schoolId = selectedSchool === "all" ? null : selectedSchool === "own" ? currentUser.school_id : selectedSchool;
+    const { data } = await supabase.rpc("get_active_klasmeyts", {
+      p_school_id: schoolId || currentUser.school_id,
+      p_user_id: currentUser.id,
+      p_limit: 20,
+    });
+    if (data && data.length > 0) setActiveKlasmeyts(data);
   }
 
   async function submitAnswer() {
@@ -800,6 +814,41 @@ export default function FeedsPage() {
               <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" multiple style={{display: "none"}} onChange={(e) => { handleImageSelect(e); setShowFeedsComposer(true); }} />
             </div>
           </div>
+
+          {/* Active Klasmeyts Strip */}
+          {activeKlasmeyts.length > 0 && activeTab === "feeds" && (
+            <div style={{backgroundColor: "#fff", padding: "12px 0 12px 16px", borderBottom: "1px solid #F0F0F0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)"}}>
+              <div style={{fontSize: "0.72rem", fontWeight: 700, color: "#2BB39A", letterSpacing: "0.06em", marginBottom: "10px", textTransform: "uppercase", display: "flex", alignItems: "center", gap: "6px"}}>
+                🔥 Active Klasmeyts
+              </div>
+              <div style={{display: "flex", gap: "14px", overflowX: "auto", scrollbarWidth: "none", paddingRight: "16px"}}>
+                {activeKlasmeyts.map(user => (
+                  <div key={user.id}
+                    onClick={() => setAvatarMenu({id: user.id, full_name: user.full_name, avatar_url: user.avatar_url})}
+                    style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "5px", cursor: "pointer", flexShrink: 0, width: "64px"}}>
+                    {/* Avatar + online dot */}
+                    <div style={{position: "relative"}}>
+                      {user.avatar_url
+                        ? <img src={user.avatar_url} alt="" loading="lazy" style={{width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover", border: "2.5px solid #2BB39A", boxShadow: "0 2px 8px rgba(43,179,154,0.2)"}} />
+                        : <div style={{width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "#E1F5EE", border: "2.5px solid #2BB39A", display: "flex", alignItems: "center", justifyContent: "center", color: "#2BB39A", fontWeight: 700, fontSize: "1.1rem", boxShadow: "0 2px 8px rgba(43,179,154,0.15)"}}>{user.full_name?.charAt(0).toUpperCase()}</div>
+                      }
+                      {user.show_online_status && user.last_seen_at && (new Date().getTime() - new Date(user.last_seen_at).getTime() < 5 * 60 * 1000) && (
+                        <div style={{position: "absolute", bottom: "1px", right: "1px", width: "12px", height: "12px", backgroundColor: "#22C55E", borderRadius: "50%", border: "2px solid #fff"}} />
+                      )}
+                    </div>
+                    {/* Name */}
+                    <span style={{fontSize: "0.65rem", fontWeight: 700, color: "#1A1A1A", textAlign: "center", width: "60px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>
+                      {user.full_name?.split(" ")[0]}
+                    </span>
+                    {/* Activity label */}
+                    <span style={{fontSize: "0.58rem", color: "#2BB39A", fontWeight: 600, textAlign: "center", width: "60px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.2}}>
+                      {user.activity_label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Question of the Day Card */}
           {todayQuestion && selectedSchool !== "all" && (
