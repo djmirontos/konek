@@ -21,7 +21,6 @@ export default function SettingsPage() {
   const [currentUser, setCurrentUser] = useState<SettingsUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState("");
-  const [unreadMessages, setUnreadMessages] = useState(0);
 
   const [privacySettings, setPrivacySettings] = useState<Record<string, string>>({
     phone: "private", email: "private", birthdate: "school_only",
@@ -53,7 +52,7 @@ export default function SettingsPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const { data } = await supabase.from("users").select("id, full_name, avatar_url, phone_number, school_id, role, show_online_status, privacy_settings, verification_status, ign, ign_changed_at").eq("id", user.id).single();
     if (data) {
       setCurrentUser(data);
       if (data.privacy_settings) setPrivacySettings(data.privacy_settings);
@@ -330,7 +329,7 @@ export default function SettingsPage() {
         <div style={{height: "16px"}} />
       </div>
 
-      <BottomNav active="/feeds" unreadMessages={unreadMessages} />
+      <BottomNav active="/feeds" />
 
       {/* CHANGE PASSWORD SHEET */}
       {showChangePassword && (

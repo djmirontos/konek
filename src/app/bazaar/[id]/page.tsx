@@ -93,13 +93,13 @@ export default function BazaarDetailPage({ params }: { params: Promise<{ id: str
   async function initPage(id: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const [{ data: userData }, { data: badges }] = await Promise.all([
+      supabase.from("users").select("id, full_name, avatar_url, school_id, role").eq("id", user.id).single(),
+      supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student"),
+    ]);
     if (userData) setCurrentUser(userData);
-    const { data: badges } = await supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student");
     if (badges) setVerifiedUsers(new Set(badges.map((b: {user_id: string}) => b.user_id)));
-    await fetchListing(id);
-    await fetchComments(id);
-    await fetchReactions(id);
+    await Promise.all([fetchListing(id), fetchComments(id), fetchReactions(id)]);
     setLoading(false);
   }
 

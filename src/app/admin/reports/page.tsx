@@ -35,7 +35,7 @@ export default function AdminReportsPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const { data: userData } = await supabase.from("users").select("id, full_name, avatar_url, role").eq("id", user.id).single();
     if (!userData || (userData.role !== "admin" && userData.role !== "moderator")) { router.push("/feeds"); return; }
     setCurrentUser(userData);
   }
@@ -50,13 +50,18 @@ export default function AdminReportsPage() {
       .limit(50);
 
     if (data) {
-      const enriched = await Promise.all(data.map(async (r) => {
-        let post = null;
-        if (r.post_id) {
-          const { data: p } = await supabase.from("posts").select("content, user_id, type, users(full_name)").eq("id", r.post_id).maybeSingle();
-          if (p) post = { ...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users };
+      const postIds = data.map(r => r.post_id).filter(Boolean) as string[];
+      let postsMap: Record<string, any> = {};
+      if (postIds.length > 0) {
+        const { data: postsData } = await supabase.from("posts").select("id, content, user_id, type, users(full_name)").in("id", postIds);
+        for (const p of postsData || []) {
+          postsMap[p.id] = { ...p, users: Array.isArray(p.users) ? p.users[0] ?? null : p.users };
         }
-        return { ...r, reporter: Array.isArray(r.reporter) ? r.reporter[0] ?? null : r.reporter, post };
+      }
+      const enriched = data.map(r => ({
+        ...r,
+        reporter: Array.isArray(r.reporter) ? r.reporter[0] ?? null : r.reporter,
+        post: r.post_id ? postsMap[r.post_id] ?? null : null,
       }));
       setReports(enriched);
     }

@@ -33,7 +33,7 @@ export default function AdminSchoolsPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const { data: userData } = await supabase.from("users").select("id, full_name, avatar_url, role").eq("id", user.id).single();
     if (!userData || (userData.role !== "admin" && userData.role !== "moderator")) { router.push("/feeds"); return; }
     if (userData.role !== "admin") { showToast("Only admins can manage school requests."); router.push("/admin"); return; }
     setCurrentUser(userData);
@@ -43,14 +43,20 @@ export default function AdminSchoolsPage() {
     setLoading(true);
     const { data } = await supabase
       .from("school_requests")
-      .select("*")
+      .select("id, school_name, city, province, notes, status, created_at, requested_by_user_id")
       .eq("status", filter)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(100);
     if (data) {
-      const enriched = await Promise.all(data.map(async (r: any) => {
-        if (!r.requested_by_user_id) return { ...r, requester: null };
-        const { data: userData } = await supabase.from("users").select("full_name").eq("id", r.requested_by_user_id).maybeSingle();
-        return { ...r, requester: userData || null };
+      const userIds = data.map((r: any) => r.requested_by_user_id).filter(Boolean) as string[];
+      let userMap: Record<string, { full_name: string }> = {};
+      if (userIds.length > 0) {
+        const { data: usersData } = await supabase.from("users").select("id, full_name").in("id", userIds);
+        for (const u of usersData || []) userMap[u.id] = { full_name: u.full_name };
+      }
+      const enriched = data.map((r: any) => ({
+        ...r,
+        requester: r.requested_by_user_id ? userMap[r.requested_by_user_id] ?? null : null,
       }));
       setRequests(enriched);
     }
@@ -85,7 +91,7 @@ export default function AdminSchoolsPage() {
 
       // Send direct message from admin
       if (adminUser?.id) {
-        const convId = await startConversation(
+        await startConversation(
           adminUser.id,
           req.requested_by_user_id,
           notifMessage

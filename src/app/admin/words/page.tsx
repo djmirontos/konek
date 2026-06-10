@@ -36,7 +36,8 @@ export default function AdminWordsPage() {
     const { data } = await supabase
       .from("pseudonym_words")
       .select("id, word, type, is_active, created_at")
-      .order("word");
+      .order("word")
+      .limit(1000);
     if (data) setWords(data);
     setLoading(false);
   }

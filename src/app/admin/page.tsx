@@ -32,7 +32,7 @@ export default function AdminPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const { data: userData } = await supabase.from("users").select("id, full_name, avatar_url, school_id, role").eq("id", user.id).single();
     if (!userData || (userData.role !== "admin" && userData.role !== "moderator")) {
       router.push("/feeds"); return;
     }
@@ -82,7 +82,8 @@ export default function AdminPage() {
       .from("users")
       .select("id, full_name, avatar_url, school_id, created_at, schools(abbreviation)")
       .gte("created_at", today.toISOString())
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(100);
     if (data) setNewTodayUsers(data.map((u: any) => ({
       ...u,
       schools: Array.isArray(u.schools) ? u.schools[0] ?? null : u.schools,
@@ -97,7 +98,8 @@ export default function AdminPage() {
       .from("posts")
       .select("id, content, type, created_at, user_id, pseudonym, is_anonymous, users(full_name, avatar_url)")
       .gte("created_at", today.toISOString())
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(100);
     if (data) setPostsTodayList(data.map((p: any) => ({
       id: p.id,
       content: p.content,
@@ -118,7 +120,8 @@ export default function AdminPage() {
       .eq("type", "quad")
       .eq("is_hidden", false)
       .gt("expires_at", new Date().toISOString())
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(100);
     if (data) setActiveQuadList(data.map((p: any) => ({
       id: p.id,
       content: p.content,

@@ -58,7 +58,7 @@ export default function AdminUsersPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const { data: userData } = await supabase.from("users").select("id, full_name, avatar_url, role").eq("id", user.id).single();
     if (!userData || (userData.role !== "admin" && userData.role !== "moderator")) { router.push("/feeds"); return; }
     setCurrentUser(userData);
   }
@@ -79,7 +79,8 @@ export default function AdminUsersPage() {
       .from("school_change_requests")
       .select("id, user_id, reason, status, created_at, rejection_reason, users(full_name, avatar_url), current_school:current_school_id(name, abbreviation), requested_school:requested_school_id(name, abbreviation)")
       .eq("status", "pending")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(100);
     if (data) setSchoolChanges(data.map((r: any) => ({
       ...r,
       users: Array.isArray(r.users) ? r.users[0] ?? null : r.users,

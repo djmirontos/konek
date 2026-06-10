@@ -62,13 +62,13 @@ export default function AdminErrorsPage() {
 
   async function fetchLogs() {
     setLoading(true);
-    const query = supabase
+    let query = supabase
       .from("error_logs")
       .select("id, created_at, user_id, module, action, error_message, error_stack, metadata, users(full_name)")
       .order("created_at", { ascending: false })
       .limit(100);
 
-    if (moduleFilter !== "all") query.eq("module", moduleFilter);
+    if (moduleFilter !== "all") query = query.eq("module", moduleFilter);
 
     const { data } = await query;
     if (data) {

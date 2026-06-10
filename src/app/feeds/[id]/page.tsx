@@ -86,7 +86,7 @@ export default function PostDetailPage() {
       { data: userData },
       { data: badges }
     ] = await Promise.all([
-      supabase.from("users").select("*").eq("id", user.id).single(),
+      supabase.from("users").select("id, full_name, avatar_url, school_id").eq("id", user.id).single(),
       supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student")
     ]);
     if (userData) setCurrentUser(userData);

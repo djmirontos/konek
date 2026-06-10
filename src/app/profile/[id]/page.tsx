@@ -76,7 +76,6 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("Posts");
   const [viewAvatar, setViewAvatar] = useState<{src:string;name:string}|null>(null);
   const [loading, setLoading] = useState(true);
-  const [unreadMessages, setUnreadMessages] = useState(0);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
 
   const [followerCount, setFollowerCount] = useState(0);
@@ -161,8 +160,8 @@ export default function ProfilePage() {
       { data: schoolData },
       { count: livingCount }
     ] = await Promise.all([
-      supabase.from("users").select("*").eq("id", user.id).single(),
-      supabase.from("users").select("*").eq("id", targetId).single(),
+      supabase.from("users").select("id, full_name, avatar_url, avatar_original_url, school_id, role, bio, birthdate, course, year_level, hometown, phone_number, created_at, show_online_status, privacy_settings, verification_status, verification_rejection_reason, verification_front_url, verification_back_url, invite_code, referral_count, trust_xp, ign").eq("id", user.id).single(),
+      supabase.from("users").select("id, full_name, avatar_url, avatar_original_url, school_id, role, bio, birthdate, course, year_level, hometown, phone_number, created_at, show_online_status, privacy_settings, verification_status, verification_rejection_reason, verification_front_url, verification_back_url, invite_code, referral_count, trust_xp, ign").eq("id", targetId).single(),
       supabase.from("user_badges").select("user_id").eq("badge_code", "verified_student"),
       supabase.from("schools").select("id, name, abbreviation").order("name"),
       supabase.from("boarding_houses").select("id", { count: "exact", head: true })
@@ -358,16 +357,17 @@ export default function ProfilePage() {
     if (!currentUser) return;
     try {
       const ts = Date.now();
-      // Upload cropped avatar
       const croppedPath = "avatars/" + currentUser.id + "/" + ts + "_cropped.jpg";
-      const { error: cropError } = await supabase.storage.from("konek-images").upload(croppedPath, croppedFile);
-      if (cropError) throw cropError;
-      const { data: croppedUrl } = supabase.storage.from("konek-images").getPublicUrl(croppedPath);
-      // Upload original photo
       const ext = originalFile.name.split(".").pop() || "jpg";
       const originalPath = "avatars/" + currentUser.id + "/" + ts + "_original." + ext;
-      const { error: origError } = await supabase.storage.from("konek-images").upload(originalPath, originalFile);
+      // Upload both files in parallel
+      const [{ error: cropError }, { error: origError }] = await Promise.all([
+        supabase.storage.from("konek-images").upload(croppedPath, croppedFile),
+        supabase.storage.from("konek-images").upload(originalPath, originalFile),
+      ]);
+      if (cropError) throw cropError;
       if (origError) throw origError;
+      const { data: croppedUrl } = supabase.storage.from("konek-images").getPublicUrl(croppedPath);
       const { data: originalUrl } = supabase.storage.from("konek-images").getPublicUrl(originalPath);
       // Save both to users table
       const { error: updateError } = await supabase.from("users").update({
@@ -581,22 +581,6 @@ export default function ProfilePage() {
     return "\u20b1" + p.toLocaleString();
   }
 
-  async function fetchUnreadMessages(userId: string) {
-    const supabase = createClient();
-    const { data: convs } = await supabase
-      .from("conversations")
-      .select("id")
-      .or("participant_1.eq." + userId + ",participant_2.eq." + userId)
-      .eq("status", "accepted");
-    if (!convs || convs.length === 0) { setUnreadMessages(0); return; }
-    const convIds = convs.map((c: {id: string}) => c.id);
-    const { count } = await supabase.from("messages")
-      .select("id", { count: "exact", head: true })
-      .in("conversation_id", convIds)
-      .eq("is_seen", false)
-      .neq("sender_id", userId);
-    setUnreadMessages(count || 0);
-  }
 
 
 
@@ -613,7 +597,7 @@ export default function ProfilePage() {
           <div style={{height: "16px", width: "140px", borderRadius: "8px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
           <div style={{height: "12px", width: "80px", borderRadius: "6px", background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)", backgroundSize: "936px 104px", animation: "shimmer 1.2s infinite linear"}} />
         </div>
-        <BottomNav active="/feeds" unreadMessages={unreadMessages} />
+        <BottomNav active="/feeds" />
       </div>
     );
   }
@@ -1100,7 +1084,7 @@ export default function ProfilePage() {
         )}
       </div>
 
-      <BottomNav active="/feeds" unreadMessages={unreadMessages} />
+      <BottomNav active="/feeds" />
 
       {showSharePhotoPrompt && (
         <>

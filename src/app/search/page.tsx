@@ -80,7 +80,7 @@ export default function SearchPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const { data: userData } = await supabase.from("users").select("id, full_name, avatar_url, school_id, role").eq("id", user.id).single();
     if (userData) setCurrentUser(userData);
     const { data: schoolData } = await supabase.from("schools").select("id, name, abbreviation").order("name");
     if (schoolData) setSchools(schoolData);

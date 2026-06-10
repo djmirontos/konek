@@ -85,7 +85,7 @@ export default function SoapboxDetailPage({ params }: { params: Promise<{ id: st
   async function initPage(id: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const { data: userData } = await supabase.from("users").select("id, full_name, avatar_url, school_id, role").eq("id", user.id).single();
     if (userData) {
       setCurrentUser(userData);
       // Load post and comments in parallel

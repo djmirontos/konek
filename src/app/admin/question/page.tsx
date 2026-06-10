@@ -53,7 +53,7 @@ export default function AdminQuestionPage() {
   }
 
   async function fetchBankQuestions() {
-    const { data } = await supabase.from("question_bank").select("id, question, created_at, is_active").order("created_at", { ascending: false });
+    const { data } = await supabase.from("question_bank").select("id, question, created_at, is_active").order("created_at", { ascending: false }).limit(200);
     if (data) setBankQuestions(data);
   }
 

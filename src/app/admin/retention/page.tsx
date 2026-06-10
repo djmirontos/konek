@@ -45,7 +45,7 @@ export default function AdminRetentionPage() {
   async function initPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
-    const { data: userData } = await supabase.from("users").select("*").eq("id", user.id).single();
+    const { data: userData } = await supabase.from("users").select("full_name, role").eq("id", user.id).single();
     if (!userData || (userData.role !== "admin" && userData.role !== "moderator")) {
       router.push("/feeds"); return;
     }
@@ -100,27 +100,37 @@ export default function AdminRetentionPage() {
     const d30Retention = d30Base ? Math.round(((d30Active || 0) / d30Base) * 100) : 0;
     const dauMauRatio = mau ? Math.round(((dau || 0) / mau) * 100) : 0;
 
-    const { data: schoolsData } = await supabase.from("schools").select("id, name, abbreviation");
+    const { data: schoolsData } = await supabase.from("schools").select("id, name, abbreviation").limit(100);
     const schools: SchoolStat[] = [];
-    if (schoolsData) {
+    if (schoolsData && schoolsData.length > 0) {
+      const schoolIds = schoolsData.map(s => s.id);
+      const [
+        { data: allUsers },
+        { data: activeUsers },
+        { data: newUsers },
+      ] = await Promise.all([
+        supabase.from("users").select("school_id").in("school_id", schoolIds),
+        supabase.from("users").select("school_id").in("school_id", schoolIds).gte("last_active_at", weekAgo.toISOString()),
+        supabase.from("users").select("school_id").in("school_id", schoolIds).gte("created_at", weekAgo.toISOString()),
+      ]);
+
+      const totalMap: Record<string, number> = {};
+      const activeMap: Record<string, number> = {};
+      const newMap: Record<string, number> = {};
+      for (const u of allUsers || []) totalMap[u.school_id] = (totalMap[u.school_id] || 0) + 1;
+      for (const u of activeUsers || []) activeMap[u.school_id] = (activeMap[u.school_id] || 0) + 1;
+      for (const u of newUsers || []) newMap[u.school_id] = (newMap[u.school_id] || 0) + 1;
+
       for (const school of schoolsData) {
-        const [
-          { count: totalSchoolUsers },
-          { count: activeSchoolUsers },
-          { count: newThisWeek },
-        ] = await Promise.all([
-          supabase.from("users").select("id", { count: "exact", head: true }).eq("school_id", school.id),
-          supabase.from("users").select("id", { count: "exact", head: true }).eq("school_id", school.id).gte("last_active_at", weekAgo.toISOString()),
-          supabase.from("users").select("id", { count: "exact", head: true }).eq("school_id", school.id).gte("created_at", weekAgo.toISOString()),
-        ]);
-        if ((totalSchoolUsers || 0) > 0) {
+        const total = totalMap[school.id] || 0;
+        if (total > 0) {
           schools.push({
             id: school.id,
             name: school.name,
             abbreviation: school.abbreviation,
-            totalUsers: totalSchoolUsers || 0,
-            activeUsers: activeSchoolUsers || 0,
-            newThisWeek: newThisWeek || 0,
+            totalUsers: total,
+            activeUsers: activeMap[school.id] || 0,
+            newThisWeek: newMap[school.id] || 0,
           });
         }
       }
