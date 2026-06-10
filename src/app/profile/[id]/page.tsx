@@ -873,7 +873,14 @@ export default function ProfilePage() {
 
                 {/* INFO CARD */}
                 <div style={{backgroundColor: "#fff", borderRadius: "14px", padding: "16px", border: "none", boxShadow: "0 2px 10px rgba(0,0,0,0.07)"}}>
-                  <div style={{fontWeight: 700, fontSize: "0.72rem", color: "#2BB39A", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.06em"}}>Info</div>
+                  <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px"}}>
+                    <div style={{fontWeight: 700, fontSize: "0.72rem", color: "#2BB39A", textTransform: "uppercase", letterSpacing: "0.06em"}}>Info</div>
+                    {isOwnProfile && (
+                      <div onClick={() => setShowEditSheet(true)} style={{padding: "4px", borderRadius: "6px", cursor: "pointer"}}>
+                        <img src="/icon/edit_black.png" alt="Edit" style={{width: "16px", height: "16px", opacity: 0.6, display: "block"}} />
+                      </div>
+                    )}
+                  </div>
                   <div style={{display: "flex", flexDirection: "column", gap: "12px"}}>
                     <div style={{display: "flex", alignItems: "center", gap: "12px"}}>
                       <img src="/icon/school.png" alt="" style={{width: "22px", height: "22px", objectFit: "contain", flexShrink: 0, opacity: 0.75}} />
